@@ -1,15 +1,97 @@
 import { loadProgress, recordResult, updateLastLevel, resetProgress } from './storage.js';
 
-const ROLE_ORDER = ['GS', 'VERBE', 'GN'];
-const ROLE_LABELS = {
-  GS: 'Groupe sujet',
-  VERBE: 'Verbe',
-  GN: 'Groupe nominal'
+const LEVEL_CONFIG = {
+  1: { requiredRoles: ['VERB'], requireSubjectType: false },
+  2: { requiredRoles: ['SUBJECT', 'VERB'], requireSubjectType: false },
+  3: { requiredRoles: ['SUBJECT', 'VERB'], requireSubjectType: true },
+  4: { requiredRoles: ['SUBJECT', 'VERB', 'COMPLEMENT'], requireSubjectType: true },
+  all: { requiredRoles: ['SUBJECT', 'VERB', 'COMPLEMENT'], requireSubjectType: true }
 };
-const ROLE_MESSAGES = {
-  GS: 'Le groupe sujet indique qui fait l\'action.',
-  VERBE: 'Le verbe est le mot qui se conjugue.',
-  GN: 'Le groupe nominal complète ou précise l\'action.'
+
+const LEVEL_INSTRUCTIONS = {
+  1: "Glisse l'étiquette Verbe sur le mot qui se conjugue.",
+  2: 'Associe le groupe sujet et le verbe aux bons groupes de la phrase.',
+  3: 'Associe le groupe sujet et le verbe, puis indique si le sujet est un pronom ou un groupe nominal.',
+  4: 'Associe groupe sujet, verbe et complément, puis précise la nature du sujet.',
+  all: 'Associe chaque étiquette au bon endroit dans la phrase.'
+};
+
+const LABEL_LIBRARY = {
+  SUBJECT: {
+    id: 'SUBJECT',
+    kind: 'ROLE',
+    value: 'SUBJECT',
+    text: 'Groupe sujet',
+    aria: 'Étiquette Groupe sujet'
+  },
+  VERB: {
+    id: 'VERB',
+    kind: 'ROLE',
+    value: 'VERB',
+    text: 'Verbe',
+    aria: 'Étiquette Verbe'
+  },
+  COMPLEMENT: {
+    id: 'COMPLEMENT',
+    kind: 'ROLE',
+    value: 'COMPLEMENT',
+    text: 'Complément',
+    aria: 'Étiquette Complément'
+  },
+  SUBJECT_TYPE_PRONOUN: {
+    id: 'SUBJECT_TYPE_PRONOUN',
+    kind: 'SUBJECT_TYPE',
+    value: 'PRONOUN',
+    text: 'Pronom',
+    aria: 'Étiquette Pronom'
+  },
+  SUBJECT_TYPE_GN: {
+    id: 'SUBJECT_TYPE_GN',
+    kind: 'SUBJECT_TYPE',
+    value: 'GN',
+    text: 'Groupe nominal',
+    aria: 'Étiquette Groupe nominal'
+  }
+};
+
+const LABEL_ORDER = [
+  'SUBJECT',
+  'VERB',
+  'COMPLEMENT',
+  'SUBJECT_TYPE_PRONOUN',
+  'SUBJECT_TYPE_GN'
+];
+
+const LABELS_BY_KIND_VALUE = new Map();
+Object.values(LABEL_LIBRARY).forEach((label) => {
+  LABELS_BY_KIND_VALUE.set(`${label.kind}-${label.value}`, label);
+});
+
+const SLOT_FEEDBACK = {
+  ROLE: {
+    SUBJECT: {
+      success: 'Groupe sujet trouvé !',
+      reminder: "Le groupe sujet indique qui fait l'action."
+    },
+    VERB: {
+      success: 'Verbe identifié !',
+      reminder: 'Le verbe est le mot qui se conjugue.'
+    },
+    COMPLEMENT: {
+      success: 'Complément repéré !',
+      reminder: 'Le complément précise le lieu ou le moment.'
+    }
+  },
+  SUBJECT_TYPE: {
+    PRONOUN: {
+      success: 'Bravo, tu as reconnu un pronom.',
+      reminder: 'Un pronom remplace un nom déjà connu.'
+    },
+    GN: {
+      success: 'Bravo, c’est un groupe nominal.',
+      reminder: 'Un groupe nominal est construit autour d’un nom.'
+    }
+  }
 };
 
 const appState = {
@@ -17,9 +99,12 @@ const appState = {
   queue: [],
   currentIndex: 0,
   currentPhrase: null,
-  assignments: new Map(),
+  slots: new Map(),
   progress: loadProgress(),
-  hasValidated: false
+  hasValidated: false,
+  activeLevel: '1',
+  requirements: LEVEL_CONFIG[1],
+  instruction: LEVEL_INSTRUCTIONS[1]
 };
 
 const elements = {
@@ -36,15 +121,13 @@ const elements = {
   streakDisplay: document.getElementById('streak-display'),
   resetBtn: document.getElementById('reset-progress'),
   phraseText: document.getElementById('phrase-text'),
-  dragArea: document.querySelector('.drag-area'),
-  dragLabels: Array.from(document.querySelectorAll('.drag-label')),
+  dragArea: document.getElementById('drag-area'),
   helpBtn: document.getElementById('help-btn'),
   validateBtn: document.getElementById('validate-btn'),
   nextBtn: document.getElementById('next-btn'),
   helpText: document.getElementById('help-text'),
   toast: document.getElementById('toast')
 };
-
 let dragState = null;
 
 async function init() {
@@ -78,22 +161,19 @@ function bindEvents() {
   });
 
   elements.resetBtn.addEventListener('click', onResetScores);
-
   elements.helpBtn.addEventListener('click', revealHint);
   elements.validateBtn.addEventListener('click', onValidate);
   elements.nextBtn.addEventListener('click', () => {
     loadNextPhrase();
   });
-
-  elements.dragLabels.forEach((label) => {
-    label.addEventListener('pointerdown', handleDragStart);
-    label.addEventListener('pointermove', handleDragMove);
-    label.addEventListener('pointerup', handleDragEnd);
-    label.addEventListener('pointercancel', handleDragEnd);
-  });
 }
 
 function startSession(level) {
+  const levelKey = LEVEL_CONFIG[level] ? level : 'all';
+  appState.activeLevel = level;
+  appState.requirements = LEVEL_CONFIG[levelKey];
+  appState.instruction = LEVEL_INSTRUCTIONS[levelKey] || LEVEL_INSTRUCTIONS.all;
+
   const levelFilter = level === 'all' ? null : Number(level);
   const available = levelFilter
     ? appState.phrases.filter((item) => item.level === levelFilter)
@@ -105,11 +185,10 @@ function startSession(level) {
   appState.queue = shuffleArray(available);
   appState.currentIndex = 0;
   appState.currentPhrase = null;
-  appState.assignments = new Map();
+  appState.slots = new Map();
   appState.hasValidated = false;
   swapScreen('exercise');
   appState.progress = updateLastLevel(appState.progress, level);
-  elements.helpText.textContent = 'Fais glisser chaque étiquette sur le bon groupe.';
   loadNextPhrase();
 }
 
@@ -138,91 +217,194 @@ function loadNextPhrase() {
   const phrase = appState.queue[appState.currentIndex % appState.queue.length];
   appState.currentPhrase = phrase;
   appState.currentIndex += 1;
-  appState.assignments = new Map();
+  appState.slots = new Map();
   appState.hasValidated = false;
-  elements.helpText.textContent = 'Dépose les étiquettes colorées sur les bons groupes.';
   elements.validateBtn.disabled = false;
   elements.nextBtn.disabled = true;
+  elements.helpText.textContent = appState.instruction;
   renderPhrase(phrase);
+  renderLabels(phrase);
 }
 
 function renderPhrase(phrase) {
   elements.phraseText.innerHTML = '';
-  let segmentIndex = 0;
-  phrase.parts.forEach((part) => {
+  phrase.parts.forEach((part, index) => {
     if (part.type === 'text') {
-      const textNode = document.createTextNode(part.text);
-      elements.phraseText.append(textNode);
+      elements.phraseText.append(document.createTextNode(part.text));
       return;
     }
-    const span = document.createElement('span');
-    span.textContent = part.text;
-    span.className = 'segment';
-    span.dataset.correctRole = part.role;
-    span.dataset.segmentIndex = String(segmentIndex);
-    span.dataset.displayRole = '';
-    elements.phraseText.append(span);
-    segmentIndex += 1;
+    const segment = document.createElement('span');
+    segment.textContent = part.text;
+    segment.className = 'segment';
+    segment.dataset.segmentIndex = String(index);
+    const needsRole = shouldRequireRole(part.role);
+    if (needsRole) {
+      const slotId = `segment-${index}-role`;
+      segment.dataset.slotId = slotId;
+      segment.dataset.slotType = 'ROLE';
+      segment.dataset.expectedValue = part.role;
+      segment.dataset.displayKey = '';
+      segment.dataset.labelText = '';
+      appState.slots.set(slotId, {
+        id: slotId,
+        kind: 'ROLE',
+        expected: part.role,
+        assigned: null,
+        element: segment
+      });
+    } else {
+      segment.classList.add('readonly');
+    }
+
+    if (
+      appState.requirements.requireSubjectType &&
+      part.role === 'SUBJECT' &&
+      part.subjectType
+    ) {
+      const typeSlotId = `segment-${index}-type`;
+      const typeSlot = document.createElement('span');
+      typeSlot.className = 'type-slot';
+      typeSlot.dataset.slotId = typeSlotId;
+      typeSlot.dataset.slotType = 'SUBJECT_TYPE';
+      typeSlot.dataset.expectedValue = part.subjectType;
+      typeSlot.dataset.placeholder = 'Pronom ou GN ?';
+      typeSlot.textContent = 'Pronom ou GN ?';
+      segment.append(typeSlot);
+      appState.slots.set(typeSlotId, {
+        id: typeSlotId,
+        kind: 'SUBJECT_TYPE',
+        expected: part.subjectType,
+        assigned: null,
+        element: typeSlot
+      });
+    }
+
+    elements.phraseText.append(segment);
   });
 }
 
-function assignRole(index, role) {
-  const segment = getSegmentElement(index);
-  if (!segment) return;
-  appState.assignments.set(index, role);
-  setSegmentBadge(segment, role);
-  segment.classList.add('assigned');
-  segment.classList.remove('incorrect', 'correct', 'hint');
+function shouldRequireRole(role) {
+  const { requiredRoles } = appState.requirements || {};
+  if (!requiredRoles) return false;
+  return requiredRoles.includes(role);
 }
 
-function getSegmentElement(index) {
-  return elements.phraseText.querySelector(`.segment[data-segment-index="${index}"]`);
+function renderLabels(phrase) {
+  elements.dragArea.innerHTML = '';
+  const activeIds = new Set();
+  const segmentRoles = new Set(
+    phrase.parts
+      .filter((part) => part.type === 'segment')
+      .map((part) => part.role)
+  );
+  const { requiredRoles, requireSubjectType } = appState.requirements;
+  requiredRoles.forEach((role) => {
+    if (segmentRoles.has(role)) {
+      activeIds.add(role);
+    }
+  });
+  if (requireSubjectType && segmentRoles.has('SUBJECT')) {
+    activeIds.add('SUBJECT_TYPE_PRONOUN');
+    activeIds.add('SUBJECT_TYPE_GN');
+  }
+
+  const fragment = document.createDocumentFragment();
+  LABEL_ORDER.forEach((id) => {
+    if (!activeIds.has(id)) return;
+    const definition = LABEL_LIBRARY[id];
+    const label = document.createElement('div');
+    label.className = 'drag-label';
+    label.dataset.labelId = definition.id;
+    label.dataset.kind = definition.kind;
+    label.dataset.value = definition.value;
+    label.textContent = definition.text;
+    label.setAttribute('aria-label', definition.aria);
+    label.addEventListener('pointerdown', (event) => handleDragStart(event, label));
+    label.addEventListener('pointermove', handleDragMove);
+    label.addEventListener('pointerup', handleDragEnd);
+    label.addEventListener('pointercancel', handleDragEnd);
+    fragment.append(label);
+  });
+  elements.dragArea.append(fragment);
 }
 
 function revealHint() {
   if (!appState.currentPhrase) return;
-  const verbSegment = elements.phraseText.querySelector(
-    '.segment[data-correct-role="VERBE"]'
-  );
-  if (!verbSegment) return;
-  verbSegment.classList.add('hint');
-  setSegmentBadge(verbSegment, 'VERBE');
-  elements.helpText.textContent = 'Indice : le verbe est déjà mis en avant.';
+  const slots = Array.from(appState.slots.values());
+  let target = slots.find((slot) => slot.kind === 'ROLE' && slot.expected === 'VERB');
+  if (!target || target.assigned) {
+    target = slots.find((slot) => !slot.assigned);
+  }
+  if (!target) return;
+  const label = getLabelByKindAndValue(target.kind, target.expected);
+  if (label) {
+    if (target.kind === 'ROLE') {
+      target.element.dataset.displayKey = label.id;
+      target.element.dataset.labelText = label.text;
+    } else if (target.kind === 'SUBJECT_TYPE') {
+      target.element.textContent = label.text;
+    }
+  }
+  target.element.classList.add('hint');
+  elements.helpText.textContent = `Indice : repère ${label ? label.text.toLowerCase() : 'cet élément'}.`;
 }
 
 function onValidate() {
   if (appState.hasValidated) return;
-  const segments = Array.from(elements.phraseText.querySelectorAll('.segment'));
-  if (segments.length !== ROLE_ORDER.length) {
-    console.warn('Phrase inattendue : nombre de segments différent de 3.');
-  }
-  const missing = segments.filter((segment) =>
-    !appState.assignments.has(Number(segment.dataset.segmentIndex))
-  );
+  const slots = Array.from(appState.slots.values());
+  const missing = slots.filter((slot) => !slot.assigned);
   if (missing.length) {
-    elements.helpText.textContent = 'Glisse chaque étiquette sur un groupe avant de valider.';
+    elements.helpText.textContent =
+      "Glisse toutes les étiquettes sur la phrase avant de valider.";
     return;
   }
 
   let correctCount = 0;
-  const feedbackRoles = new Set();
-  segments.forEach((segment) => {
-    const idx = Number(segment.dataset.segmentIndex);
-    const expected = segment.dataset.correctRole;
-    const given = appState.assignments.get(idx);
-    segment.classList.remove('assigned', 'hint');
-    if (given === expected) {
+  const slotMessages = [];
+  slots.forEach((slot) => {
+    const isCorrect = slot.assigned === slot.expected;
+    const expectedLabel = getLabelByKindAndValue(slot.kind, slot.expected);
+    const assignedLabel = getLabelByKindAndValue(slot.kind, slot.assigned);
+    slot.element.classList.remove('hint');
+    slot.element.classList.toggle('correct', isCorrect);
+    slot.element.classList.toggle('incorrect', !isCorrect);
+
+    if (slot.kind === 'ROLE') {
+      const chosen = assignedLabel || expectedLabel;
+      slot.element.dataset.displayKey = chosen?.id || '';
+      slot.element.dataset.labelText = chosen?.text || '';
+    } else if (slot.kind === 'SUBJECT_TYPE') {
+      slot.element.textContent = (assignedLabel || expectedLabel)?.text || slot.element.textContent;
+    }
+
+    if (isCorrect) {
       correctCount += 1;
-      segment.classList.add('correct');
-      setSegmentBadge(segment, expected);
+      const message = SLOT_FEEDBACK[slot.kind][slot.expected]?.success || 'Bien joué !';
+      slotMessages.push(`✓ ${message}`);
     } else {
-      segment.classList.add('incorrect');
-      setSegmentBadge(segment, given);
-      feedbackRoles.add(expected);
+      const reminder = SLOT_FEEDBACK[slot.kind][slot.expected]?.reminder || 'Observe la phrase attentivement.';
+      slotMessages.push(`✗ ${reminder}`);
+      if (slot.kind === 'SUBJECT_TYPE' && expectedLabel) {
+        slot.element.textContent = expectedLabel.text;
+      }
+      if (slot.kind === 'ROLE' && expectedLabel) {
+        slot.element.dataset.displayKey = expectedLabel.id;
+        slot.element.dataset.labelText = expectedLabel.text;
+      }
     }
   });
 
-  const stars = correctCount;
+  const totalSlots = slots.length || 1;
+  const accuracy = correctCount / totalSlots;
+  let stars = 0;
+  if (accuracy === 1) {
+    stars = 3;
+  } else if (accuracy >= 0.66) {
+    stars = 2;
+  } else if (accuracy > 0) {
+    stars = 1;
+  }
+
   const deltaScore = correctCount;
   appState.progress = recordResult(
     appState.progress,
@@ -231,32 +413,27 @@ function onValidate() {
     stars
   );
   updateScoreboard();
-  const messages = [];
-  if (stars === 3) {
-    messages.push('Bravo ! 3 étoiles ✨');
-  } else if (stars === 0) {
-    messages.push('Essaie encore, tu vas y arriver !');
-  } else {
-    messages.push(`${stars} étoile${stars > 1 ? 's' : ''} gagnée${stars > 1 ? 's' : ''}.`);
-  }
-  feedbackRoles.forEach((role) => {
-    messages.push(ROLE_MESSAGES[role]);
-  });
-  showToast(messages.join(' '));
-  elements.helpText.textContent = messages.slice(1).join(' ');
+
+  elements.helpText.innerHTML = slotMessages.join('<br />');
+  showToast(`${correctCount}/${totalSlots} réponse${correctCount > 1 ? 's' : ''} correcte${
+    correctCount > 1 ? 's' : ''
+  }.`);
   elements.nextBtn.disabled = false;
   elements.validateBtn.disabled = true;
   appState.hasValidated = true;
 }
 
-function handleDragStart(event) {
+function handleDragStart(event, label) {
   event.preventDefault();
-  const label = event.currentTarget;
+  const definition = LABEL_LIBRARY[label.dataset.labelId];
+  if (!definition) return;
   label.setPointerCapture(event.pointerId);
   const ghost = createGhost(label, event.clientX, event.clientY);
   dragState = {
     pointerId: event.pointerId,
-    role: label.dataset.role,
+    labelId: definition.id,
+    kind: definition.kind,
+    value: definition.value,
     ghost,
     source: label
   };
@@ -271,17 +448,42 @@ function handleDragMove(event) {
 
 function handleDragEnd(event) {
   if (!dragState || event.pointerId !== dragState.pointerId) return;
-  const { ghost, role, source } = dragState;
+  const { ghost, source } = dragState;
   source.classList.remove('dragging');
   source.releasePointerCapture(event.pointerId);
   moveGhost(ghost, event.clientX, event.clientY);
   ghost.remove();
-  const dropTarget = document.elementFromPoint(event.clientX, event.clientY);
-  if (dropTarget && dropTarget.classList.contains('segment') && !appState.hasValidated) {
-    const idx = Number(dropTarget.dataset.segmentIndex);
-    assignRole(idx, role);
+  if (!appState.hasValidated) {
+    const dropTarget = document.elementFromPoint(event.clientX, event.clientY);
+    const slotElement = dropTarget ? dropTarget.closest('[data-slot-id]') : null;
+    if (slotElement) {
+      const definition = LABEL_LIBRARY[dragState.labelId];
+      assignToSlot(slotElement, definition);
+    }
   }
   dragState = null;
+}
+
+function assignToSlot(slotElement, label) {
+  const slotId = slotElement.dataset.slotId;
+  const slot = appState.slots.get(slotId);
+  if (!slot) return;
+  if (slot.kind !== label.kind) {
+    slotElement.classList.add('shake');
+    setTimeout(() => slotElement.classList.remove('shake'), 300);
+    showToast("Cette étiquette ne correspond pas à cette case.");
+    return;
+  }
+  slot.assigned = label.value;
+  slot.element.classList.remove('incorrect', 'correct', 'hint');
+  if (slot.kind === 'ROLE') {
+    slot.element.dataset.displayKey = label.id;
+    slot.element.dataset.labelText = label.text;
+    slot.element.classList.add('assigned');
+  } else if (slot.kind === 'SUBJECT_TYPE') {
+    slot.element.textContent = label.text;
+    slot.element.classList.add('assigned');
+  }
 }
 
 function createGhost(label, clientX, clientY) {
@@ -317,8 +519,8 @@ function updateScoreboard() {
   }
 }
 
-function setSegmentBadge(segment, role) {
-  segment.dataset.displayRole = role || '';
+function getLabelByKindAndValue(kind, value) {
+  return LABELS_BY_KIND_VALUE.get(`${kind}-${value}`) || null;
 }
 
 function onResetScores() {

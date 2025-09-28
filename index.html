@@ -9,7 +9,7 @@
   <body>
     <header class="app-header" role="banner">
       <h1>Détective des groupes</h1>
-      <p class="tagline">Repère le groupe sujet, le verbe et le groupe nominal !</p>
+      <p class="tagline">Repère pas à pas le groupe sujet, le verbe et les compléments !</p>
     </header>
     <main id="app" class="app" role="main">
       <section id="screen-home" class="screen active" aria-label="Accueil">
@@ -37,30 +37,34 @@
             </button>
           </div>
           <div class="card legend-card">
-            <h2>Les groupes</h2>
+            <h2>Les repères</h2>
             <div class="icon-legend" role="list">
-              <div role="listitem" class="legend-item" data-role="GS">
+              <div role="listitem" class="legend-item" data-role="SUBJECT">
                 <img src="public/pictos/subject.svg" alt="Groupe sujet" />
                 <div class="legend-text">
                   <span class="legend-title">Groupe sujet</span>
                   <span class="legend-caption">Qui fait l'action</span>
                 </div>
               </div>
-              <div role="listitem" class="legend-item" data-role="VERBE">
+              <div role="listitem" class="legend-item" data-role="VERB">
                 <img src="public/pictos/verb.svg" alt="Verbe" />
                 <div class="legend-text">
                   <span class="legend-title">Verbe</span>
                   <span class="legend-caption">Ce qui se conjugue</span>
                 </div>
               </div>
-              <div role="listitem" class="legend-item" data-role="GN">
-                <img src="public/pictos/group.svg" alt="Groupe nominal" />
+              <div role="listitem" class="legend-item" data-role="COMPLEMENT">
+                <img src="public/pictos/group.svg" alt="Complément" />
                 <div class="legend-text">
-                  <span class="legend-title">Groupe nominal</span>
-                  <span class="legend-caption">Complète l'action</span>
+                  <span class="legend-title">Complément</span>
+                  <span class="legend-caption">Lieu ou temps</span>
                 </div>
               </div>
             </div>
+            <p class="legend-note">
+              Dès le niveau 3, précise si le sujet est un <strong>pronom</strong> ou un
+              <strong>groupe nominal</strong>.
+            </p>
           </div>
         </div>
       </section>
@@ -73,32 +77,12 @@
           <div class="phrase-zone" aria-live="polite">
             <p id="phrase-text" class="phrase"></p>
           </div>
-          <div class="drag-area" aria-hidden="false">
-            <div
-              class="drag-label"
-              data-role="GS"
-              draggable="false"
-              aria-label="Étiquette Groupe sujet"
-            >
-              Groupe sujet
-            </div>
-            <div
-              class="drag-label"
-              data-role="VERBE"
-              draggable="false"
-              aria-label="Étiquette Verbe"
-            >
-              Verbe
-            </div>
-            <div
-              class="drag-label"
-              data-role="GN"
-              draggable="false"
-              aria-label="Étiquette Groupe nominal"
-            >
-              Groupe nominal
-            </div>
-          </div>
+          <div
+            class="drag-area"
+            id="drag-area"
+            role="group"
+            aria-label="Étiquettes à déplacer"
+          ></div>
           <div class="help-text" id="help-text" aria-live="assertive"></div>
           <div class="controls">
             <button id="help-btn" class="ghost">Indice</button>

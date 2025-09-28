@@ -11,9 +11,11 @@
   --accent: #4cc38a;
   --warning: #f5b545;
   --error: #f06f6f;
-  --gs-color: #f4a259;
-  --verbe-color: #4c8df7;
-  --gn-color: #3ec9b0;
+  --subject-color: #f4a259;
+  --verb-color: #4c8df7;
+  --complement-color: #3ec9b0;
+  --type-pronoun: #9661ff;
+  --type-gn: #37c3a1;
   --radius: 18px;
   --transition: 240ms ease;
 }
@@ -236,6 +238,13 @@ button:disabled {
   color: var(--muted);
 }
 
+.legend-note {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  text-align: center;
+}
+
 
 .phrase-zone {
   background: rgba(255, 255, 255, 0.96);
@@ -261,30 +270,63 @@ button:disabled {
 
 .segment {
   padding: 0.1rem 0.35rem;
-  border-radius: 10px;
+  border-radius: 12px;
   transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
   font-weight: 600;
+  position: relative;
 }
 
-.segment[data-display-role='GS'] {
-  --segment-color: rgba(244, 162, 89, 0.28);
-  --segment-strong: rgba(244, 162, 89, 0.7);
+.segment::after {
+  content: attr(data-label-text);
+  position: absolute;
+  top: -1.25rem;
+  left: 50%;
+  transform: translate(-50%, -10%);
+  font-size: 0.72rem;
+  line-height: 1;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--segment-strong, rgba(76, 141, 247, 0.75));
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(31, 41, 55, 0.18);
 }
 
-.segment[data-display-role='VERBE'] {
+.segment[data-label-text='']::after {
+  display: none;
+}
+
+.segment.assigned::after,
+.segment.hint::after,
+.segment.correct::after,
+.segment.incorrect::after {
+  opacity: 1;
+}
+
+.segment[data-display-key='SUBJECT'] {
+  --segment-color: rgba(244, 162, 89, 0.25);
+  --segment-strong: rgba(244, 162, 89, 0.72);
+}
+
+.segment[data-display-key='VERB'] {
   --segment-color: rgba(76, 141, 247, 0.22);
-  --segment-strong: rgba(76, 141, 247, 0.7);
+  --segment-strong: rgba(76, 141, 247, 0.72);
 }
 
-.segment[data-display-role='GN'] {
-  --segment-color: rgba(62, 201, 176, 0.22);
-  --segment-strong: rgba(62, 201, 176, 0.7);
+.segment[data-display-key='COMPLEMENT'] {
+  --segment-color: rgba(62, 201, 176, 0.24);
+  --segment-strong: rgba(62, 201, 176, 0.72);
 }
-
 
 .segment.assigned {
   background: var(--segment-color);
   box-shadow: 0 0 0 2px var(--segment-strong) inset;
+}
+
+.segment.readonly {
+  opacity: 0.9;
 }
 
 .segment.hint {
@@ -302,6 +344,55 @@ button:disabled {
   animation: shake 260ms ease;
   background: rgba(255, 111, 111, 0.18);
   box-shadow: 0 0 0 2px var(--error) inset;
+}
+
+.type-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  margin-left: 0.2rem;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(32, 48, 73, 0.08);
+  border: 1px dashed rgba(32, 48, 73, 0.25);
+  color: var(--muted);
+  transition: background var(--transition), box-shadow var(--transition), color var(--transition);
+}
+
+.type-slot.assigned {
+  border-style: solid;
+  box-shadow: 0 6px 18px rgba(31, 41, 55, 0.12);
+}
+
+.type-slot[data-expected-value='PRONOUN'].assigned {
+  background: rgba(150, 97, 255, 0.25);
+  color: #4d2cb8;
+  border-color: rgba(150, 97, 255, 0.45);
+}
+
+.type-slot[data-expected-value='GN'].assigned {
+  background: rgba(55, 195, 161, 0.25);
+  color: #116954;
+  border-color: rgba(55, 195, 161, 0.45);
+}
+
+.type-slot.hint {
+  background: rgba(76, 141, 247, 0.2);
+  border-color: rgba(76, 141, 247, 0.4);
+  color: #214274;
+}
+
+.type-slot.correct {
+  background: rgba(74, 200, 160, 0.3);
+  border-color: rgba(74, 200, 160, 0.6);
+  color: #0e6042;
+}
+
+.type-slot.incorrect {
+  background: rgba(240, 111, 111, 0.25);
+  border-color: rgba(240, 111, 111, 0.5);
+  color: #6f1d1d;
 }
 
 @keyframes pop {
@@ -351,21 +442,32 @@ button:disabled {
   touch-action: none;
   position: relative;
   letter-spacing: 0.3px;
+  user-select: none;
 }
 
-.drag-label[data-role='GS'] {
+.drag-label[data-label-id='SUBJECT'] {
   background: rgba(244, 162, 89, 0.22);
   border-color: rgba(244, 162, 89, 0.45);
 }
 
-.drag-label[data-role='VERBE'] {
+.drag-label[data-label-id='VERB'] {
   background: rgba(76, 141, 247, 0.22);
   border-color: rgba(76, 141, 247, 0.45);
 }
 
-.drag-label[data-role='GN'] {
+.drag-label[data-label-id='COMPLEMENT'] {
   background: rgba(62, 201, 176, 0.22);
   border-color: rgba(62, 201, 176, 0.45);
+}
+
+.drag-label[data-label-id='SUBJECT_TYPE_PRONOUN'] {
+  background: rgba(150, 97, 255, 0.22);
+  border-color: rgba(150, 97, 255, 0.45);
+}
+
+.drag-label[data-label-id='SUBJECT_TYPE_GN'] {
+  background: rgba(55, 195, 161, 0.22);
+  border-color: rgba(55, 195, 161, 0.45);
 }
 
 .drag-label.dragging {
@@ -374,11 +476,16 @@ button:disabled {
   background: var(--card);
 }
 
+.shake {
+  animation: shake 260ms ease;
+}
+
 .help-text {
   min-height: 1.2rem;
   text-align: center;
   color: var(--muted);
   font-size: 0.95rem;
+  line-height: 1.4;
 }
 
 .controls {
