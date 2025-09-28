@@ -478,5 +478,149 @@
       { "type": "segment", "role": "GN", "text": "leurs filets usés" },
       { "type": "text", "text": "." }
     ]
+  },
+  {
+    "id": "n4-01",
+    "level": 4,
+    "text": "Sous le ciel étoilé, les deux astronautes émerveillés observent la Terre bleue.",
+    "parts": [
+      { "type": "text", "text": "Sous le ciel étoilé, " },
+      {
+        "type": "segment",
+        "role": "GS",
+        "text": "les deux astronautes émerveillés"
+      },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "observent" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "la Terre bleue" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n4-02",
+    "level": 4,
+    "text": "Grâce à leur courage, les trois explorateurs silencieux franchissent la rivière glacée.",
+    "parts": [
+      { "type": "text", "text": "Grâce à leur courage, " },
+      {
+        "type": "segment",
+        "role": "GS",
+        "text": "les trois explorateurs silencieux"
+      },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "franchissent" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "la rivière glacée" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n4-03",
+    "level": 4,
+    "text": "Malgré le vent glacial, la grande montgolfière colorée emporte les voyageurs joyeux.",
+    "parts": [
+      { "type": "text", "text": "Malgré le vent glacial, " },
+      {
+        "type": "segment",
+        "role": "GS",
+        "text": "la grande montgolfière colorée"
+      },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "emporte" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "les voyageurs joyeux" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n4-04",
+    "level": 4,
+    "text": "Au milieu du désert doré, les caravanes patientes transportent des trésors précieux.",
+    "parts": [
+      { "type": "text", "text": "Au milieu du désert doré, " },
+      {
+        "type": "segment",
+        "role": "GS",
+        "text": "les caravanes patientes"
+      },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "transportent" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "des trésors précieux" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n4-05",
+    "level": 4,
+    "text": "Quand la cloche résonne, toute la classe attentive range ses cahiers illustrés.",
+    "parts": [
+      { "type": "text", "text": "Quand la cloche résonne, " },
+      {
+        "type": "segment",
+        "role": "GS",
+        "text": "toute la classe attentive"
+      },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "range" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "ses cahiers illustrés" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n4-06",
+    "level": 4,
+    "text": "À la tombée de la nuit, les lucioles lumineuses illuminent le sentier sinueux.",
+    "parts": [
+      { "type": "text", "text": "À la tombée de la nuit, " },
+      {
+        "type": "segment",
+        "role": "GS",
+        "text": "les lucioles lumineuses"
+      },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "illuminent" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "le sentier sinueux" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n4-07",
+    "level": 4,
+    "text": "Pendant l'orage, la vieille cabane tremblante protège les animaux abrités.",
+    "parts": [
+      { "type": "text", "text": "Pendant l'orage, " },
+      {
+        "type": "segment",
+        "role": "GS",
+        "text": "la vieille cabane tremblante"
+      },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "protège" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "les animaux abrités" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n4-08",
+    "level": 4,
+    "text": "Dans la forêt enchantée, la chouette au plumage argenté surveille les petits aventuriers.",
+    "parts": [
+      { "type": "text", "text": "Dans la forêt enchantée, " },
+      {
+        "type": "segment",
+        "role": "GS",
+        "text": "la chouette au plumage argenté"
+      },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "surveille" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "les petits aventuriers" },
+      { "type": "text", "text": "." }
+    ]
   }
 ]

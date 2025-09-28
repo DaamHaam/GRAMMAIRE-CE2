@@ -1,8 +1,13 @@
-import { loadProgress, recordResult, updateLastLevel } from './storage.js';
+import { loadProgress, recordResult, updateLastLevel, resetProgress } from './storage.js';
 
 const ROLE_ORDER = ['GS', 'VERBE', 'GN'];
+const ROLE_LABELS = {
+  GS: 'Groupe sujet',
+  VERBE: 'Verbe',
+  GN: 'Groupe nominal'
+};
 const ROLE_MESSAGES = {
-  GS: 'Le sujet indique qui fait l\'action.',
+  GS: 'Le groupe sujet indique qui fait l\'action.',
   VERBE: 'Le verbe est le mot qui se conjugue.',
   GN: 'Le groupe nominal complète ou précise l\'action.'
 };
@@ -14,8 +19,6 @@ const appState = {
   currentPhrase: null,
   assignments: new Map(),
   progress: loadProgress(),
-  activeRole: 'GS',
-  mode: 'highlight',
   hasValidated: false
 };
 
@@ -30,11 +33,10 @@ const elements = {
   scoreDisplay: document.getElementById('score-display'),
   streakDisplay: document.getElementById('streak-display'),
   bestDisplay: document.getElementById('best-display'),
+  resetBtn: document.getElementById('reset-progress'),
   phraseText: document.getElementById('phrase-text'),
   dragArea: document.querySelector('.drag-area'),
   dragLabels: Array.from(document.querySelectorAll('.drag-label')),
-  modeButtons: Array.from(document.querySelectorAll('.mode-btn')),
-  legendItems: Array.from(document.querySelectorAll('.legend-item[data-role]')),
   helpBtn: document.getElementById('help-btn'),
   validateBtn: document.getElementById('validate-btn'),
   nextBtn: document.getElementById('next-btn'),
@@ -47,7 +49,6 @@ let dragState = null;
 async function init() {
   await loadData();
   bindEvents();
-  setActiveRole(appState.activeRole);
   renderResume();
   updateScoreboard();
   const { lastLevel } = appState.progress;
@@ -80,22 +81,7 @@ function bindEvents() {
     renderResume();
   });
 
-  elements.modeButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      if (appState.mode === btn.dataset.mode) return;
-      switchMode(btn.dataset.mode);
-    });
-  });
-
-  elements.legendItems.forEach((item) => {
-    item.addEventListener('click', () => setActiveRole(item.dataset.role));
-    item.addEventListener('keypress', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        setActiveRole(item.dataset.role);
-      }
-    });
-  });
+  elements.resetBtn.addEventListener('click', onResetScores);
 
   elements.helpBtn.addEventListener('click', revealHint);
   elements.validateBtn.addEventListener('click', onValidate);
@@ -126,9 +112,8 @@ function startSession(level) {
   appState.assignments = new Map();
   appState.hasValidated = false;
   swapScreen('exercise');
-  switchMode('highlight');
-  setActiveRole('GS');
   appState.progress = updateLastLevel(appState.progress, level);
+  elements.helpText.textContent = 'Fais glisser chaque étiquette sur le bon groupe.';
   loadNextPhrase();
 }
 
@@ -151,26 +136,6 @@ function renderResume() {
   elements.resumePanel.textContent = lines.join(' • ');
 }
 
-function switchMode(mode) {
-  appState.mode = mode;
-  elements.modeButtons.forEach((btn) => {
-    btn.classList.toggle('active', btn.dataset.mode === mode);
-  });
-  elements.phraseText.dataset.mode = mode;
-  const dragVisible = mode === 'drag';
-  elements.dragArea.setAttribute('aria-hidden', dragVisible ? 'false' : 'true');
-  elements.dragArea.style.display = dragVisible ? 'flex' : 'none';
-  elements.helpText.textContent = '';
-  resetAssignments(false);
-}
-
-function setActiveRole(role) {
-  appState.activeRole = role;
-  elements.legendItems.forEach((item) => {
-    item.classList.toggle('active', item.dataset.role === role);
-  });
-}
-
 function loadNextPhrase() {
   if (!appState.queue.length) return;
   const phrase = appState.queue[appState.currentIndex % appState.queue.length];
@@ -178,7 +143,7 @@ function loadNextPhrase() {
   appState.currentIndex += 1;
   appState.assignments = new Map();
   appState.hasValidated = false;
-  elements.helpText.textContent = '';
+  elements.helpText.textContent = 'Dépose les étiquettes colorées sur les bons groupes.';
   elements.validateBtn.disabled = false;
   elements.nextBtn.disabled = true;
   renderPhrase(phrase);
@@ -199,35 +164,19 @@ function renderPhrase(phrase) {
     span.dataset.correctRole = part.role;
     span.dataset.segmentIndex = String(segmentIndex);
     span.dataset.displayRole = '';
-    span.setAttribute('tabindex', '0');
-    span.setAttribute('role', 'button');
-    span.setAttribute('aria-pressed', 'false');
-    span.addEventListener('click', () => onSegmentInteract(segmentIndex));
-    span.addEventListener('keypress', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        onSegmentInteract(segmentIndex);
-      }
-    });
+    span.dataset.badge = '';
     elements.phraseText.append(span);
     segmentIndex += 1;
   });
-}
-
-function onSegmentInteract(index) {
-  if (appState.mode !== 'highlight' || appState.hasValidated) return;
-  const role = appState.activeRole;
-  assignRole(index, role);
 }
 
 function assignRole(index, role) {
   const segment = getSegmentElement(index);
   if (!segment) return;
   appState.assignments.set(index, role);
-  segment.dataset.displayRole = role;
+  setSegmentBadge(segment, role);
   segment.classList.add('assigned');
   segment.classList.remove('incorrect', 'correct', 'hint');
-  segment.setAttribute('aria-pressed', 'true');
 }
 
 function getSegmentElement(index) {
@@ -241,7 +190,7 @@ function revealHint() {
   );
   if (!verbSegment) return;
   verbSegment.classList.add('hint');
-  verbSegment.dataset.displayRole = 'VERBE';
+  setSegmentBadge(verbSegment, 'VERBE');
   elements.helpText.textContent = 'Indice : le verbe est déjà mis en avant.';
 }
 
@@ -251,9 +200,11 @@ function onValidate() {
   if (segments.length !== ROLE_ORDER.length) {
     console.warn('Phrase inattendue : nombre de segments différent de 3.');
   }
-  const missing = segments.filter((segment) => !appState.assignments.has(Number(segment.dataset.segmentIndex)));
+  const missing = segments.filter((segment) =>
+    !appState.assignments.has(Number(segment.dataset.segmentIndex))
+  );
   if (missing.length) {
-    elements.helpText.textContent = 'Sélectionne chaque segment avant de valider.';
+    elements.helpText.textContent = 'Glisse chaque étiquette sur un groupe avant de valider.';
     return;
   }
 
@@ -267,10 +218,10 @@ function onValidate() {
     if (given === expected) {
       correctCount += 1;
       segment.classList.add('correct');
-      segment.dataset.displayRole = expected;
+      setSegmentBadge(segment, expected);
     } else {
       segment.classList.add('incorrect');
-      segment.dataset.displayRole = given;
+      setSegmentBadge(segment, given);
       feedbackRoles.add(expected);
     }
   });
@@ -302,25 +253,7 @@ function onValidate() {
   appState.hasValidated = true;
 }
 
-function resetAssignments(clearHints = true) {
-  appState.assignments.clear();
-  const segments = Array.from(elements.phraseText.querySelectorAll('.segment'));
-  segments.forEach((segment) => {
-    segment.classList.remove('assigned', 'correct', 'incorrect');
-    if (clearHints) {
-      segment.classList.remove('hint');
-    }
-    segment.dataset.displayRole = '';
-    segment.setAttribute('aria-pressed', 'false');
-  });
-  appState.hasValidated = false;
-  elements.validateBtn.disabled = false;
-  elements.nextBtn.disabled = true;
-  elements.helpText.textContent = '';
-}
-
 function handleDragStart(event) {
-  if (appState.mode !== 'drag') return;
   event.preventDefault();
   const label = event.currentTarget;
   label.setPointerCapture(event.pointerId);
@@ -377,6 +310,18 @@ function updateScoreboard() {
   elements.scoreDisplay.textContent = `Score : ${totalScore}`;
   elements.streakDisplay.textContent = `Série : ${streak}`;
   elements.bestDisplay.textContent = `Meilleur : ${bestScore}`;
+}
+
+function setSegmentBadge(segment, role) {
+  segment.dataset.displayRole = role || '';
+  segment.dataset.badge = role ? ROLE_LABELS[role] || role : '';
+}
+
+function onResetScores() {
+  appState.progress = resetProgress();
+  updateScoreboard();
+  renderResume();
+  showToast('Progression réinitialisée. Repars à la découverte des phrases !');
 }
 
 function showToast(message) {

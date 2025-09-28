@@ -53,3 +53,9 @@ export function updateLastLevel(progress, level) {
   saveProgress(next);
   return next;
 }
+
+export function resetProgress() {
+  const next = { ...defaultState };
+  saveProgress(next);
+  return next;
+}

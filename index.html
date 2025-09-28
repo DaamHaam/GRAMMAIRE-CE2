@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Repérer GS, Verbe et GN - CE2</title>
+    <title>Détective des groupes - CE2</title>
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
     <header class="app-header" role="banner">
-      <h1>Repérer GS, Verbe et GN</h1>
-      <p class="tagline">Entraînement CE2 • phrase par phrase</p>
+      <h1>Détective des groupes</h1>
+      <p class="tagline">Repère le groupe sujet, le verbe et le groupe nominal !</p>
     </header>
     <main id="app" class="app" role="main">
       <section id="screen-home" class="screen active" aria-label="Accueil">
@@ -19,6 +19,7 @@
             <button class="level-btn" data-level="1">Niveau 1</button>
             <button class="level-btn" data-level="2">Niveau 2</button>
             <button class="level-btn" data-level="3">Niveau 3</button>
+            <button class="level-btn" data-level="4">Niveau 4</button>
             <button class="level-btn" data-level="all">Révision libre</button>
           </div>
           <div class="resume" id="resume-panel" aria-live="polite"></div>
@@ -28,39 +29,68 @@
         <div class="top-bar">
           <button id="back-home" class="ghost">← Accueil</button>
           <div class="scoreboard" aria-live="polite">
-            <span id="score-display">Score : 0</span>
-            <span id="streak-display">Série : 0</span>
-            <span id="best-display">Meilleur : 0</span>
+            <span class="score-pill" id="score-display">Score : 0</span>
+            <span class="score-pill" id="streak-display">Série : 0</span>
+            <span class="score-pill" id="best-display">Meilleur : 0</span>
           </div>
+          <button id="reset-progress" class="ghost small" type="button">
+            Remettre les scores à zéro
+          </button>
         </div>
         <div class="card exercise-card">
           <div class="exercise-header">
-            <div class="mode-switch" role="group" aria-label="Modes d'interaction">
-              <button class="mode-btn active" data-mode="highlight">Surlignage</button>
-              <button class="mode-btn" data-mode="drag">Drag &amp; Drop</button>
-            </div>
             <div class="icon-legend" role="list">
-              <div role="listitem" class="legend-item" data-role="GS" tabindex="0">
-                <img src="public/pictos/subject.svg" alt="Sujet" />
-                <span>GS</span>
+              <div role="listitem" class="legend-item" data-role="GS">
+                <img src="public/pictos/subject.svg" alt="Groupe sujet" />
+                <div class="legend-text">
+                  <span class="legend-title">Groupe sujet</span>
+                  <span class="legend-caption">Qui fait l'action</span>
+                </div>
               </div>
-              <div role="listitem" class="legend-item" data-role="VERBE" tabindex="0">
+              <div role="listitem" class="legend-item" data-role="VERBE">
                 <img src="public/pictos/verb.svg" alt="Verbe" />
-                <span>Verbe</span>
+                <div class="legend-text">
+                  <span class="legend-title">Verbe</span>
+                  <span class="legend-caption">Ce qui se conjugue</span>
+                </div>
               </div>
-              <div role="listitem" class="legend-item" data-role="GN" tabindex="0">
+              <div role="listitem" class="legend-item" data-role="GN">
                 <img src="public/pictos/group.svg" alt="Groupe nominal" />
-                <span>GN</span>
+                <div class="legend-text">
+                  <span class="legend-title">Groupe nominal</span>
+                  <span class="legend-caption">Complète l'action</span>
+                </div>
               </div>
             </div>
           </div>
           <div class="phrase-zone" aria-live="polite">
-            <p id="phrase-text" class="phrase" data-mode="highlight"></p>
+            <p id="phrase-text" class="phrase"></p>
           </div>
-          <div class="drag-area" aria-hidden="true">
-            <div class="drag-label" data-role="GS" draggable="false" aria-label="Étiquette Sujet">GS</div>
-            <div class="drag-label" data-role="VERBE" draggable="false" aria-label="Étiquette Verbe">Verbe</div>
-            <div class="drag-label" data-role="GN" draggable="false" aria-label="Étiquette Groupe nominal">GN</div>
+          <div class="drag-area" aria-hidden="false">
+            <div
+              class="drag-label"
+              data-role="GS"
+              draggable="false"
+              aria-label="Étiquette Groupe sujet"
+            >
+              Groupe sujet
+            </div>
+            <div
+              class="drag-label"
+              data-role="VERBE"
+              draggable="false"
+              aria-label="Étiquette Verbe"
+            >
+              Verbe
+            </div>
+            <div
+              class="drag-label"
+              data-role="GN"
+              draggable="false"
+              aria-label="Étiquette Groupe nominal"
+            >
+              Groupe nominal
+            </div>
           </div>
           <div class="help-text" id="help-text" aria-live="assertive"></div>
           <div class="controls">
