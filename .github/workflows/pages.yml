@@ -22,42 +22,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Build artifact layout
+      - name: Prepare artifact layout
         shell: bash
         run: |
           set -e
           mkdir -p dist
-          REF="${GITHUB_REF}"
-          EVENT="${GITHUB_EVENT_NAME}"
-
-          # Nettoyage fichiers inutiles dans l'artifact
           EXCLUDES="--exclude .git --exclude .github --exclude dist --exclude node_modules"
 
-          if [ "$EVENT" = "pull_request" ]; then
-            # Preview PR -> on déploie la racine telle quelle
-            rsync -a $EXCLUDES ./ dist/
-          elif [ "$REF" = "refs/heads/main" ]; then
-            # Production à la racine
-            rsync -a $EXCLUDES ./ dist/
-          elif [ "$REF" = "refs/heads/next" ]; then
-            # Canal beta sous /beta/
-            mkdir -p dist/beta
-            rsync -a $EXCLUDES ./ dist/beta/
-          elif [[ "$REF" == refs/tags/* ]]; then
-            # Archive sous /releases/<tag>/
+          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+            rsync -a $EXCLUDES ./ dist/                     # preview éphémère
+          elif [ "${GITHUB_REF}" = "refs/heads/main" ]; then
+            rsync -a $EXCLUDES ./ dist/                     # prod à la racine
+          elif [ "${GITHUB_REF}" = "refs/heads/next" ]; then
+            mkdir -p dist/beta && rsync -a $EXCLUDES ./ dist/beta/
+          elif [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             mkdir -p "dist/releases/${GITHUB_REF_NAME}"
             rsync -a $EXCLUDES ./ "dist/releases/${GITHUB_REF_NAME}/"
+          else
+            rsync -a $EXCLUDES ./ dist/
           fi
 
-          # Evite le traitement Jekyll
           touch dist/.nojekyll
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: dist
 
@@ -72,7 +60,7 @@ jobs:
       - id: deployment
         uses: actions/deploy-pages@v4
 
-  deploy_preview:
+  preview:
     if: ${{ github.event_name == 'pull_request' }}
     needs: build
     runs-on: ubuntu-latest
@@ -84,10 +72,3 @@ jobs:
         uses: actions/deploy-pages@v4
         with:
           preview: true
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v4
-        with: { path: '.' }
-      - id: deployment
-        uses: actions/deploy-pages@v4
