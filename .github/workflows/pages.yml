@@ -1,8 +1,11 @@
-name: Deploy to GitHub Pages (minimal)
+name: Pages (prod + PR previews + beta + releases)
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, next ]          # prod=main, beta=next
+    tags: ['v*', 'v*.*', 'v*.*.*']    # releases/vX[.Y[.Z]]
+  pull_request:                        # previews pour PR vers main/next
+    branches: [ main, next ]
   workflow_dispatch:
 
 permissions:
@@ -11,15 +14,76 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: "github-pages"
   cancel-in-progress: true
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build artifact layout
+        shell: bash
+        run: |
+          set -e
+          mkdir -p dist
+          REF="${GITHUB_REF}"
+          EVENT="${GITHUB_EVENT_NAME}"
+
+          # Nettoyage fichiers inutiles dans l'artifact
+          EXCLUDES="--exclude .git --exclude .github --exclude dist --exclude node_modules"
+
+          if [ "$EVENT" = "pull_request" ]; then
+            # Preview PR -> on déploie la racine telle quelle
+            rsync -a $EXCLUDES ./ dist/
+          elif [ "$REF" = "refs/heads/main" ]; then
+            # Production à la racine
+            rsync -a $EXCLUDES ./ dist/
+          elif [ "$REF" = "refs/heads/next" ]; then
+            # Canal beta sous /beta/
+            mkdir -p dist/beta
+            rsync -a $EXCLUDES ./ dist/beta/
+          elif [[ "$REF" == refs/tags/* ]]; then
+            # Archive sous /releases/<tag>/
+            mkdir -p "dist/releases/${GITHUB_REF_NAME}"
+            rsync -a $EXCLUDES ./ "dist/releases/${GITHUB_REF_NAME}/"
+          fi
+
+          # Evite le traitement Jekyll
+          touch dist/.nojekyll
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
   deploy:
+    if: ${{ github.event_name != 'pull_request' }}
+    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  deploy_preview:
+    if: ${{ github.event_name == 'pull_request' }}
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: preview
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          preview: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
