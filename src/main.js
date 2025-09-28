@@ -30,9 +30,10 @@ const elements = {
   levelButtons: Array.from(document.querySelectorAll('.level-btn')),
   resumePanel: document.getElementById('resume-panel'),
   backHome: document.getElementById('back-home'),
-  scoreDisplay: document.getElementById('score-display'),
+  homeScore: document.getElementById('home-score'),
+  homeBest: document.getElementById('home-best'),
+  homeStreak: document.getElementById('home-streak'),
   streakDisplay: document.getElementById('streak-display'),
-  bestDisplay: document.getElementById('best-display'),
   resetBtn: document.getElementById('reset-progress'),
   phraseText: document.getElementById('phrase-text'),
   dragArea: document.querySelector('.drag-area'),
@@ -51,11 +52,6 @@ async function init() {
   bindEvents();
   renderResume();
   updateScoreboard();
-  const { lastLevel } = appState.progress;
-  if (lastLevel) {
-    const label = lastLevel === 'all' ? 'Révision libre' : `Niveau ${lastLevel}`;
-    elements.resumePanel.textContent += ` Dernier niveau : ${label}.`;
-  }
 }
 
 async function loadData() {
@@ -124,16 +120,17 @@ function swapScreen(target) {
 }
 
 function renderResume() {
-  const { totalScore, bestScore, streak, recentPhrases } = appState.progress;
-  const lines = [
-    `Score enregistré : ${totalScore}`,
-    `Meilleur score : ${bestScore}`,
-    `Série actuelle : ${streak}`
-  ];
+  const { lastLevel, recentPhrases } = appState.progress;
+  const lines = [];
+  if (lastLevel) {
+    const label = lastLevel === 'all' ? 'Révision libre' : `Niveau ${lastLevel}`;
+    lines.push(`Dernier niveau joué : ${label}`);
+  }
   if (recentPhrases && recentPhrases.length) {
     lines.push(`Dernières phrases : ${recentPhrases.slice(0, 5).join(', ')}`);
   }
-  elements.resumePanel.textContent = lines.join(' • ');
+  elements.resumePanel.textContent =
+    lines.join(' • ') || 'Prêt à jouer ? Choisis un niveau pour commencer.';
 }
 
 function loadNextPhrase() {
@@ -164,7 +161,6 @@ function renderPhrase(phrase) {
     span.dataset.correctRole = part.role;
     span.dataset.segmentIndex = String(segmentIndex);
     span.dataset.displayRole = '';
-    span.dataset.badge = '';
     elements.phraseText.append(span);
     segmentIndex += 1;
   });
@@ -307,14 +303,22 @@ function moveGhost(ghost, clientX, clientY) {
 
 function updateScoreboard() {
   const { totalScore = 0, streak = 0, bestScore = 0 } = appState.progress;
-  elements.scoreDisplay.textContent = `Score : ${totalScore}`;
-  elements.streakDisplay.textContent = `Série : ${streak}`;
-  elements.bestDisplay.textContent = `Meilleur : ${bestScore}`;
+  if (elements.homeScore) {
+    elements.homeScore.textContent = `Score total : ${totalScore}`;
+  }
+  if (elements.homeBest) {
+    elements.homeBest.textContent = `Meilleur score : ${bestScore}`;
+  }
+  if (elements.homeStreak) {
+    elements.homeStreak.textContent = `Série en cours : ${streak}`;
+  }
+  if (elements.streakDisplay) {
+    elements.streakDisplay.textContent = `Série en cours : ${streak}`;
+  }
 }
 
 function setSegmentBadge(segment, role) {
   segment.dataset.displayRole = role || '';
-  segment.dataset.badge = role ? ROLE_LABELS[role] || role : '';
 }
 
 function onResetScores() {

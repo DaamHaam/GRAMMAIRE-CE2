@@ -13,7 +13,7 @@
     </header>
     <main id="app" class="app" role="main">
       <section id="screen-home" class="screen active" aria-label="Accueil">
-        <div class="card">
+        <div class="card home-card">
           <h2>Choisis ton niveau</h2>
           <div class="level-grid" role="group" aria-label="Niveaux">
             <button class="level-btn" data-level="1">Niveau 1</button>
@@ -24,21 +24,20 @@
           </div>
           <div class="resume" id="resume-panel" aria-live="polite"></div>
         </div>
-      </section>
-      <section id="screen-exercise" class="screen" aria-label="Exercice">
-        <div class="top-bar">
-          <button id="back-home" class="ghost">← Accueil</button>
-          <div class="scoreboard" aria-live="polite">
-            <span class="score-pill" id="score-display">Score : 0</span>
-            <span class="score-pill" id="streak-display">Série : 0</span>
-            <span class="score-pill" id="best-display">Meilleur : 0</span>
+        <div class="home-grid">
+          <div class="card scoreboard-card">
+            <h2>Mes scores</h2>
+            <div class="scoreboard" id="scoreboard-home" aria-live="polite">
+              <span class="score-pill" id="home-score">Score total : 0</span>
+              <span class="score-pill" id="home-best">Meilleur score : 0</span>
+              <span class="score-pill" id="home-streak">Série en cours : 0</span>
+            </div>
+            <button id="reset-progress" class="ghost small" type="button">
+              Remettre les scores à zéro
+            </button>
           </div>
-          <button id="reset-progress" class="ghost small" type="button">
-            Remettre les scores à zéro
-          </button>
-        </div>
-        <div class="card exercise-card">
-          <div class="exercise-header">
+          <div class="card legend-card">
+            <h2>Les groupes</h2>
             <div class="icon-legend" role="list">
               <div role="listitem" class="legend-item" data-role="GS">
                 <img src="public/pictos/subject.svg" alt="Groupe sujet" />
@@ -63,6 +62,14 @@
               </div>
             </div>
           </div>
+        </div>
+      </section>
+      <section id="screen-exercise" class="screen" aria-label="Exercice">
+        <div class="top-bar">
+          <button id="back-home" class="ghost back-home">← Accueil</button>
+          <span class="streak-chip" id="streak-display">Série en cours : 0</span>
+        </div>
+        <div class="card exercise-card">
           <div class="phrase-zone" aria-live="polite">
             <p id="phrase-text" class="phrase"></p>
           </div>
