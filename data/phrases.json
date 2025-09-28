@@ -1,0 +1,482 @@
+[
+  {
+    "id": "n1-01",
+    "level": 1,
+    "text": "Le chat mange une souris.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Le chat" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "mange" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "une souris" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n1-02",
+    "level": 1,
+    "text": "Paul joue au ballon.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Paul" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "joue" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "au ballon" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n1-03",
+    "level": 1,
+    "text": "Marie lit un livre.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Marie" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "lit" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "un livre" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n1-04",
+    "level": 1,
+    "text": "Les oiseaux chantent une chanson.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Les oiseaux" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "chantent" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "une chanson" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n1-05",
+    "level": 1,
+    "text": "Le soleil brille dans le ciel.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Le soleil" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "brille" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "dans le ciel" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n1-06",
+    "level": 1,
+    "text": "Tu manges une pomme.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Tu" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "manges" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "une pomme" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n1-07",
+    "level": 1,
+    "text": "Nous regardons un film.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Nous" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "regardons" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "un film" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n1-08",
+    "level": 1,
+    "text": "La maîtresse explique la leçon.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "La maîtresse" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "explique" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "la leçon" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n1-09",
+    "level": 1,
+    "text": "Les lapins grignotent des carottes.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Les lapins" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "grignotent" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "des carottes" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n1-10",
+    "level": 1,
+    "text": "Léa dessine une maison.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Léa" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "dessine" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "une maison" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n1-11",
+    "level": 1,
+    "text": "Ils portent des sacs.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Ils" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "portent" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "des sacs" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n1-12",
+    "level": 1,
+    "text": "Le bébé touche son doudou.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Le bébé" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "touche" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "son doudou" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n2-01",
+    "level": 2,
+    "text": "Le petit garçon porte un grand sac.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Le petit garçon" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "porte" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "un grand sac" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n2-02",
+    "level": 2,
+    "text": "La vieille cloche sonne chaque matin.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "La vieille cloche" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "sonne" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "chaque matin" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n2-03",
+    "level": 2,
+    "text": "Le jardinier arrose les fleurs rouges.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Le jardinier" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "arrose" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "les fleurs rouges" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n2-04",
+    "level": 2,
+    "text": "Nous ne trouvons pas la clé.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Nous" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "ne trouvons pas" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "la clé" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n2-05",
+    "level": 2,
+    "text": "Les élèves rangent leurs cahiers bleus.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Les élèves" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "rangent" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "leurs cahiers bleus" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n2-06",
+    "level": 2,
+    "text": "Cette fillette tient une poupée douce.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Cette fillette" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "tient" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "une poupée douce" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n2-07",
+    "level": 2,
+    "text": "Le chaton noir chasse une boule de laine.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Le chaton noir" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "chasse" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "une boule de laine" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n2-08",
+    "level": 2,
+    "text": "Vous entendez un bruit étrange.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Vous" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "entendez" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "un bruit étrange" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n2-09",
+    "level": 2,
+    "text": "Mon oncle prépare une soupe chaude.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Mon oncle" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "prépare" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "une soupe chaude" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n2-10",
+    "level": 2,
+    "text": "La rivière traverse un petit village.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "La rivière" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "traverse" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "un petit village" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n2-11",
+    "level": 2,
+    "text": "Ces oiseaux ne quittent pas le nid.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Ces oiseaux" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "ne quittent pas" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "le nid" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n2-12",
+    "level": 2,
+    "text": "Les amies partagent un goûter sucré.",
+    "parts": [
+      { "type": "segment", "role": "GS", "text": "Les amies" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "partagent" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "un goûter sucré" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n3-01",
+    "level": 3,
+    "text": "Le matin, la brume enveloppe la vallée paisible.",
+    "parts": [
+      { "type": "text", "text": "Le matin, " },
+      { "type": "segment", "role": "GS", "text": "la brume" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "enveloppe" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "la vallée paisible" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n3-02",
+    "level": 3,
+    "text": "Sous la pluie, les coureurs accélèrent le rythme.",
+    "parts": [
+      { "type": "text", "text": "Sous la pluie, " },
+      { "type": "segment", "role": "GS", "text": "les coureurs" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "accélèrent" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "le rythme" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n3-03",
+    "level": 3,
+    "text": "Dans le grenier sombre, une araignée tisse sa toile.",
+    "parts": [
+      { "type": "text", "text": "Dans le grenier sombre, " },
+      { "type": "segment", "role": "GS", "text": "une araignée" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "tisse" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "sa toile" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n3-04",
+    "level": 3,
+    "text": "Autour du feu, les amis racontent une histoire mystérieuse.",
+    "parts": [
+      { "type": "text", "text": "Autour du feu, " },
+      { "type": "segment", "role": "GS", "text": "les amis" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "racontent" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "une histoire mystérieuse" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n3-05",
+    "level": 3,
+    "text": "Le soir venu, la chouette observe la clairière silencieuse.",
+    "parts": [
+      { "type": "text", "text": "Le soir venu, " },
+      { "type": "segment", "role": "GS", "text": "la chouette" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "observe" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "la clairière silencieuse" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n3-06",
+    "level": 3,
+    "text": "Près de la rivière, le castor construit un barrage solide.",
+    "parts": [
+      { "type": "text", "text": "Près de la rivière, " },
+      { "type": "segment", "role": "GS", "text": "le castor" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "construit" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "un barrage solide" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n3-07",
+    "level": 3,
+    "text": "Les volets fermés, la maison respire une odeur de pain chaud.",
+    "parts": [
+      { "type": "text", "text": "Les volets fermés, " },
+      { "type": "segment", "role": "GS", "text": "la maison" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "respire" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "une odeur de pain chaud" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n3-08",
+    "level": 3,
+    "text": "Au loin, les cloches annoncent la fête du village.",
+    "parts": [
+      { "type": "text", "text": "Au loin, " },
+      { "type": "segment", "role": "GS", "text": "les cloches" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "annoncent" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "la fête du village" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n3-09",
+    "level": 3,
+    "text": "Après le repas, les enfants découpent des formes colorées.",
+    "parts": [
+      { "type": "text", "text": "Après le repas, " },
+      { "type": "segment", "role": "GS", "text": "les enfants" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "découpent" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "des formes colorées" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n3-10",
+    "level": 3,
+    "text": "Dans la cour, une fillette observe les nuages mouvants.",
+    "parts": [
+      { "type": "text", "text": "Dans la cour, " },
+      { "type": "segment", "role": "GS", "text": "une fillette" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "observe" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "les nuages mouvants" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n3-11",
+    "level": 3,
+    "text": "Au marché du village, les marchands proposent des fruits rares.",
+    "parts": [
+      { "type": "text", "text": "Au marché du village, " },
+      { "type": "segment", "role": "GS", "text": "les marchands" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "proposent" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "des fruits rares" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "n3-12",
+    "level": 3,
+    "text": "Près du port, les pêcheurs réparent leurs filets usés.",
+    "parts": [
+      { "type": "text", "text": "Près du port, " },
+      { "type": "segment", "role": "GS", "text": "les pêcheurs" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERBE", "text": "réparent" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "GN", "text": "leurs filets usés" },
+      { "type": "text", "text": "." }
+    ]
+  }
+]
