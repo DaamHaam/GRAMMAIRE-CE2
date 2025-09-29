@@ -128,7 +128,10 @@ const elements = {
   resetBtn: document.getElementById('reset-progress'),
   phraseText: document.getElementById('phrase-text'),
   subjectPrompt: document.getElementById('subject-type-prompt'),
+  subjectPromptToggle: document.getElementById('subject-type-toggle'),
   subjectPromptQuestion: document.getElementById('subject-type-question'),
+  subjectPromptStatus: document.getElementById('subject-type-status'),
+  subjectPromptPanel: document.getElementById('subject-type-panel'),
   subjectPromptDrop: document.getElementById('subject-type-drop'),
   subjectPromptChoices: document.getElementById('subject-type-choices'),
   dragArea: document.getElementById('drag-area'),
@@ -164,6 +167,10 @@ function bindEvents() {
       startSession(button.dataset.level);
     });
   });
+
+  if (elements.subjectPromptToggle) {
+    elements.subjectPromptToggle.addEventListener('click', toggleSubjectPrompt);
+  }
 
   elements.backHome.addEventListener('click', () => {
     swapScreen('home');
@@ -206,6 +213,7 @@ function swapScreen(target) {
   Object.entries(elements.screens).forEach(([key, section]) => {
     section.classList.toggle('active', key === target);
   });
+  document.body.classList.toggle('exercise-active', target === 'exercise');
 }
 
 function renderResume() {
@@ -249,23 +257,21 @@ function renderPhrase(phrase) {
     segment.className = 'segment';
     segment.dataset.segmentIndex = String(index);
     segment.dataset.role = part.role;
-    const needsRole = shouldRequireRole(part.role);
-    if (needsRole) {
-      const slotId = `segment-${index}-role`;
-      segment.dataset.slotId = slotId;
-      segment.dataset.slotType = 'ROLE';
-      segment.dataset.expectedValue = part.role;
-      appState.slots.set(slotId, {
-        id: slotId,
-        kind: 'ROLE',
-        expected: part.role,
-        assigned: null,
-        element: segment,
-        subjectType: part.subjectType || null
-      });
-    } else {
-      segment.classList.add('readonly');
-    }
+    const requiresRole = shouldRequireRole(part.role);
+    const slotId = `segment-${index}-role`;
+    segment.dataset.slotId = slotId;
+    segment.dataset.slotType = 'ROLE';
+    segment.dataset.expectedValue = part.role;
+    segment.dataset.required = String(requiresRole);
+    appState.slots.set(slotId, {
+      id: slotId,
+      kind: 'ROLE',
+      expected: part.role,
+      assigned: null,
+      element: segment,
+      subjectType: part.subjectType || null,
+      required: requiresRole
+    });
 
     elements.phraseText.append(segment);
   });
@@ -316,6 +322,31 @@ function createDragLabel(definition) {
   return label;
 }
 
+function updateSubjectPromptStatus(text) {
+  if (elements.subjectPromptStatus) {
+    elements.subjectPromptStatus.textContent = text || '';
+  }
+}
+
+function setSubjectPromptCollapsed(collapsed) {
+  const { subjectPrompt, subjectPromptPanel, subjectPromptToggle } = elements;
+  if (!subjectPrompt) return;
+  subjectPrompt.classList.toggle('collapsed', collapsed);
+  if (subjectPromptPanel) {
+    subjectPromptPanel.hidden = collapsed;
+  }
+  if (subjectPromptToggle) {
+    subjectPromptToggle.setAttribute('aria-expanded', String(!collapsed));
+  }
+}
+
+function toggleSubjectPrompt() {
+  const { subjectPrompt } = elements;
+  if (!subjectPrompt || subjectPrompt.hidden) return;
+  const isCollapsed = subjectPrompt.classList.contains('collapsed');
+  setSubjectPromptCollapsed(!isCollapsed);
+}
+
 function showSubjectTypePrompt(slot) {
   const expectedType = slot.subjectType;
   if (!expectedType) return;
@@ -323,9 +354,20 @@ function showSubjectTypePrompt(slot) {
   clearSubjectTypePrompt();
 
   const slotId = 'subject-type-slot';
-  const { subjectPrompt, subjectPromptQuestion, subjectPromptDrop, subjectPromptChoices } = elements;
+  const {
+    subjectPrompt,
+    subjectPromptQuestion,
+    subjectPromptDrop,
+    subjectPromptChoices,
+    subjectPromptToggle
+  } = elements;
   subjectPrompt.hidden = false;
   subjectPromptQuestion.textContent = `Quel est le type du groupe sujet « ${segmentText} » ?`;
+  updateSubjectPromptStatus('Choisis : pronom ou groupe nominal.');
+  setSubjectPromptCollapsed(false);
+  if (subjectPromptToggle) {
+    subjectPromptToggle.focus();
+  }
 
   subjectPromptDrop.textContent = 'Glisse ta réponse ici';
   subjectPromptDrop.className = 'prompt-drop';
@@ -348,7 +390,8 @@ function showSubjectTypePrompt(slot) {
     expected: expectedType,
     assigned: null,
     element: subjectPromptDrop,
-    segment: slot.element
+    segment: slot.element,
+    required: true
   };
   appState.slots.set(slotId, typeSlot);
   appState.subjectTypePrompt = { slotId, segment: slot.element };
@@ -359,7 +402,13 @@ function clearSubjectTypePrompt() {
     appState.slots.delete(appState.subjectTypePrompt.slotId);
     setSubjectTypeVisual(appState.subjectTypePrompt.segment, null);
   }
-  const { subjectPrompt, subjectPromptQuestion, subjectPromptDrop, subjectPromptChoices } = elements;
+  const {
+    subjectPrompt,
+    subjectPromptQuestion,
+    subjectPromptDrop,
+    subjectPromptChoices,
+    subjectPromptStatus
+  } = elements;
   subjectPrompt.hidden = true;
   subjectPromptQuestion.textContent = '';
   subjectPromptDrop.textContent = 'Glisse ta réponse ici';
@@ -369,6 +418,10 @@ function clearSubjectTypePrompt() {
   subjectPromptDrop.removeAttribute('data-expected-value');
   subjectPromptDrop.classList.remove('assigned', 'correct', 'incorrect', 'hint');
   subjectPromptChoices.innerHTML = '';
+  if (subjectPromptStatus) {
+    subjectPromptStatus.textContent = '';
+  }
+  setSubjectPromptCollapsed(false);
   appState.subjectTypePrompt = null;
 }
 
@@ -395,7 +448,8 @@ function revealHint() {
 function onValidate() {
   if (appState.hasValidated) return;
   const slots = Array.from(appState.slots.values());
-  const missing = slots.filter((slot) => !slot.assigned);
+  const requiredSlots = slots.filter((slot) => slot.required !== false);
+  const missing = requiredSlots.filter((slot) => !slot.assigned);
   if (missing.length) {
     elements.helpText.textContent =
       "Glisse toutes les étiquettes sur la phrase avant de valider.";
@@ -404,7 +458,7 @@ function onValidate() {
 
   let correctCount = 0;
   const slotMessages = [];
-  slots.forEach((slot) => {
+  requiredSlots.forEach((slot) => {
     const isCorrect = slot.assigned === slot.expected;
     const expectedLabel = getLabelByKindAndValue(slot.kind, slot.expected);
     const assignedLabel = getLabelByKindAndValue(slot.kind, slot.assigned);
@@ -441,7 +495,17 @@ function onValidate() {
     }
   });
 
-  const totalSlots = slots.length || 1;
+  const optionalAssigned = slots.filter((slot) => slot.required === false && slot.assigned);
+  optionalAssigned.forEach((slot) => {
+    slot.element.classList.remove('hint');
+    slot.element.classList.add('incorrect');
+    slot.element.classList.remove('assigned');
+    setRoleVisual(slot.element, null);
+    slot.assigned = null;
+    slotMessages.push('✗ Ce groupe n’est pas à identifier dans ce niveau.');
+  });
+
+  const totalSlots = requiredSlots.length || 1;
   const accuracy = correctCount / totalSlots;
   let stars = 0;
   if (accuracy === 1) {
@@ -521,6 +585,19 @@ function assignToSlot(slotElement, label) {
     showToast("Cette étiquette ne correspond pas à cette case.");
     return;
   }
+  appState.slots.forEach((otherSlot, otherId) => {
+    if (otherId === slotId || otherSlot.kind !== label.kind) return;
+    if (otherSlot.assigned === label.value) {
+      otherSlot.assigned = null;
+      otherSlot.element.classList.remove('assigned', 'correct', 'incorrect', 'hint');
+      if (otherSlot.kind === 'ROLE') {
+        setRoleVisual(otherSlot.element, null);
+      } else if (otherSlot.kind === 'SUBJECT_TYPE') {
+        otherSlot.element.textContent = 'Glisse ta réponse ici';
+        setSubjectTypeVisual(otherSlot.segment, null);
+      }
+    }
+  });
   slot.assigned = label.value;
   slot.element.classList.remove('incorrect', 'correct', 'hint');
   if (slot.kind === 'ROLE') {
@@ -541,6 +618,8 @@ function assignToSlot(slotElement, label) {
     slot.element.textContent = label.text;
     slot.element.classList.add('assigned');
     setSubjectTypeVisual(slot.segment, label.value);
+    updateSubjectPromptStatus(`Réponse : ${label.text}. (Appuie pour modifier)`);
+    setSubjectPromptCollapsed(true);
   }
 }
 

@@ -79,8 +79,17 @@
             <p id="phrase-text" class="phrase"></p>
           </div>
           <div id="subject-type-prompt" class="subject-type-prompt" hidden>
-            <p id="subject-type-question" class="prompt-question"></p>
-            <div class="prompt-body">
+            <button
+              id="subject-type-toggle"
+              class="prompt-toggle"
+              type="button"
+              aria-controls="subject-type-panel"
+              aria-expanded="true"
+            >
+              <span id="subject-type-question" class="prompt-question"></span>
+              <span id="subject-type-status" class="prompt-status"></span>
+            </button>
+            <div id="subject-type-panel" class="prompt-panel">
               <div
                 id="subject-type-drop"
                 class="prompt-drop"

@@ -13,9 +13,9 @@
   --error: #f06f6f;
   --subject-color: #f4a259;
   --verb-color: #4c8df7;
-  --complement-color: #3ec9b0;
-  --type-pronoun: #9661ff;
-  --type-gn: #37c3a1;
+  --complement-color: #7b6bff;
+  --type-pronoun: #3bb4c5;
+  --type-gn: #f29d4b;
   --radius: 18px;
   --transition: 240ms ease;
 }
@@ -63,6 +63,14 @@ body::before {
   margin: 0.2rem 0 0;
   color: #3f4c5f;
   font-size: 1rem;
+}
+
+body.exercise-active .app-header {
+  display: none;
+}
+
+body.exercise-active .app {
+  padding-top: 0.5rem;
 }
 
 .app {
@@ -250,7 +258,7 @@ button:disabled {
   background: rgba(255, 255, 255, 0.96);
   border-radius: calc(var(--radius) * 0.9);
   padding: 1.4rem 1.2rem;
-  min-height: 130px;
+  min-height: 110px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -286,8 +294,8 @@ button:disabled {
 }
 
 .segment.role-COMPLEMENT {
-  --segment-color: rgba(62, 201, 176, 0.24);
-  --segment-strong: rgba(62, 201, 176, 0.72);
+  --segment-color: rgba(123, 107, 255, 0.22);
+  --segment-strong: rgba(123, 107, 255, 0.7);
 }
 
 .segment.assigned {
@@ -296,23 +304,23 @@ button:disabled {
 }
 
 .segment.subject-pronoun {
-  border-bottom: 3px solid rgba(150, 97, 255, 0.75);
+  border-bottom: 3px solid rgba(59, 180, 197, 0.82);
 }
 
 .segment.subject-gn {
-  border-bottom: 3px solid rgba(55, 195, 161, 0.85);
+  border-bottom: 3px solid rgba(242, 157, 75, 0.82);
 }
 
 .segment.role-SUBJECT.subject-pronoun.assigned {
-  background: rgba(150, 97, 255, 0.22);
-  box-shadow: 0 0 0 2px rgba(150, 97, 255, 0.55) inset;
-  color: #2f236d;
+  background: rgba(59, 180, 197, 0.2);
+  box-shadow: 0 0 0 2px rgba(59, 180, 197, 0.5) inset;
+  color: #0f4a50;
 }
 
 .segment.role-SUBJECT.subject-gn.assigned {
-  background: rgba(55, 195, 161, 0.22);
-  box-shadow: 0 0 0 2px rgba(55, 195, 161, 0.55) inset;
-  color: #0f4e3d;
+  background: rgba(242, 157, 75, 0.22);
+  box-shadow: 0 0 0 2px rgba(242, 157, 75, 0.55) inset;
+  color: #6d3c09;
 }
 
 .segment.readonly {
@@ -337,37 +345,79 @@ button:disabled {
 }
 
 .subject-type-prompt {
-  margin: 1rem auto 0;
-  padding: 0.85rem 1rem 1rem;
-  border-radius: calc(var(--radius) * 1.1);
-  background: linear-gradient(140deg, rgba(255, 255, 255, 0.96), rgba(227, 242, 255, 0.92));
-  border: 1px solid rgba(32, 48, 73, 0.08);
-  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.12);
-  max-width: 700px;
+  margin: 0.6rem auto 0.2rem;
+  padding: 0.55rem 0.85rem 0.7rem;
+  border-radius: calc(var(--radius) * 0.9);
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.96), rgba(217, 237, 255, 0.94));
+  border: 1px solid rgba(32, 48, 73, 0.06);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.12);
+  width: min(640px, 100%);
+}
+
+.subject-type-prompt.collapsed {
+  padding-bottom: 0.45rem;
+  margin-bottom: 0.35rem;
+}
+
+.prompt-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  background: transparent;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+}
+
+.prompt-toggle:focus-visible {
+  outline: 3px solid rgba(76, 141, 247, 0.45);
+  border-radius: calc(var(--radius) * 0.6);
+}
+
+.prompt-toggle::after {
+  content: '▾';
+  font-size: 1.1rem;
+  color: var(--primary-dark);
+  transition: transform var(--transition);
+}
+
+.subject-type-prompt.collapsed .prompt-toggle::after {
+  transform: rotate(-90deg);
 }
 
 .prompt-question {
   font-weight: 700;
-  text-align: center;
   color: #1f2a44;
-  margin-bottom: 0.75rem;
+  margin: 0;
+  font-size: 1rem;
 }
 
-.prompt-body {
+.prompt-status {
+  font-size: 0.88rem;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.prompt-panel {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.65rem;
   align-items: center;
+  margin-top: 0.65rem;
 }
 
 .prompt-drop {
-  min-height: 52px;
-  min-width: min(100%, 320px);
-  border-radius: 16px;
-  padding: 0.65rem 1rem;
-  background: rgba(246, 248, 255, 0.75);
+  min-height: 48px;
+  min-width: min(100%, 300px);
+  border-radius: 14px;
+  padding: 0.55rem 0.9rem;
+  background: rgba(246, 248, 255, 0.82);
   border: 2px dashed rgba(76, 141, 247, 0.45);
-  color: rgba(33, 50, 77, 0.8);
+  color: rgba(33, 50, 77, 0.85);
   font-weight: 600;
   text-align: center;
   display: flex;
@@ -402,14 +452,14 @@ button:disabled {
 
 .prompt-choices {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.65rem;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .prompt-label {
-  min-width: 140px;
-  padding: 0.6rem 1.1rem;
+  min-width: 132px;
+  padding: 0.55rem 0.95rem;
 }
 
 @keyframes pop {
@@ -473,18 +523,18 @@ button:disabled {
 }
 
 .drag-label[data-label-id='COMPLEMENT'] {
-  background: rgba(62, 201, 176, 0.22);
-  border-color: rgba(62, 201, 176, 0.45);
+  background: rgba(123, 107, 255, 0.22);
+  border-color: rgba(123, 107, 255, 0.45);
 }
 
 .drag-label[data-label-id='SUBJECT_TYPE_PRONOUN'] {
-  background: rgba(150, 97, 255, 0.22);
-  border-color: rgba(150, 97, 255, 0.45);
+  background: rgba(59, 180, 197, 0.22);
+  border-color: rgba(59, 180, 197, 0.45);
 }
 
 .drag-label[data-label-id='SUBJECT_TYPE_GN'] {
-  background: rgba(55, 195, 161, 0.22);
-  border-color: rgba(55, 195, 161, 0.45);
+  background: rgba(242, 157, 75, 0.22);
+  border-color: rgba(242, 157, 75, 0.45);
 }
 
 .drag-label.dragging {
