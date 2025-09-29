@@ -322,6 +322,7 @@ function showSubjectTypePrompt(slot) {
   const slotId = 'subject-type-slot';
   const { subjectPrompt, subjectPromptDrop, subjectPromptChoices } = elements;
   subjectPrompt.hidden = false;
+  subjectPrompt.removeAttribute('aria-hidden');
   subjectPromptDrop.textContent = 'Glisse le type de sujet';
   subjectPromptDrop.className = 'prompt-drop';
   subjectPromptDrop.dataset.slotId = slotId;
@@ -330,6 +331,7 @@ function showSubjectTypePrompt(slot) {
   subjectPromptDrop.classList.remove('assigned', 'correct', 'incorrect', 'hint');
 
   subjectPromptChoices.innerHTML = '';
+  subjectPromptChoices.removeAttribute('aria-hidden');
   ['SUBJECT_TYPE_PRONOUN', 'SUBJECT_TYPE_GN'].forEach((id) => {
     const definition = LABEL_LIBRARY[id];
     const choice = createDragLabel(definition);
@@ -357,13 +359,15 @@ function clearSubjectTypePrompt() {
   }
   const { subjectPrompt, subjectPromptDrop, subjectPromptChoices } = elements;
   subjectPrompt.hidden = true;
-  subjectPromptDrop.textContent = 'Glisse le type de sujet';
+  subjectPrompt.setAttribute('aria-hidden', 'true');
+  subjectPromptDrop.textContent = '';
   subjectPromptDrop.className = 'prompt-drop';
   subjectPromptDrop.removeAttribute('data-slot-id');
   subjectPromptDrop.removeAttribute('data-slot-type');
   subjectPromptDrop.removeAttribute('data-expected-value');
   subjectPromptDrop.classList.remove('assigned', 'correct', 'incorrect', 'hint');
   subjectPromptChoices.innerHTML = '';
+  subjectPromptChoices.setAttribute('aria-hidden', 'true');
   appState.subjectTypePrompt = null;
 }
 

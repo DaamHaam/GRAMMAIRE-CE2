@@ -359,6 +359,10 @@ button:disabled {
   max-width: 100%;
 }
 
+.subject-type-prompt[hidden] {
+  display: none !important;
+}
+
 .prompt-drop {
   min-height: 42px;
   min-width: min(100%, 240px);
