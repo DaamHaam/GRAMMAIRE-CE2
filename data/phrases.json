@@ -366,5 +366,109 @@
       { "type": "segment", "role": "COMPLEMENT", "text": "à dix heures" },
       { "type": "text", "text": "." }
     ]
+  },
+  {
+    "id": "l5-01",
+    "level": 5,
+    "text": "Au sommet de la colline se dressaient hier encore trois chênes majestueux.",
+    "parts": [
+      { "type": "segment", "role": "COMPLEMENT", "text": "Au sommet de la colline" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "se dressaient" },
+      { "type": "text", "text": " hier encore " },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "trois chênes majestueux" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "l5-02",
+    "level": 5,
+    "text": "Dans l'obscurité de la salle, chuchotait timidement une jeune actrice.",
+    "parts": [
+      { "type": "segment", "role": "COMPLEMENT", "text": "Dans l'obscurité de la salle" },
+      { "type": "text", "text": ", " },
+      { "type": "segment", "role": "VERB", "text": "chuchotait" },
+      { "type": "text", "text": " timidement " },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "une jeune actrice" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "l5-03",
+    "level": 5,
+    "text": "Arriveront-ils enfin à temps ce soir ?",
+    "parts": [
+      { "type": "segment", "role": "VERB", "text": "Arriveront" },
+      { "type": "text", "text": "-" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "PRONOUN", "text": "ils" },
+      { "type": "text", "text": " enfin à temps " },
+      { "type": "segment", "role": "COMPLEMENT", "text": "ce soir" },
+      { "type": "text", "text": " ?" }
+    ]
+  },
+  {
+    "id": "l5-04",
+    "level": 5,
+    "text": "Tout près du vieux port avaient choisi leur banc deux amis d'enfance.",
+    "parts": [
+      { "type": "segment", "role": "COMPLEMENT", "text": "Tout près du vieux port" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "avaient choisi" },
+      { "type": "text", "text": " leur banc " },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "deux amis d'enfance" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "l5-05",
+    "level": 5,
+    "text": "Sur la grande scène ce matin répétaient en secret les trois comédiens principaux.",
+    "parts": [
+      { "type": "segment", "role": "COMPLEMENT", "text": "Sur la grande scène ce matin" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "répétaient" },
+      { "type": "text", "text": " en secret " },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "les trois comédiens principaux" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "l5-06",
+    "level": 5,
+    "text": "Parfois, écrivait-elle en cachette dans son carnet au clair de lune.",
+    "parts": [
+      { "type": "segment", "role": "COMPLEMENT", "text": "Parfois" },
+      { "type": "text", "text": ", " },
+      { "type": "segment", "role": "VERB", "text": "écrivait" },
+      { "type": "text", "text": "-" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "PRONOUN", "text": "elle" },
+      { "type": "text", "text": " en cachette dans son carnet au clair de lune." }
+    ]
+  },
+  {
+    "id": "l5-07",
+    "level": 5,
+    "text": "Sous la tente, nous partagions encore des histoires tard dans la nuit.",
+    "parts": [
+      { "type": "segment", "role": "COMPLEMENT", "text": "Sous la tente" },
+      { "type": "text", "text": ", " },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "PRONOUN", "text": "nous" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "partagions" },
+      { "type": "text", "text": " encore des histoires tard dans la nuit." }
+    ]
+  },
+  {
+    "id": "l5-08",
+    "level": 5,
+    "text": "Entre les pages du vieux grimoire se cachait encore ce soir un indice mystérieux.",
+    "parts": [
+      { "type": "segment", "role": "COMPLEMENT", "text": "Entre les pages du vieux grimoire" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "se cachait" },
+      { "type": "text", "text": " encore ce soir " },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "un indice mystérieux" },
+      { "type": "text", "text": "." }
+    ]
   }
 ]

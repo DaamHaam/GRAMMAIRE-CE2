@@ -20,6 +20,7 @@
             <button class="level-btn" data-level="2">Niveau 2</button>
             <button class="level-btn" data-level="3">Niveau 3</button>
             <button class="level-btn" data-level="4">Niveau 4</button>
+            <button class="level-btn" data-level="5">Niveau 5</button>
             <button class="level-btn" data-level="all">Révision libre</button>
           </div>
           <div class="resume" id="resume-panel" aria-live="polite"></div>
@@ -76,6 +77,25 @@
         <div class="card exercise-card">
           <div class="phrase-zone" aria-live="polite">
             <p id="phrase-text" class="phrase"></p>
+          </div>
+          <div id="subject-type-prompt" class="subject-type-prompt" hidden>
+            <p id="subject-type-question" class="prompt-question"></p>
+            <div class="prompt-body">
+              <div
+                id="subject-type-drop"
+                class="prompt-drop"
+                role="button"
+                aria-label="Dépose ta réponse ici"
+              >
+                Glisse ta réponse ici
+              </div>
+              <div
+                id="subject-type-choices"
+                class="prompt-choices"
+                role="group"
+                aria-label="Choisis la nature du sujet"
+              ></div>
+            </div>
           </div>
           <div
             class="drag-area"

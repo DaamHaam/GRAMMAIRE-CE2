@@ -5,6 +5,7 @@ const LEVEL_CONFIG = {
   2: { requiredRoles: ['SUBJECT', 'VERB'], requireSubjectType: false },
   3: { requiredRoles: ['SUBJECT', 'VERB'], requireSubjectType: true },
   4: { requiredRoles: ['SUBJECT', 'VERB', 'COMPLEMENT'], requireSubjectType: true },
+  5: { requiredRoles: ['SUBJECT', 'VERB', 'COMPLEMENT'], requireSubjectType: true },
   all: { requiredRoles: ['SUBJECT', 'VERB', 'COMPLEMENT'], requireSubjectType: true }
 };
 
@@ -13,6 +14,7 @@ const LEVEL_INSTRUCTIONS = {
   2: 'Associe le groupe sujet et le verbe aux bons groupes de la phrase.',
   3: 'Associe le groupe sujet et le verbe, puis indique si le sujet est un pronom ou un groupe nominal.',
   4: 'Associe groupe sujet, verbe et complément, puis précise la nature du sujet.',
+  5: 'Décrypte des phrases complexes : groupe sujet, verbe, complément et nature du sujet.',
   all: 'Associe chaque étiquette au bon endroit dans la phrase.'
 };
 
@@ -67,6 +69,9 @@ Object.values(LABEL_LIBRARY).forEach((label) => {
   LABELS_BY_KIND_VALUE.set(`${label.kind}-${label.value}`, label);
 });
 
+const ROLE_VISUAL_CLASSES = ['role-SUBJECT', 'role-VERB', 'role-COMPLEMENT'];
+const SUBJECT_TYPE_VISUAL_CLASSES = ['subject-pronoun', 'subject-gn'];
+
 const SLOT_FEEDBACK = {
   ROLE: {
     SUBJECT: {
@@ -104,7 +109,8 @@ const appState = {
   hasValidated: false,
   activeLevel: '1',
   requirements: LEVEL_CONFIG[1],
-  instruction: LEVEL_INSTRUCTIONS[1]
+  instruction: LEVEL_INSTRUCTIONS[1],
+  subjectTypePrompt: null
 };
 
 const elements = {
@@ -121,6 +127,10 @@ const elements = {
   streakDisplay: document.getElementById('streak-display'),
   resetBtn: document.getElementById('reset-progress'),
   phraseText: document.getElementById('phrase-text'),
+  subjectPrompt: document.getElementById('subject-type-prompt'),
+  subjectPromptQuestion: document.getElementById('subject-type-question'),
+  subjectPromptDrop: document.getElementById('subject-type-drop'),
+  subjectPromptChoices: document.getElementById('subject-type-choices'),
   dragArea: document.getElementById('drag-area'),
   helpBtn: document.getElementById('help-btn'),
   validateBtn: document.getElementById('validate-btn'),
@@ -219,6 +229,7 @@ function loadNextPhrase() {
   appState.currentIndex += 1;
   appState.slots = new Map();
   appState.hasValidated = false;
+  clearSubjectTypePrompt();
   elements.validateBtn.disabled = false;
   elements.nextBtn.disabled = true;
   elements.helpText.textContent = appState.instruction;
@@ -237,46 +248,23 @@ function renderPhrase(phrase) {
     segment.textContent = part.text;
     segment.className = 'segment';
     segment.dataset.segmentIndex = String(index);
+    segment.dataset.role = part.role;
     const needsRole = shouldRequireRole(part.role);
     if (needsRole) {
       const slotId = `segment-${index}-role`;
       segment.dataset.slotId = slotId;
       segment.dataset.slotType = 'ROLE';
       segment.dataset.expectedValue = part.role;
-      segment.dataset.displayKey = '';
-      segment.dataset.labelText = '';
       appState.slots.set(slotId, {
         id: slotId,
         kind: 'ROLE',
         expected: part.role,
         assigned: null,
-        element: segment
+        element: segment,
+        subjectType: part.subjectType || null
       });
     } else {
       segment.classList.add('readonly');
-    }
-
-    if (
-      appState.requirements.requireSubjectType &&
-      part.role === 'SUBJECT' &&
-      part.subjectType
-    ) {
-      const typeSlotId = `segment-${index}-type`;
-      const typeSlot = document.createElement('span');
-      typeSlot.className = 'type-slot';
-      typeSlot.dataset.slotId = typeSlotId;
-      typeSlot.dataset.slotType = 'SUBJECT_TYPE';
-      typeSlot.dataset.expectedValue = part.subjectType;
-      typeSlot.dataset.placeholder = 'Pronom ou GN ?';
-      typeSlot.textContent = 'Pronom ou GN ?';
-      segment.append(typeSlot);
-      appState.slots.set(typeSlotId, {
-        id: typeSlotId,
-        kind: 'SUBJECT_TYPE',
-        expected: part.subjectType,
-        assigned: null,
-        element: typeSlot
-      });
     }
 
     elements.phraseText.append(segment);
@@ -303,29 +291,85 @@ function renderLabels(phrase) {
       activeIds.add(role);
     }
   });
-  if (requireSubjectType && segmentRoles.has('SUBJECT')) {
-    activeIds.add('SUBJECT_TYPE_PRONOUN');
-    activeIds.add('SUBJECT_TYPE_GN');
-  }
-
   const fragment = document.createDocumentFragment();
   LABEL_ORDER.forEach((id) => {
     if (!activeIds.has(id)) return;
     const definition = LABEL_LIBRARY[id];
-    const label = document.createElement('div');
-    label.className = 'drag-label';
-    label.dataset.labelId = definition.id;
-    label.dataset.kind = definition.kind;
-    label.dataset.value = definition.value;
-    label.textContent = definition.text;
-    label.setAttribute('aria-label', definition.aria);
-    label.addEventListener('pointerdown', (event) => handleDragStart(event, label));
-    label.addEventListener('pointermove', handleDragMove);
-    label.addEventListener('pointerup', handleDragEnd);
-    label.addEventListener('pointercancel', handleDragEnd);
+    const label = createDragLabel(definition);
     fragment.append(label);
   });
   elements.dragArea.append(fragment);
+}
+
+function createDragLabel(definition) {
+  const label = document.createElement('div');
+  label.className = 'drag-label';
+  label.dataset.labelId = definition.id;
+  label.dataset.kind = definition.kind;
+  label.dataset.value = definition.value;
+  label.textContent = definition.text;
+  label.setAttribute('aria-label', definition.aria);
+  label.addEventListener('pointerdown', (event) => handleDragStart(event, label));
+  label.addEventListener('pointermove', handleDragMove);
+  label.addEventListener('pointerup', handleDragEnd);
+  label.addEventListener('pointercancel', handleDragEnd);
+  return label;
+}
+
+function showSubjectTypePrompt(slot) {
+  const expectedType = slot.subjectType;
+  if (!expectedType) return;
+  const segmentText = slot.element.textContent.trim();
+  clearSubjectTypePrompt();
+
+  const slotId = 'subject-type-slot';
+  const { subjectPrompt, subjectPromptQuestion, subjectPromptDrop, subjectPromptChoices } = elements;
+  subjectPrompt.hidden = false;
+  subjectPromptQuestion.textContent = `Quel est le type du groupe sujet « ${segmentText} » ?`;
+
+  subjectPromptDrop.textContent = 'Glisse ta réponse ici';
+  subjectPromptDrop.className = 'prompt-drop';
+  subjectPromptDrop.dataset.slotId = slotId;
+  subjectPromptDrop.dataset.slotType = 'SUBJECT_TYPE';
+  subjectPromptDrop.dataset.expectedValue = expectedType;
+  subjectPromptDrop.classList.remove('assigned', 'correct', 'incorrect', 'hint');
+
+  subjectPromptChoices.innerHTML = '';
+  ['SUBJECT_TYPE_PRONOUN', 'SUBJECT_TYPE_GN'].forEach((id) => {
+    const definition = LABEL_LIBRARY[id];
+    const choice = createDragLabel(definition);
+    choice.classList.add('prompt-label');
+    subjectPromptChoices.append(choice);
+  });
+
+  const typeSlot = {
+    id: slotId,
+    kind: 'SUBJECT_TYPE',
+    expected: expectedType,
+    assigned: null,
+    element: subjectPromptDrop,
+    segment: slot.element
+  };
+  appState.slots.set(slotId, typeSlot);
+  appState.subjectTypePrompt = { slotId, segment: slot.element };
+}
+
+function clearSubjectTypePrompt() {
+  if (appState.subjectTypePrompt) {
+    appState.slots.delete(appState.subjectTypePrompt.slotId);
+    setSubjectTypeVisual(appState.subjectTypePrompt.segment, null);
+  }
+  const { subjectPrompt, subjectPromptQuestion, subjectPromptDrop, subjectPromptChoices } = elements;
+  subjectPrompt.hidden = true;
+  subjectPromptQuestion.textContent = '';
+  subjectPromptDrop.textContent = 'Glisse ta réponse ici';
+  subjectPromptDrop.className = 'prompt-drop';
+  subjectPromptDrop.removeAttribute('data-slot-id');
+  subjectPromptDrop.removeAttribute('data-slot-type');
+  subjectPromptDrop.removeAttribute('data-expected-value');
+  subjectPromptDrop.classList.remove('assigned', 'correct', 'incorrect', 'hint');
+  subjectPromptChoices.innerHTML = '';
+  appState.subjectTypePrompt = null;
 }
 
 function revealHint() {
@@ -339,8 +383,7 @@ function revealHint() {
   const label = getLabelByKindAndValue(target.kind, target.expected);
   if (label) {
     if (target.kind === 'ROLE') {
-      target.element.dataset.displayKey = label.id;
-      target.element.dataset.labelText = label.text;
+      setRoleVisual(target.element, label.value);
     } else if (target.kind === 'SUBJECT_TYPE') {
       target.element.textContent = label.text;
     }
@@ -370,11 +413,15 @@ function onValidate() {
     slot.element.classList.toggle('incorrect', !isCorrect);
 
     if (slot.kind === 'ROLE') {
-      const chosen = assignedLabel || expectedLabel;
-      slot.element.dataset.displayKey = chosen?.id || '';
-      slot.element.dataset.labelText = chosen?.text || '';
+      const visualRole = isCorrect ? slot.assigned : slot.expected;
+      setRoleVisual(slot.element, visualRole);
     } else if (slot.kind === 'SUBJECT_TYPE') {
-      slot.element.textContent = (assignedLabel || expectedLabel)?.text || slot.element.textContent;
+      const choiceText = (assignedLabel || expectedLabel)?.text;
+      if (choiceText) {
+        slot.element.textContent = choiceText;
+      }
+      const visualType = isCorrect ? slot.assigned : slot.expected;
+      setSubjectTypeVisual(slot.segment, visualType);
     }
 
     if (isCorrect) {
@@ -386,10 +433,10 @@ function onValidate() {
       slotMessages.push(`✗ ${reminder}`);
       if (slot.kind === 'SUBJECT_TYPE' && expectedLabel) {
         slot.element.textContent = expectedLabel.text;
+        setSubjectTypeVisual(slot.segment, slot.expected);
       }
-      if (slot.kind === 'ROLE' && expectedLabel) {
-        slot.element.dataset.displayKey = expectedLabel.id;
-        slot.element.dataset.labelText = expectedLabel.text;
+      if (slot.kind === 'ROLE') {
+        setRoleVisual(slot.element, slot.expected);
       }
     }
   });
@@ -477,12 +524,23 @@ function assignToSlot(slotElement, label) {
   slot.assigned = label.value;
   slot.element.classList.remove('incorrect', 'correct', 'hint');
   if (slot.kind === 'ROLE') {
-    slot.element.dataset.displayKey = label.id;
-    slot.element.dataset.labelText = label.text;
+    setRoleVisual(slot.element, label.value);
     slot.element.classList.add('assigned');
+    if (slot.expected === 'SUBJECT') {
+      if (
+        label.value === 'SUBJECT' &&
+        appState.requirements.requireSubjectType &&
+        slot.subjectType
+      ) {
+        showSubjectTypePrompt(slot);
+      } else {
+        clearSubjectTypePrompt();
+      }
+    }
   } else if (slot.kind === 'SUBJECT_TYPE') {
     slot.element.textContent = label.text;
     slot.element.classList.add('assigned');
+    setSubjectTypeVisual(slot.segment, label.value);
   }
 }
 
@@ -501,6 +559,23 @@ function moveGhost(ghost, clientX, clientY) {
   ghost.style.left = `${clientX}px`;
   ghost.style.top = `${clientY}px`;
   ghost.style.transform = 'translate(-50%, -50%) scale(1.02)';
+}
+
+function setRoleVisual(element, role) {
+  ROLE_VISUAL_CLASSES.forEach((cls) => element.classList.remove(cls));
+  if (role) {
+    element.classList.add(`role-${role}`);
+  }
+}
+
+function setSubjectTypeVisual(segment, type) {
+  if (!segment) return;
+  SUBJECT_TYPE_VISUAL_CLASSES.forEach((cls) => segment.classList.remove(cls));
+  if (type === 'PRONOUN') {
+    segment.classList.add('subject-pronoun');
+  } else if (type === 'GN') {
+    segment.classList.add('subject-gn');
+  }
 }
 
 function updateScoreboard() {
