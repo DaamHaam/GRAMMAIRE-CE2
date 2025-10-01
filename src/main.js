@@ -71,6 +71,7 @@ Object.values(LABEL_LIBRARY).forEach((label) => {
 
 const ROLE_VISUAL_CLASSES = ['role-SUBJECT', 'role-VERB', 'role-COMPLEMENT'];
 const SUBJECT_TYPE_VISUAL_CLASSES = ['subject-pronoun', 'subject-gn'];
+const SUBJECT_PROMPT_TYPE_CLASSES = ['type-PRONOUN', 'type-GN'];
 
 const SLOT_FEEDBACK = {
   ROLE: {
@@ -110,7 +111,9 @@ const appState = {
   activeLevel: '1',
   requirements: LEVEL_CONFIG[1],
   instruction: LEVEL_INSTRUCTIONS[1],
-  subjectTypePrompt: null
+  subjectTypePrompt: null,
+  subjectTypeSelection: null,
+  currentSubjectTypeAnswer: null
 };
 
 const elements = {
@@ -128,8 +131,12 @@ const elements = {
   resetBtn: document.getElementById('reset-progress'),
   phraseText: document.getElementById('phrase-text'),
   subjectPrompt: document.getElementById('subject-type-prompt'),
-  subjectPromptDrop: document.getElementById('subject-type-drop'),
-  subjectPromptChoices: document.getElementById('subject-type-choices'),
+  subjectPromptToggle: document.getElementById('subject-type-toggle'),
+  subjectPromptStatus: document.getElementById('subject-type-status'),
+  subjectPromptBody: document.getElementById('subject-type-body'),
+  subjectPromptOptions: Array.from(
+    document.querySelectorAll('#subject-type-prompt [data-subject-type]')
+  ),
   dragArea: document.getElementById('drag-area'),
   helpBtn: document.getElementById('help-btn'),
   validateBtn: document.getElementById('validate-btn'),
@@ -175,6 +182,17 @@ function bindEvents() {
   elements.nextBtn.addEventListener('click', () => {
     loadNextPhrase();
   });
+
+  if (elements.subjectPromptToggle) {
+    elements.subjectPromptToggle.addEventListener('click', toggleSubjectPrompt);
+  }
+  elements.subjectPromptOptions.forEach((button) => {
+    button.addEventListener('click', () => {
+      onSubjectTypeSelect(button.dataset.subjectType);
+    });
+  });
+
+  updateSubjectTypeButtons(null);
 }
 
 function startSession(level) {
@@ -230,6 +248,7 @@ function loadNextPhrase() {
   appState.slots = new Map();
   appState.hasValidated = false;
   clearSubjectTypePrompt();
+  appState.subjectTypeSelection = null;
   elements.validateBtn.disabled = false;
   elements.nextBtn.disabled = true;
   elements.helpText.textContent = appState.instruction;
@@ -239,6 +258,7 @@ function loadNextPhrase() {
 
 function renderPhrase(phrase) {
   elements.phraseText.innerHTML = '';
+  appState.currentSubjectTypeAnswer = null;
   phrase.parts.forEach((part, index) => {
     if (part.type === 'text') {
       elements.phraseText.append(document.createTextNode(part.text));
@@ -255,6 +275,9 @@ function renderPhrase(phrase) {
     segment.dataset.slotType = 'ROLE';
     segment.dataset.expectedValue = part.role;
     segment.dataset.required = String(requiresRole);
+    if (part.role === 'SUBJECT' && part.subjectType) {
+      appState.currentSubjectTypeAnswer = part.subjectType;
+    }
     appState.slots.set(slotId, {
       id: slotId,
       kind: 'ROLE',
@@ -315,60 +338,138 @@ function createDragLabel(definition) {
 }
 
 function showSubjectTypePrompt(slot) {
-  const expectedType = slot.subjectType;
+  if (!appState.requirements.requireSubjectType) return;
+  const expectedType = appState.currentSubjectTypeAnswer || slot.subjectType;
   if (!expectedType) return;
-  clearSubjectTypePrompt();
+
+  const previousSegment = appState.subjectTypePrompt?.segment;
+  if (previousSegment && previousSegment !== slot.element) {
+    setSubjectTypeVisual(previousSegment, null);
+  }
 
   const slotId = 'subject-type-slot';
-  const { subjectPrompt, subjectPromptDrop, subjectPromptChoices } = elements;
+  const { subjectPrompt } = elements;
+  let typeSlot = appState.slots.get(slotId);
+  if (!typeSlot) {
+    typeSlot = {
+      id: slotId,
+      kind: 'SUBJECT_TYPE',
+      expected: expectedType,
+      assigned: null,
+      element: subjectPrompt,
+      segment: slot.element,
+      required: true
+    };
+  } else {
+    typeSlot.expected = expectedType;
+    typeSlot.segment = slot.element;
+    typeSlot.element = subjectPrompt;
+  }
+  typeSlot.assigned = appState.subjectTypeSelection;
+  appState.slots.set(slotId, typeSlot);
+
   subjectPrompt.hidden = false;
   subjectPrompt.removeAttribute('aria-hidden');
-  subjectPromptDrop.textContent = 'Glisse le type de sujet';
-  subjectPromptDrop.className = 'prompt-drop';
-  subjectPromptDrop.dataset.slotId = slotId;
-  subjectPromptDrop.dataset.slotType = 'SUBJECT_TYPE';
-  subjectPromptDrop.dataset.expectedValue = expectedType;
-  subjectPromptDrop.classList.remove('assigned', 'correct', 'incorrect', 'hint');
+  subjectPrompt.classList.remove('correct', 'incorrect', 'hint');
+  SUBJECT_PROMPT_TYPE_CLASSES.forEach((cls) => subjectPrompt.classList.remove(cls));
 
-  subjectPromptChoices.innerHTML = '';
-  subjectPromptChoices.removeAttribute('aria-hidden');
-  ['SUBJECT_TYPE_PRONOUN', 'SUBJECT_TYPE_GN'].forEach((id) => {
-    const definition = LABEL_LIBRARY[id];
-    const choice = createDragLabel(definition);
-    choice.classList.add('prompt-label');
-    subjectPromptChoices.append(choice);
-  });
-
-  const typeSlot = {
-    id: slotId,
-    kind: 'SUBJECT_TYPE',
-    expected: expectedType,
-    assigned: null,
-    element: subjectPromptDrop,
-    segment: slot.element,
-    required: true
-  };
-  appState.slots.set(slotId, typeSlot);
   appState.subjectTypePrompt = { slotId, segment: slot.element };
+  updateSubjectPromptStatus();
+  updateSubjectTypeButtons(appState.subjectTypeSelection);
+  setSubjectPromptExpanded(true);
+
+  if (appState.subjectTypeSelection) {
+    setSubjectTypeVisual(slot.element, appState.subjectTypeSelection);
+  } else {
+    setSubjectTypeVisual(slot.element, null);
+  }
 }
 
-function clearSubjectTypePrompt() {
+function clearSubjectTypePrompt(options = {}) {
+  const { preserveSelection = false } = options;
   if (appState.subjectTypePrompt) {
-    appState.slots.delete(appState.subjectTypePrompt.slotId);
     setSubjectTypeVisual(appState.subjectTypePrompt.segment, null);
+    appState.slots.delete(appState.subjectTypePrompt.slotId);
   }
-  const { subjectPrompt, subjectPromptDrop, subjectPromptChoices } = elements;
+  if (!preserveSelection) {
+    appState.subjectTypeSelection = null;
+  }
+  const { subjectPrompt } = elements;
   subjectPrompt.hidden = true;
   subjectPrompt.setAttribute('aria-hidden', 'true');
-  subjectPromptDrop.textContent = '';
-  subjectPromptDrop.className = 'prompt-drop';
-  subjectPromptDrop.removeAttribute('data-slot-id');
-  subjectPromptDrop.removeAttribute('data-slot-type');
-  subjectPromptDrop.removeAttribute('data-expected-value');
-  subjectPromptDrop.classList.remove('assigned', 'correct', 'incorrect', 'hint');
-  subjectPromptChoices.innerHTML = '';
-  subjectPromptChoices.setAttribute('aria-hidden', 'true');
+  subjectPrompt.classList.remove('correct', 'incorrect', 'hint');
+  SUBJECT_PROMPT_TYPE_CLASSES.forEach((cls) => subjectPrompt.classList.remove(cls));
+  subjectPrompt.classList.remove('has-selection', 'collapsed', 'assigned');
+  if (!preserveSelection) {
+    updateSubjectPromptStatus();
+    updateSubjectTypeButtons(null);
+  }
+  if (elements.subjectPromptToggle) {
+    elements.subjectPromptToggle.setAttribute('aria-expanded', 'true');
+  }
+  if (elements.subjectPromptBody) {
+    elements.subjectPromptBody.removeAttribute('hidden');
+  }
   appState.subjectTypePrompt = null;
+}
+
+function toggleSubjectPrompt() {
+  if (!appState.subjectTypePrompt) return;
+  const expanded = elements.subjectPromptToggle.getAttribute('aria-expanded') === 'true';
+  setSubjectPromptExpanded(!expanded);
+}
+
+function setSubjectPromptExpanded(expanded) {
+  const { subjectPrompt, subjectPromptToggle, subjectPromptBody } = elements;
+  if (!subjectPrompt || !subjectPromptToggle || !subjectPromptBody) return;
+  subjectPromptToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  subjectPrompt.classList.toggle('collapsed', !expanded);
+  if (expanded) {
+    subjectPromptBody.removeAttribute('hidden');
+  } else {
+    subjectPromptBody.setAttribute('hidden', 'true');
+  }
+}
+
+function updateSubjectPromptStatus() {
+  const { subjectPrompt, subjectPromptStatus } = elements;
+  if (!subjectPrompt || !subjectPromptStatus) return;
+  SUBJECT_PROMPT_TYPE_CLASSES.forEach((cls) => subjectPrompt.classList.remove(cls));
+  const selection = appState.subjectTypeSelection;
+  subjectPrompt.classList.toggle('assigned', Boolean(selection));
+  if (!selection) {
+    subjectPromptStatus.textContent = 'À préciser';
+    subjectPrompt.classList.remove('has-selection');
+    return;
+  }
+  const label = getLabelByKindAndValue('SUBJECT_TYPE', selection);
+  subjectPromptStatus.textContent = label ? label.text : 'Sélectionné';
+  subjectPrompt.classList.add(`type-${selection}`);
+  subjectPrompt.classList.add('has-selection');
+}
+
+function updateSubjectTypeButtons(selected) {
+  elements.subjectPromptOptions.forEach((button) => {
+    const isActive = button.dataset.subjectType === selected;
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+  });
+}
+
+function onSubjectTypeSelect(value) {
+  if (!value) return;
+  const promptState = appState.subjectTypePrompt;
+  if (!promptState) return;
+  const slot = appState.slots.get(promptState.slotId);
+  if (!slot) return;
+  appState.subjectTypeSelection = value;
+  slot.assigned = value;
+  slot.element.classList.remove('incorrect', 'correct', 'hint');
+  slot.element.classList.add('assigned');
+  updateSubjectPromptStatus();
+  updateSubjectTypeButtons(value);
+  setSubjectTypeVisual(promptState.segment, value);
+  setSubjectPromptExpanded(false);
 }
 
 function revealHint() {
@@ -384,7 +485,13 @@ function revealHint() {
     if (target.kind === 'ROLE') {
       setRoleVisual(target.element, label.value);
     } else if (target.kind === 'SUBJECT_TYPE') {
-      target.element.textContent = label.text;
+      target.assigned = label.value;
+      appState.subjectTypeSelection = label.value;
+      updateSubjectPromptStatus();
+      updateSubjectTypeButtons(label.value);
+      target.element.classList.add('assigned');
+      setSubjectTypeVisual(target.segment, label.value);
+      setSubjectPromptExpanded(true);
     }
   }
   target.element.classList.add('hint');
@@ -416,12 +523,17 @@ function onValidate() {
       const visualRole = isCorrect ? slot.assigned : slot.expected;
       setRoleVisual(slot.element, visualRole);
     } else if (slot.kind === 'SUBJECT_TYPE') {
-      const choiceText = (assignedLabel || expectedLabel)?.text;
-      if (choiceText) {
-        slot.element.textContent = choiceText;
-      }
       const visualType = isCorrect ? slot.assigned : slot.expected;
-      setSubjectTypeVisual(slot.segment, visualType);
+      if (isCorrect) {
+        appState.subjectTypeSelection = slot.assigned;
+      } else {
+        appState.subjectTypeSelection = slot.expected;
+      }
+      if (visualType) {
+        setSubjectTypeVisual(slot.segment, visualType);
+      }
+      updateSubjectPromptStatus();
+      updateSubjectTypeButtons(appState.subjectTypeSelection);
     }
 
     if (isCorrect) {
@@ -431,10 +543,6 @@ function onValidate() {
     } else {
       const reminder = SLOT_FEEDBACK[slot.kind][slot.expected]?.reminder || 'Observe la phrase attentivement.';
       slotMessages.push(`✗ ${reminder}`);
-      if (slot.kind === 'SUBJECT_TYPE' && expectedLabel) {
-        slot.element.textContent = expectedLabel.text;
-        setSubjectTypeVisual(slot.segment, slot.expected);
-      }
       if (slot.kind === 'ROLE') {
         setRoleVisual(slot.element, slot.expected);
       }
@@ -472,9 +580,6 @@ function onValidate() {
   updateScoreboard();
 
   elements.helpText.innerHTML = slotMessages.join('<br />');
-  showToast(`${correctCount}/${totalSlots} réponse${correctCount > 1 ? 's' : ''} correcte${
-    correctCount > 1 ? 's' : ''
-  }.`);
   elements.nextBtn.disabled = false;
   elements.validateBtn.disabled = true;
   appState.hasValidated = true;
@@ -538,8 +643,13 @@ function assignToSlot(slotElement, label) {
       otherSlot.element.classList.remove('assigned', 'correct', 'incorrect', 'hint');
       if (otherSlot.kind === 'ROLE') {
         setRoleVisual(otherSlot.element, null);
+        if (
+          label.value === 'SUBJECT' &&
+          appState.subjectTypePrompt?.segment === otherSlot.element
+        ) {
+          clearSubjectTypePrompt({ preserveSelection: true });
+        }
       } else if (otherSlot.kind === 'SUBJECT_TYPE') {
-        otherSlot.element.textContent = 'Glisse le type de sujet';
         setSubjectTypeVisual(otherSlot.segment, null);
       }
     }
@@ -549,20 +659,22 @@ function assignToSlot(slotElement, label) {
   if (slot.kind === 'ROLE') {
     setRoleVisual(slot.element, label.value);
     slot.element.classList.add('assigned');
-    if (slot.expected === 'SUBJECT') {
-      if (
-        label.value === 'SUBJECT' &&
-        appState.requirements.requireSubjectType &&
-        slot.subjectType
-      ) {
+    if (label.value === 'SUBJECT') {
+      if (appState.requirements.requireSubjectType) {
+        if (appState.subjectTypePrompt && appState.subjectTypePrompt.segment !== slot.element) {
+          clearSubjectTypePrompt({ preserveSelection: true });
+        }
         showSubjectTypePrompt(slot);
       } else {
         clearSubjectTypePrompt();
       }
+    } else if (
+      appState.subjectTypePrompt &&
+      appState.subjectTypePrompt.segment === slot.element
+    ) {
+      clearSubjectTypePrompt();
     }
   } else if (slot.kind === 'SUBJECT_TYPE') {
-    slot.element.textContent = label.text;
-    slot.element.classList.add('assigned');
     setSubjectTypeVisual(slot.segment, label.value);
   }
 }

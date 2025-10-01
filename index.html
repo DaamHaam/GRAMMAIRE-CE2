@@ -79,15 +79,23 @@
             <p id="phrase-text" class="phrase"></p>
           </div>
           <div id="subject-type-prompt" class="subject-type-prompt" hidden>
-            <div id="subject-type-drop" class="prompt-drop" role="button" aria-label="Dépose le type du sujet ici">
-              Glisse le type de sujet
+            <button
+              id="subject-type-toggle"
+              class="prompt-toggle"
+              type="button"
+              aria-expanded="true"
+            >
+              <span class="prompt-title">Type du sujet</span>
+              <span id="subject-type-status" class="prompt-status">À préciser</span>
+              <span class="prompt-chevron" aria-hidden="true"></span>
+            </button>
+            <div id="subject-type-body" class="prompt-body">
+              <p class="prompt-instruction">Choisis le type du sujet :</p>
+              <div class="prompt-options" role="group" aria-label="Choisis la nature du sujet">
+                <button type="button" class="prompt-option" data-subject-type="PRONOUN">Pronom</button>
+                <button type="button" class="prompt-option" data-subject-type="GN">Groupe nominal</button>
+              </div>
             </div>
-            <div
-              id="subject-type-choices"
-              class="prompt-choices"
-              role="group"
-              aria-label="Choisis la nature du sujet"
-            ></div>
           </div>
           <div
             class="drag-area"
