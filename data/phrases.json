@@ -1,481 +1,473 @@
 [
   {
-    "id": "n1-01",
+    "id": "l1-01",
     "level": 1,
-    "text": "Le chat mange une souris.",
+    "text": "Le chat dort.",
     "parts": [
-      { "type": "segment", "role": "GS", "text": "Le chat" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Le chat" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "mange" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "une souris" },
+      { "type": "segment", "role": "VERB", "text": "dort" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n1-02",
+    "id": "l1-02",
     "level": 1,
-    "text": "Paul joue au ballon.",
+    "text": "Léo court vite.",
     "parts": [
-      { "type": "segment", "role": "GS", "text": "Paul" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Léo" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "joue" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "au ballon" },
-      { "type": "text", "text": "." }
+      { "type": "segment", "role": "VERB", "text": "court" },
+      { "type": "text", "text": " vite." }
     ]
   },
   {
-    "id": "n1-03",
+    "id": "l1-03",
     "level": 1,
-    "text": "Marie lit un livre.",
+    "text": "Ils jouent.",
     "parts": [
-      { "type": "segment", "role": "GS", "text": "Marie" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "PRONOUN", "text": "Ils" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "lit" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "un livre" },
+      { "type": "segment", "role": "VERB", "text": "jouent" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n1-04",
+    "id": "l1-04",
     "level": 1,
-    "text": "Les oiseaux chantent une chanson.",
+    "text": "La pluie tombe.",
     "parts": [
-      { "type": "segment", "role": "GS", "text": "Les oiseaux" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "La pluie" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "chantent" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "une chanson" },
+      { "type": "segment", "role": "VERB", "text": "tombe" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n1-05",
+    "id": "l1-05",
     "level": 1,
-    "text": "Le soleil brille dans le ciel.",
+    "text": "Je ris.",
     "parts": [
-      { "type": "segment", "role": "GS", "text": "Le soleil" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "PRONOUN", "text": "Je" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "brille" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "dans le ciel" },
+      { "type": "segment", "role": "VERB", "text": "ris" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n1-06",
+    "id": "l1-06",
     "level": 1,
-    "text": "Tu manges une pomme.",
+    "text": "Le train arrive.",
     "parts": [
-      { "type": "segment", "role": "GS", "text": "Tu" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Le train" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "manges" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "une pomme" },
+      { "type": "segment", "role": "VERB", "text": "arrive" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n1-07",
+    "id": "l1-07",
     "level": 1,
-    "text": "Nous regardons un film.",
+    "text": "Nous chantons.",
     "parts": [
-      { "type": "segment", "role": "GS", "text": "Nous" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "PRONOUN", "text": "Nous" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "regardons" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "un film" },
+      { "type": "segment", "role": "VERB", "text": "chantons" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n1-08",
+    "id": "l1-08",
     "level": 1,
-    "text": "La maîtresse explique la leçon.",
+    "text": "Le vent souffle.",
     "parts": [
-      { "type": "segment", "role": "GS", "text": "La maîtresse" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Le vent" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "explique" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "la leçon" },
+      { "type": "segment", "role": "VERB", "text": "souffle" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n1-09",
-    "level": 1,
-    "text": "Les lapins grignotent des carottes.",
-    "parts": [
-      { "type": "segment", "role": "GS", "text": "Les lapins" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "grignotent" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "des carottes" },
-      { "type": "text", "text": "." }
-    ]
-  },
-  {
-    "id": "n1-10",
-    "level": 1,
-    "text": "Léa dessine une maison.",
-    "parts": [
-      { "type": "segment", "role": "GS", "text": "Léa" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "dessine" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "une maison" },
-      { "type": "text", "text": "." }
-    ]
-  },
-  {
-    "id": "n1-11",
-    "level": 1,
-    "text": "Ils portent des sacs.",
-    "parts": [
-      { "type": "segment", "role": "GS", "text": "Ils" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "portent" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "des sacs" },
-      { "type": "text", "text": "." }
-    ]
-  },
-  {
-    "id": "n1-12",
-    "level": 1,
-    "text": "Le bébé touche son doudou.",
-    "parts": [
-      { "type": "segment", "role": "GS", "text": "Le bébé" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "touche" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "son doudou" },
-      { "type": "text", "text": "." }
-    ]
-  },
-  {
-    "id": "n2-01",
+    "id": "l2-01",
     "level": 2,
-    "text": "Le petit garçon porte un grand sac.",
+    "text": "La maîtresse explique la règle.",
     "parts": [
-      { "type": "segment", "role": "GS", "text": "Le petit garçon" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "La maîtresse" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "porte" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "un grand sac" },
-      { "type": "text", "text": "." }
+      { "type": "segment", "role": "VERB", "text": "explique" },
+      { "type": "text", "text": " la règle." }
     ]
   },
   {
-    "id": "n2-02",
+    "id": "l2-02",
     "level": 2,
-    "text": "La vieille cloche sonne chaque matin.",
+    "text": "Les enfants dessinent un soleil.",
     "parts": [
-      { "type": "segment", "role": "GS", "text": "La vieille cloche" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Les enfants" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "sonne" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "chaque matin" },
-      { "type": "text", "text": "." }
+      { "type": "segment", "role": "VERB", "text": "dessinent" },
+      { "type": "text", "text": " un soleil." }
     ]
   },
   {
-    "id": "n2-03",
+    "id": "l2-03",
     "level": 2,
-    "text": "Le jardinier arrose les fleurs rouges.",
+    "text": "Le chien poursuit la balle.",
     "parts": [
-      { "type": "segment", "role": "GS", "text": "Le jardinier" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Le chien" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "arrose" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "les fleurs rouges" },
-      { "type": "text", "text": "." }
+      { "type": "segment", "role": "VERB", "text": "poursuit" },
+      { "type": "text", "text": " la balle." }
     ]
   },
   {
-    "id": "n2-04",
+    "id": "l2-04",
     "level": 2,
-    "text": "Nous ne trouvons pas la clé.",
+    "text": "Paul regarde les nuages.",
     "parts": [
-      { "type": "segment", "role": "GS", "text": "Nous" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Paul" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "ne trouvons pas" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "la clé" },
-      { "type": "text", "text": "." }
+      { "type": "segment", "role": "VERB", "text": "regarde" },
+      { "type": "text", "text": " les nuages." }
     ]
   },
   {
-    "id": "n2-05",
+    "id": "l2-05",
     "level": 2,
-    "text": "Les élèves rangent leurs cahiers bleus.",
+    "text": "Les parents préparent le repas.",
     "parts": [
-      { "type": "segment", "role": "GS", "text": "Les élèves" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Les parents" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "rangent" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "leurs cahiers bleus" },
-      { "type": "text", "text": "." }
+      { "type": "segment", "role": "VERB", "text": "préparent" },
+      { "type": "text", "text": " le repas." }
     ]
   },
   {
-    "id": "n2-06",
+    "id": "l2-06",
     "level": 2,
-    "text": "Cette fillette tient une poupée douce.",
+    "text": "Nous observons les étoiles.",
     "parts": [
-      { "type": "segment", "role": "GS", "text": "Cette fillette" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "PRONOUN", "text": "Nous" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "tient" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "une poupée douce" },
-      { "type": "text", "text": "." }
+      { "type": "segment", "role": "VERB", "text": "observons" },
+      { "type": "text", "text": " les étoiles." }
     ]
   },
   {
-    "id": "n2-07",
+    "id": "l2-07",
     "level": 2,
-    "text": "Le chaton noir chasse une boule de laine.",
+    "text": "La cloche sonne la récréation.",
     "parts": [
-      { "type": "segment", "role": "GS", "text": "Le chaton noir" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "La cloche" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "chasse" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "une boule de laine" },
-      { "type": "text", "text": "." }
+      { "type": "segment", "role": "VERB", "text": "sonne" },
+      { "type": "text", "text": " la récréation." }
     ]
   },
   {
-    "id": "n2-08",
+    "id": "l2-08",
     "level": 2,
-    "text": "Vous entendez un bruit étrange.",
+    "text": "Elles terminent le puzzle.",
     "parts": [
-      { "type": "segment", "role": "GS", "text": "Vous" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "PRONOUN", "text": "Elles" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "entendez" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "un bruit étrange" },
-      { "type": "text", "text": "." }
+      { "type": "segment", "role": "VERB", "text": "terminent" },
+      { "type": "text", "text": " le puzzle." }
     ]
   },
   {
-    "id": "n2-09",
-    "level": 2,
-    "text": "Mon oncle prépare une soupe chaude.",
-    "parts": [
-      { "type": "segment", "role": "GS", "text": "Mon oncle" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "prépare" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "une soupe chaude" },
-      { "type": "text", "text": "." }
-    ]
-  },
-  {
-    "id": "n2-10",
-    "level": 2,
-    "text": "La rivière traverse un petit village.",
-    "parts": [
-      { "type": "segment", "role": "GS", "text": "La rivière" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "traverse" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "un petit village" },
-      { "type": "text", "text": "." }
-    ]
-  },
-  {
-    "id": "n2-11",
-    "level": 2,
-    "text": "Ces oiseaux ne quittent pas le nid.",
-    "parts": [
-      { "type": "segment", "role": "GS", "text": "Ces oiseaux" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "ne quittent pas" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "le nid" },
-      { "type": "text", "text": "." }
-    ]
-  },
-  {
-    "id": "n2-12",
-    "level": 2,
-    "text": "Les amies partagent un goûter sucré.",
-    "parts": [
-      { "type": "segment", "role": "GS", "text": "Les amies" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "partagent" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "un goûter sucré" },
-      { "type": "text", "text": "." }
-    ]
-  },
-  {
-    "id": "n3-01",
+    "id": "l3-01",
     "level": 3,
-    "text": "Le matin, la brume enveloppe la vallée paisible.",
+    "text": "Ils construisent un château de sable.",
     "parts": [
-      { "type": "text", "text": "Le matin, " },
-      { "type": "segment", "role": "GS", "text": "la brume" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "PRONOUN", "text": "Ils" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "enveloppe" },
+      { "type": "segment", "role": "VERB", "text": "construisent" },
+      { "type": "text", "text": " un château de sable." }
+    ]
+  },
+  {
+    "id": "l3-02",
+    "level": 3,
+    "text": "La petite souris grignote un fromage.",
+    "parts": [
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "La petite souris" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "la vallée paisible" },
+      { "type": "segment", "role": "VERB", "text": "grignote" },
+      { "type": "text", "text": " un fromage." }
+    ]
+  },
+  {
+    "id": "l3-03",
+    "level": 3,
+    "text": "Tu regardes la lune.",
+    "parts": [
+      { "type": "segment", "role": "SUBJECT", "subjectType": "PRONOUN", "text": "Tu" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "regardes" },
+      { "type": "text", "text": " la lune." }
+    ]
+  },
+  {
+    "id": "l3-04",
+    "level": 3,
+    "text": "Le grand cerf traverse la clairière.",
+    "parts": [
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Le grand cerf" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "traverse" },
+      { "type": "text", "text": " la clairière." }
+    ]
+  },
+  {
+    "id": "l3-05",
+    "level": 3,
+    "text": "Nous rangeons nos cahiers.",
+    "parts": [
+      { "type": "segment", "role": "SUBJECT", "subjectType": "PRONOUN", "text": "Nous" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "rangeons" },
+      { "type": "text", "text": " nos cahiers." }
+    ]
+  },
+  {
+    "id": "l3-06",
+    "level": 3,
+    "text": "Les deux sœurs peignent un tableau.",
+    "parts": [
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Les deux sœurs" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "peignent" },
+      { "type": "text", "text": " un tableau." }
+    ]
+  },
+  {
+    "id": "l3-07",
+    "level": 3,
+    "text": "Il choisit une histoire.",
+    "parts": [
+      { "type": "segment", "role": "SUBJECT", "subjectType": "PRONOUN", "text": "Il" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "choisit" },
+      { "type": "text", "text": " une histoire." }
+    ]
+  },
+  {
+    "id": "l3-08",
+    "level": 3,
+    "text": "Les élèves attentifs écoutent le récit.",
+    "parts": [
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Les élèves attentifs" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "écoutent" },
+      { "type": "text", "text": " le récit." }
+    ]
+  },
+  {
+    "id": "l4-01",
+    "level": 4,
+    "text": "Les élèves lisent dans la bibliothèque.",
+    "parts": [
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Les élèves" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "lisent" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "COMPLEMENT", "text": "dans la bibliothèque" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n3-02",
-    "level": 3,
-    "text": "Sous la pluie, les coureurs accélèrent le rythme.",
+    "id": "l4-02",
+    "level": 4,
+    "text": "Le facteur passe chaque matin.",
     "parts": [
-      { "type": "text", "text": "Sous la pluie, " },
-      { "type": "segment", "role": "GS", "text": "les coureurs" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Le facteur" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "accélèrent" },
+      { "type": "segment", "role": "VERB", "text": "passe" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "le rythme" },
+      { "type": "segment", "role": "COMPLEMENT", "text": "chaque matin" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n3-03",
-    "level": 3,
-    "text": "Dans le grenier sombre, une araignée tisse sa toile.",
+    "id": "l4-03",
+    "level": 4,
+    "text": "Ma cousine joue dans le jardin.",
     "parts": [
-      { "type": "text", "text": "Dans le grenier sombre, " },
-      { "type": "segment", "role": "GS", "text": "une araignée" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Ma cousine" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "tisse" },
+      { "type": "segment", "role": "VERB", "text": "joue" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "sa toile" },
+      { "type": "segment", "role": "COMPLEMENT", "text": "dans le jardin" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n3-04",
-    "level": 3,
-    "text": "Autour du feu, les amis racontent une histoire mystérieuse.",
+    "id": "l4-04",
+    "level": 4,
+    "text": "Ils déjeunent à midi.",
     "parts": [
-      { "type": "text", "text": "Autour du feu, " },
-      { "type": "segment", "role": "GS", "text": "les amis" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "PRONOUN", "text": "Ils" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "racontent" },
+      { "type": "segment", "role": "VERB", "text": "déjeunent" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "une histoire mystérieuse" },
+      { "type": "segment", "role": "COMPLEMENT", "text": "à midi" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n3-05",
-    "level": 3,
-    "text": "Le soir venu, la chouette observe la clairière silencieuse.",
+    "id": "l4-05",
+    "level": 4,
+    "text": "Le petit train s'arrête devant la gare.",
     "parts": [
-      { "type": "text", "text": "Le soir venu, " },
-      { "type": "segment", "role": "GS", "text": "la chouette" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Le petit train" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "observe" },
+      { "type": "segment", "role": "VERB", "text": "s'arrête" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "la clairière silencieuse" },
+      { "type": "segment", "role": "COMPLEMENT", "text": "devant la gare" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n3-06",
-    "level": 3,
-    "text": "Près de la rivière, le castor construit un barrage solide.",
+    "id": "l4-06",
+    "level": 4,
+    "text": "Nous partons dimanche.",
     "parts": [
-      { "type": "text", "text": "Près de la rivière, " },
-      { "type": "segment", "role": "GS", "text": "le castor" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "PRONOUN", "text": "Nous" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "construit" },
+      { "type": "segment", "role": "VERB", "text": "partons" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "un barrage solide" },
+      { "type": "segment", "role": "COMPLEMENT", "text": "dimanche" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n3-07",
-    "level": 3,
-    "text": "Les volets fermés, la maison respire une odeur de pain chaud.",
+    "id": "l4-07",
+    "level": 4,
+    "text": "Les hirondelles reviennent au printemps.",
     "parts": [
-      { "type": "text", "text": "Les volets fermés, " },
-      { "type": "segment", "role": "GS", "text": "la maison" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Les hirondelles" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "respire" },
+      { "type": "segment", "role": "VERB", "text": "reviennent" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "une odeur de pain chaud" },
+      { "type": "segment", "role": "COMPLEMENT", "text": "au printemps" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n3-08",
-    "level": 3,
-    "text": "Au loin, les cloches annoncent la fête du village.",
+    "id": "l4-08",
+    "level": 4,
+    "text": "Le spectacle commence à dix heures.",
     "parts": [
-      { "type": "text", "text": "Au loin, " },
-      { "type": "segment", "role": "GS", "text": "les cloches" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Le spectacle" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "annoncent" },
+      { "type": "segment", "role": "VERB", "text": "commence" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "la fête du village" },
+      { "type": "segment", "role": "COMPLEMENT", "text": "à dix heures" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n3-09",
-    "level": 3,
-    "text": "Après le repas, les enfants découpent des formes colorées.",
+    "id": "l5-01",
+    "level": 5,
+    "text": "Au sommet de la colline se dressaient hier encore trois chênes majestueux.",
     "parts": [
-      { "type": "text", "text": "Après le repas, " },
-      { "type": "segment", "role": "GS", "text": "les enfants" },
+      { "type": "segment", "role": "COMPLEMENT", "text": "Au sommet de la colline" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "découpent" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "des formes colorées" },
+      { "type": "segment", "role": "VERB", "text": "se dressaient" },
+      { "type": "text", "text": " hier encore " },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "trois chênes majestueux" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n3-10",
-    "level": 3,
-    "text": "Dans la cour, une fillette observe les nuages mouvants.",
+    "id": "l5-02",
+    "level": 5,
+    "text": "Dans l'obscurité de la salle, chuchotait timidement une jeune actrice.",
     "parts": [
-      { "type": "text", "text": "Dans la cour, " },
-      { "type": "segment", "role": "GS", "text": "une fillette" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "observe" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "les nuages mouvants" },
+      { "type": "segment", "role": "COMPLEMENT", "text": "Dans l'obscurité de la salle" },
+      { "type": "text", "text": ", " },
+      { "type": "segment", "role": "VERB", "text": "chuchotait" },
+      { "type": "text", "text": " timidement " },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "une jeune actrice" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n3-11",
-    "level": 3,
-    "text": "Au marché du village, les marchands proposent des fruits rares.",
+    "id": "l5-03",
+    "level": 5,
+    "text": "Arriveront-ils enfin à temps ce soir ?",
     "parts": [
-      { "type": "text", "text": "Au marché du village, " },
-      { "type": "segment", "role": "GS", "text": "les marchands" },
+      { "type": "segment", "role": "VERB", "text": "Arriveront" },
+      { "type": "text", "text": "-" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "PRONOUN", "text": "ils" },
+      { "type": "text", "text": " enfin à temps " },
+      { "type": "segment", "role": "COMPLEMENT", "text": "ce soir" },
+      { "type": "text", "text": " ?" }
+    ]
+  },
+  {
+    "id": "l5-04",
+    "level": 5,
+    "text": "Tout près du vieux port avaient choisi leur banc deux amis d'enfance.",
+    "parts": [
+      { "type": "segment", "role": "COMPLEMENT", "text": "Tout près du vieux port" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "proposent" },
-      { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "des fruits rares" },
+      { "type": "segment", "role": "VERB", "text": "avaient choisi" },
+      { "type": "text", "text": " leur banc " },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "deux amis d'enfance" },
       { "type": "text", "text": "." }
     ]
   },
   {
-    "id": "n3-12",
-    "level": 3,
-    "text": "Près du port, les pêcheurs réparent leurs filets usés.",
+    "id": "l5-05",
+    "level": 5,
+    "text": "Sur la grande scène ce matin répétaient en secret les trois comédiens principaux.",
     "parts": [
-      { "type": "text", "text": "Près du port, " },
-      { "type": "segment", "role": "GS", "text": "les pêcheurs" },
+      { "type": "segment", "role": "COMPLEMENT", "text": "Sur la grande scène ce matin" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "VERBE", "text": "réparent" },
+      { "type": "segment", "role": "VERB", "text": "répétaient" },
+      { "type": "text", "text": " en secret " },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "les trois comédiens principaux" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "l5-06",
+    "level": 5,
+    "text": "Parfois, écrivait-elle en cachette dans son carnet au clair de lune.",
+    "parts": [
+      { "type": "segment", "role": "COMPLEMENT", "text": "Parfois" },
+      { "type": "text", "text": ", " },
+      { "type": "segment", "role": "VERB", "text": "écrivait" },
+      { "type": "text", "text": "-" },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "PRONOUN", "text": "elle" },
+      { "type": "text", "text": " en cachette dans son carnet au clair de lune." }
+    ]
+  },
+  {
+    "id": "l5-07",
+    "level": 5,
+    "text": "Sous la tente, nous partagions encore des histoires tard dans la nuit.",
+    "parts": [
+      { "type": "segment", "role": "COMPLEMENT", "text": "Sous la tente" },
+      { "type": "text", "text": ", " },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "PRONOUN", "text": "nous" },
       { "type": "text", "text": " " },
-      { "type": "segment", "role": "GN", "text": "leurs filets usés" },
+      { "type": "segment", "role": "VERB", "text": "partagions" },
+      { "type": "text", "text": " encore des histoires tard dans la nuit." }
+    ]
+  },
+  {
+    "id": "l5-08",
+    "level": 5,
+    "text": "Entre les pages du vieux grimoire se cachait encore ce soir un indice mystérieux.",
+    "parts": [
+      { "type": "segment", "role": "COMPLEMENT", "text": "Entre les pages du vieux grimoire" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "se cachait" },
+      { "type": "text", "text": " encore ce soir " },
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "un indice mystérieux" },
       { "type": "text", "text": "." }
     ]
   }
