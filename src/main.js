@@ -71,8 +71,6 @@ Object.values(LABEL_LIBRARY).forEach((label) => {
 
 const ROLE_VISUAL_CLASSES = ['role-SUBJECT', 'role-VERB', 'role-COMPLEMENT'];
 const SUBJECT_TYPE_VISUAL_CLASSES = ['subject-pronoun', 'subject-gn'];
-const SUBJECT_PROMPT_TYPE_CLASSES = ['type-PRONOUN', 'type-GN'];
-const SUBJECT_PROMPT_DEFAULT_LABEL = 'Choisis le type de sujet';
 
 const SLOT_FEEDBACK = {
   ROLE: {
@@ -132,9 +130,7 @@ const elements = {
   resetBtn: document.getElementById('reset-progress'),
   phraseText: document.getElementById('phrase-text'),
   subjectPrompt: document.getElementById('subject-type-prompt'),
-  subjectPromptToggle: document.getElementById('subject-type-toggle'),
   subjectPromptLabel: document.getElementById('subject-type-label'),
-  subjectPromptBody: document.getElementById('subject-type-body'),
   subjectPromptOptions: Array.from(
     document.querySelectorAll('#subject-type-prompt [data-subject-type]')
   ),
@@ -184,9 +180,6 @@ function bindEvents() {
     loadNextPhrase();
   });
 
-  if (elements.subjectPromptToggle) {
-    elements.subjectPromptToggle.addEventListener('click', toggleSubjectPrompt);
-  }
   elements.subjectPromptOptions.forEach((button) => {
     button.addEventListener('click', () => {
       onSubjectTypeSelect(button.dataset.subjectType);
@@ -279,6 +272,7 @@ function renderPhrase(phrase) {
     if (part.role === 'SUBJECT' && part.subjectType) {
       appState.currentSubjectTypeAnswer = part.subjectType;
     }
+    segment.addEventListener('click', () => onSegmentClick(segment));
     appState.slots.set(slotId, {
       id: slotId,
       kind: 'ROLE',
@@ -291,6 +285,16 @@ function renderPhrase(phrase) {
 
     elements.phraseText.append(segment);
   });
+}
+
+function onSegmentClick(segment) {
+  if (!segment || !appState.requirements.requireSubjectType) return;
+  const slotId = segment.dataset.slotId;
+  const slot = appState.slots.get(slotId);
+  if (!slot || slot.kind !== 'ROLE') return;
+  if (slot.assigned === 'SUBJECT') {
+    showSubjectTypePrompt(slot);
+  }
 }
 
 function shouldRequireRole(role) {
@@ -321,6 +325,20 @@ function renderLabels(phrase) {
     fragment.append(label);
   });
   elements.dragArea.append(fragment);
+}
+
+function openSubjectPrompt() {
+  const { subjectPrompt } = elements;
+  if (!subjectPrompt) return;
+  subjectPrompt.hidden = false;
+  subjectPrompt.removeAttribute('aria-hidden');
+}
+
+function closeSubjectPrompt() {
+  const { subjectPrompt } = elements;
+  if (!subjectPrompt) return;
+  subjectPrompt.hidden = true;
+  subjectPrompt.setAttribute('aria-hidden', 'true');
 }
 
 function createDragLabel(definition) {
@@ -369,15 +387,11 @@ function showSubjectTypePrompt(slot) {
   typeSlot.assigned = appState.subjectTypeSelection;
   appState.slots.set(slotId, typeSlot);
 
-  subjectPrompt.hidden = false;
-  subjectPrompt.removeAttribute('aria-hidden');
+  openSubjectPrompt();
   subjectPrompt.classList.remove('correct', 'incorrect', 'hint');
-  SUBJECT_PROMPT_TYPE_CLASSES.forEach((cls) => subjectPrompt.classList.remove(cls));
 
   appState.subjectTypePrompt = { slotId, segment: slot.element };
-  updateSubjectPromptLabel();
   updateSubjectTypeButtons(appState.subjectTypeSelection);
-  setSubjectPromptExpanded(true);
 
   if (appState.subjectTypeSelection) {
     setSubjectTypeVisual(slot.element, appState.subjectTypeSelection);
@@ -396,57 +410,12 @@ function clearSubjectTypePrompt(options = {}) {
     appState.subjectTypeSelection = null;
   }
   const { subjectPrompt } = elements;
-  subjectPrompt.hidden = true;
-  subjectPrompt.setAttribute('aria-hidden', 'true');
+  closeSubjectPrompt();
   subjectPrompt.classList.remove('correct', 'incorrect', 'hint');
-  SUBJECT_PROMPT_TYPE_CLASSES.forEach((cls) => subjectPrompt.classList.remove(cls));
-  subjectPrompt.classList.remove('has-selection', 'collapsed', 'assigned');
   if (!preserveSelection) {
-    updateSubjectPromptLabel();
     updateSubjectTypeButtons(null);
   }
-  if (elements.subjectPromptToggle) {
-    elements.subjectPromptToggle.setAttribute('aria-expanded', 'true');
-  }
-  if (elements.subjectPromptBody) {
-    elements.subjectPromptBody.removeAttribute('hidden');
-  }
   appState.subjectTypePrompt = null;
-}
-
-function toggleSubjectPrompt() {
-  if (!appState.subjectTypePrompt) return;
-  const expanded = elements.subjectPromptToggle.getAttribute('aria-expanded') === 'true';
-  setSubjectPromptExpanded(!expanded);
-}
-
-function setSubjectPromptExpanded(expanded) {
-  const { subjectPrompt, subjectPromptToggle, subjectPromptBody } = elements;
-  if (!subjectPrompt || !subjectPromptToggle || !subjectPromptBody) return;
-  subjectPromptToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-  subjectPrompt.classList.toggle('collapsed', !expanded);
-  if (expanded) {
-    subjectPromptBody.removeAttribute('hidden');
-  } else {
-    subjectPromptBody.setAttribute('hidden', 'true');
-  }
-}
-
-function updateSubjectPromptLabel() {
-  const { subjectPrompt, subjectPromptLabel } = elements;
-  if (!subjectPrompt || !subjectPromptLabel) return;
-  SUBJECT_PROMPT_TYPE_CLASSES.forEach((cls) => subjectPrompt.classList.remove(cls));
-  const selection = appState.subjectTypeSelection;
-  subjectPrompt.classList.toggle('assigned', Boolean(selection));
-  if (!selection) {
-    subjectPromptLabel.textContent = SUBJECT_PROMPT_DEFAULT_LABEL;
-    subjectPrompt.classList.remove('has-selection');
-    return;
-  }
-  const label = getLabelByKindAndValue('SUBJECT_TYPE', selection);
-  subjectPromptLabel.textContent = label ? label.text : SUBJECT_PROMPT_DEFAULT_LABEL;
-  subjectPrompt.classList.add(`type-${selection}`);
-  subjectPrompt.classList.add('has-selection');
 }
 
 function updateSubjectTypeButtons(selected) {
@@ -466,11 +435,9 @@ function onSubjectTypeSelect(value) {
   appState.subjectTypeSelection = value;
   slot.assigned = value;
   slot.element.classList.remove('incorrect', 'correct', 'hint');
-  slot.element.classList.add('assigned');
-  updateSubjectPromptLabel();
   updateSubjectTypeButtons(value);
   setSubjectTypeVisual(promptState.segment, value);
-  setSubjectPromptExpanded(false);
+  closeSubjectPrompt();
 }
 
 function revealHint() {
@@ -488,11 +455,10 @@ function revealHint() {
     } else if (target.kind === 'SUBJECT_TYPE') {
       target.assigned = label.value;
       appState.subjectTypeSelection = label.value;
-      updateSubjectPromptLabel();
       updateSubjectTypeButtons(label.value);
       target.element.classList.add('assigned');
       setSubjectTypeVisual(target.segment, label.value);
-      setSubjectPromptExpanded(true);
+      openSubjectPrompt();
     }
   }
   target.element.classList.add('hint');
@@ -533,8 +499,10 @@ function onValidate() {
       if (visualType) {
         setSubjectTypeVisual(slot.segment, visualType);
       }
-      updateSubjectPromptLabel();
       updateSubjectTypeButtons(appState.subjectTypeSelection);
+      if (!isCorrect) {
+        openSubjectPrompt();
+      }
     }
 
     if (isCorrect) {
