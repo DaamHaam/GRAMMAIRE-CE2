@@ -72,6 +72,7 @@ Object.values(LABEL_LIBRARY).forEach((label) => {
 const ROLE_VISUAL_CLASSES = ['role-SUBJECT', 'role-VERB', 'role-COMPLEMENT'];
 const SUBJECT_TYPE_VISUAL_CLASSES = ['subject-pronoun', 'subject-gn'];
 const SUBJECT_PROMPT_TYPE_CLASSES = ['type-PRONOUN', 'type-GN'];
+const SUBJECT_PROMPT_DEFAULT_LABEL = 'Choisis le type de sujet';
 
 const SLOT_FEEDBACK = {
   ROLE: {
@@ -132,7 +133,7 @@ const elements = {
   phraseText: document.getElementById('phrase-text'),
   subjectPrompt: document.getElementById('subject-type-prompt'),
   subjectPromptToggle: document.getElementById('subject-type-toggle'),
-  subjectPromptStatus: document.getElementById('subject-type-status'),
+  subjectPromptLabel: document.getElementById('subject-type-label'),
   subjectPromptBody: document.getElementById('subject-type-body'),
   subjectPromptOptions: Array.from(
     document.querySelectorAll('#subject-type-prompt [data-subject-type]')
@@ -374,7 +375,7 @@ function showSubjectTypePrompt(slot) {
   SUBJECT_PROMPT_TYPE_CLASSES.forEach((cls) => subjectPrompt.classList.remove(cls));
 
   appState.subjectTypePrompt = { slotId, segment: slot.element };
-  updateSubjectPromptStatus();
+  updateSubjectPromptLabel();
   updateSubjectTypeButtons(appState.subjectTypeSelection);
   setSubjectPromptExpanded(true);
 
@@ -401,7 +402,7 @@ function clearSubjectTypePrompt(options = {}) {
   SUBJECT_PROMPT_TYPE_CLASSES.forEach((cls) => subjectPrompt.classList.remove(cls));
   subjectPrompt.classList.remove('has-selection', 'collapsed', 'assigned');
   if (!preserveSelection) {
-    updateSubjectPromptStatus();
+    updateSubjectPromptLabel();
     updateSubjectTypeButtons(null);
   }
   if (elements.subjectPromptToggle) {
@@ -431,19 +432,19 @@ function setSubjectPromptExpanded(expanded) {
   }
 }
 
-function updateSubjectPromptStatus() {
-  const { subjectPrompt, subjectPromptStatus } = elements;
-  if (!subjectPrompt || !subjectPromptStatus) return;
+function updateSubjectPromptLabel() {
+  const { subjectPrompt, subjectPromptLabel } = elements;
+  if (!subjectPrompt || !subjectPromptLabel) return;
   SUBJECT_PROMPT_TYPE_CLASSES.forEach((cls) => subjectPrompt.classList.remove(cls));
   const selection = appState.subjectTypeSelection;
   subjectPrompt.classList.toggle('assigned', Boolean(selection));
   if (!selection) {
-    subjectPromptStatus.textContent = 'À préciser';
+    subjectPromptLabel.textContent = SUBJECT_PROMPT_DEFAULT_LABEL;
     subjectPrompt.classList.remove('has-selection');
     return;
   }
   const label = getLabelByKindAndValue('SUBJECT_TYPE', selection);
-  subjectPromptStatus.textContent = label ? label.text : 'Sélectionné';
+  subjectPromptLabel.textContent = label ? label.text : SUBJECT_PROMPT_DEFAULT_LABEL;
   subjectPrompt.classList.add(`type-${selection}`);
   subjectPrompt.classList.add('has-selection');
 }
@@ -466,7 +467,7 @@ function onSubjectTypeSelect(value) {
   slot.assigned = value;
   slot.element.classList.remove('incorrect', 'correct', 'hint');
   slot.element.classList.add('assigned');
-  updateSubjectPromptStatus();
+  updateSubjectPromptLabel();
   updateSubjectTypeButtons(value);
   setSubjectTypeVisual(promptState.segment, value);
   setSubjectPromptExpanded(false);
@@ -487,7 +488,7 @@ function revealHint() {
     } else if (target.kind === 'SUBJECT_TYPE') {
       target.assigned = label.value;
       appState.subjectTypeSelection = label.value;
-      updateSubjectPromptStatus();
+      updateSubjectPromptLabel();
       updateSubjectTypeButtons(label.value);
       target.element.classList.add('assigned');
       setSubjectTypeVisual(target.segment, label.value);
@@ -532,7 +533,7 @@ function onValidate() {
       if (visualType) {
         setSubjectTypeVisual(slot.segment, visualType);
       }
-      updateSubjectPromptStatus();
+      updateSubjectPromptLabel();
       updateSubjectTypeButtons(appState.subjectTypeSelection);
     }
 
