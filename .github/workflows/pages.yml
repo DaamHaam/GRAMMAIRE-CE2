@@ -1,11 +1,13 @@
-name: Pages (prod + PR previews + beta + releases)
+name: Pages (prod + beta + releases + PR previews incl. forks)
 
 on:
   push:
-    branches: [ main, next ]          # prod=main, beta=next
-    tags: ['v*', 'v*.*', 'v*.*.*']    # releases/vX[.Y[.Z]]
-  pull_request:                        # previews pour PR vers main/next
+    branches: [ main, next ]           # prod=main, beta=next
+    tags:    [ 'v*', 'v*.*', 'v*.*.*' ]# releases/vX[.Y[.Z]]
+  pull_request:                         # PR créées depuis le même dépôt
     branches: [ main, next ]
+  pull_request_target:                  # PR depuis un fork -> droits du dépôt cible
+    types: [ opened, synchronize, reopened ]
   workflow_dispatch:
 
 permissions:
@@ -14,61 +16,93 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "github-pages"
+  group: github-pages
   cancel-in-progress: true
 
+# ---- Déploiements "persistants": prod/beta/releases ----
 jobs:
-  build:
+  deploy:
+    if: ${{ github.event_name != 'pull_request' && github.event_name != 'pull_request_target' }}
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - name: Prepare artifact layout
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build artifact layout
         shell: bash
         run: |
           set -e
           mkdir -p dist
           EXCLUDES="--exclude .git --exclude .github --exclude dist --exclude node_modules"
 
-          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
-            rsync -a $EXCLUDES ./ dist/                     # preview éphémère
-          elif [ "${GITHUB_REF}" = "refs/heads/main" ]; then
-            rsync -a $EXCLUDES ./ dist/                     # prod à la racine
+          if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
+            # Production à la racine
+            rsync -a $EXCLUDES ./ dist/
           elif [ "${GITHUB_REF}" = "refs/heads/next" ]; then
-            mkdir -p dist/beta && rsync -a $EXCLUDES ./ dist/beta/
+            # Canal beta sous /beta/
+            mkdir -p dist/beta
+            rsync -a $EXCLUDES ./ dist/beta/
           elif [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            # Archive sous /releases/<tag>/
             mkdir -p "dist/releases/${GITHUB_REF_NAME}"
             rsync -a $EXCLUDES ./ "dist/releases/${GITHUB_REF_NAME}/"
           else
             rsync -a $EXCLUDES ./ dist/
           fi
 
+          # Empêche Jekyll d'ignorer des fichiers
           touch dist/.nojekyll
 
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v4
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
         with:
           path: dist
 
-  deploy:
-    if: ${{ github.event_name != 'pull_request' }}
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
       - id: deployment
+        name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
 
+# ---- Previews éphémères pour PR (inclut PR depuis fork, en mode sûr) ----
   preview:
-    if: ${{ github.event_name == 'pull_request' }}
-    needs: build
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target' }}
     runs-on: ubuntu-latest
     environment:
       name: preview
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # On récupère le code exact de la PR (même dépôt OU fork) sans exposer de token
+      - name: Checkout PR HEAD (safe)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Prepare dist (static copy only)
+        shell: bash
+        run: |
+          set -e
+          rm -rf dist
+          mkdir -p dist
+          rsync -a --exclude '.git' --exclude '.github' --exclude 'dist' --exclude 'node_modules' ./ dist/
+          touch dist/.nojekyll
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
       - id: deployment
+        name: Deploy PR preview
         uses: actions/deploy-pages@v4
         with:
           preview: true
