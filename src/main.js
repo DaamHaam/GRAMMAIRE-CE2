@@ -143,11 +143,25 @@ const elements = {
 };
 let dragState = null;
 
+function requestFullscreenIfSupported() {
+  const isStandalone =
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(display-mode: standalone)').matches;
+  if (isStandalone) return;
+  if (document.fullscreenElement) return;
+  const root = document.documentElement;
+  if (!root || typeof root.requestFullscreen !== 'function') return;
+  root.requestFullscreen().catch(() => {
+    // Ignorer les erreurs (refus utilisateur ou navigateur)
+  });
+}
+
 async function init() {
   await loadData();
   bindEvents();
   renderResume();
   updateScoreboard();
+  registerServiceWorker();
 }
 
 async function loadData() {
@@ -209,6 +223,7 @@ function startSession(level) {
   appState.slots = new Map();
   appState.hasValidated = false;
   swapScreen('exercise');
+  requestFullscreenIfSupported();
   appState.progress = updateLastLevel(appState.progress, level);
   loadNextPhrase();
 }
@@ -727,6 +742,17 @@ function shuffleArray(arr) {
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
   return copy;
+}
+
+async function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) {
+    return;
+  }
+  try {
+    await navigator.serviceWorker.register('service-worker.js');
+  } catch (error) {
+    console.warn('Service Worker indisponible :', error);
+  }
 }
 
 init();
