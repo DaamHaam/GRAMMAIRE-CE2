@@ -79,6 +79,10 @@ body::before {
   font-size: 1rem;
 }
 
+body.subject-math .tagline {
+  color: #1f7cd8;
+}
+
 body.exercise-active .app-header {
   display: none;
 }
@@ -134,6 +138,289 @@ body.exercise-active .app {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 0.75rem;
+}
+
+.home-view {
+  display: none;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.home-view.active {
+  display: flex;
+}
+
+.intro-card {
+  text-align: center;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.subject-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.subject-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 1.25rem;
+  border-radius: 1.25rem;
+  border: 2px solid transparent;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 14px 28px rgba(45, 60, 89, 0.18);
+}
+
+.subject-choice .subject-choice-title {
+  font-size: 1.35rem;
+}
+
+.subject-choice .subject-choice-caption {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.subject-choice.grammar {
+  background: linear-gradient(135deg, rgba(255, 108, 162, 0.95), rgba(255, 140, 105, 0.92));
+}
+
+.subject-choice.math {
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.9), rgba(45, 155, 240, 0.9));
+}
+
+.subject-choice:focus-visible,
+.subject-choice:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 18px 32px rgba(45, 60, 89, 0.24);
+}
+
+.subject-choice:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 3px;
+}
+
+.back-to-menu {
+  align-self: flex-start;
+  margin-bottom: -0.5rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.back-to-menu:hover,
+.back-to-menu:focus-visible {
+  background: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.math-track-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.math-track-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(45, 155, 240, 0.9), rgba(108, 99, 255, 0.9));
+  color: #fff;
+  font-weight: 700;
+  border: 2px solid transparent;
+  box-shadow: 0 12px 28px rgba(64, 90, 255, 0.24);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
+  text-align: left;
+}
+
+.math-track-btn:hover,
+.math-track-btn:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px rgba(64, 90, 255, 0.32);
+  outline: 3px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 3px;
+}
+
+.math-track-btn.selected {
+  border-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 22px 44px rgba(64, 90, 255, 0.36);
+}
+
+.math-track-title {
+  font-size: 1.05rem;
+}
+
+.math-track-caption {
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.35;
+  opacity: 0.92;
+}
+
+.math-track-help {
+  margin: 0.25rem 0 0.75rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.math-levels-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.math-levels-wrapper[hidden] {
+  display: none;
+}
+
+.math-level-btn {
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.9), rgba(45, 155, 240, 0.9));
+  color: #fff;
+  font-weight: 700;
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 12px 26px rgba(64, 90, 255, 0.22);
+}
+
+.math-level-btn:hover,
+.math-level-btn:focus-visible {
+  background: linear-gradient(135deg, rgba(79, 70, 228, 1), rgba(31, 124, 216, 1));
+  transform: translateY(-3px) scale(1.01);
+  outline: 3px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 3px;
+}
+
+.math-level-btn:disabled,
+.math-level-btn.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.math-resume {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.math-info-card ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.math-score {
+  font-weight: 600;
+}
+
+.math-card {
+  gap: 1rem;
+}
+
+.math-question {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.math-sequence {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  font-size: 1.4rem;
+  justify-content: center;
+}
+
+.math-sequence .sequence-item {
+  min-width: 3rem;
+  min-height: 3rem;
+  border-radius: var(--radius);
+  border: 2px dashed rgba(45, 155, 240, 0.4);
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.75rem;
+  font-weight: 700;
+}
+
+.math-sequence .sequence-item.filled {
+  border-style: solid;
+  border-color: rgba(76, 195, 138, 0.7);
+  background: rgba(76, 195, 138, 0.1);
+}
+
+.math-sequence .sequence-item.drag-over {
+  border-color: rgba(45, 155, 240, 0.8);
+  background: rgba(45, 155, 240, 0.12);
+}
+
+.math-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.math-option {
+  background: rgba(45, 155, 240, 0.12);
+  border: 2px solid rgba(45, 155, 240, 0.4);
+  color: var(--primary-dark);
+  font-weight: 700;
+  padding: 0.65rem 1.2rem;
+  border-radius: calc(var(--radius) / 1.4);
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+}
+
+.math-option:hover,
+.math-option:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(45, 155, 240, 0.2);
+}
+
+.math-option.selected {
+  background: rgba(76, 195, 138, 0.2);
+  border-color: rgba(76, 195, 138, 0.8);
+}
+
+.math-option.dragging {
+  opacity: 0.7;
+  cursor: grabbing;
+}
+
+.math-feedback {
+  min-height: 1.4rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.math-feedback.success {
+  color: var(--accent);
+}
+
+.math-feedback.error {
+  color: var(--error);
 }
 
 button {

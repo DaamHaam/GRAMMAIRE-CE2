@@ -77,6 +77,54 @@ Object.values(LABEL_LIBRARY).forEach((label) => {
   LABELS_BY_KIND_VALUE.set(`${label.kind}-${label.value}`, label);
 });
 
+const SUBJECTS = {
+  GRAMMAR: 'grammar',
+  MATH: 'math'
+};
+
+const SUBJECT_TAGLINES = {
+  [SUBJECTS.GRAMMAR]:
+    'Repère pas à pas le groupe sujet, le verbe et les compléments !',
+  [SUBJECTS.MATH]:
+    'Résous des énigmes de logique et complète des suites mathématiques !'
+};
+
+const HOME_VIEWS = {
+  MENU: 'menu',
+  GRAMMAR: 'grammar',
+  MATH: 'math'
+};
+
+const HOME_MENU_TAGLINE = 'Choisis ta matière pour commencer !';
+
+const MATH_TRACK_DEFINITIONS = [
+  {
+    id: 'logic-rapide',
+    key: 'logicRapide',
+    label: 'Logique rapide',
+    description:
+      'Résous des problèmes mentaux de plus en plus longs en choisissant la bonne réponse.',
+    levelLabels: {
+      '1': 'Logique rapide · Niveau 1',
+      '2': 'Logique rapide · Niveau 2',
+      '3': 'Logique rapide · Niveau 3'
+    }
+  },
+  {
+    id: 'suites-logiques',
+    key: 'suitesLogiques',
+    label: 'Suites logiques',
+    description: 'Observe les rythmes de suites numériques ou visuelles et complète-les.',
+    levelLabels: {
+      '1': 'Suites logiques · Niveau 1',
+      '2': 'Suites logiques · Niveau 2',
+      '3': 'Suites logiques · Niveau 3'
+    }
+  }
+];
+
+const MATH_TRACKS_BY_ID = new Map(MATH_TRACK_DEFINITIONS.map((track) => [track.id, track]));
+
 const ROLE_VISUAL_CLASSES = ['role-SUBJECT', 'role-VERB', 'role-COMPLEMENT'];
 const SUBJECT_TYPE_VISUAL_CLASSES = ['subject-pronoun', 'subject-gn'];
 
@@ -134,17 +182,42 @@ const appState = {
   instruction: LEVEL_INSTRUCTIONS[1],
   subjectTypePrompt: null,
   subjectTypeSelection: null,
-  currentSubjectTypeAnswer: null
+  currentSubjectTypeAnswer: null,
+  subject: SUBJECTS.GRAMMAR,
+  homeView: HOME_VIEWS.MENU,
+  math: {
+    tracks: new Map(),
+    selectedTrack: null,
+    currentTrack: null,
+    currentLevel: null,
+    queue: [],
+    queueIndex: 0,
+    currentQuestion: null,
+    currentQuestionNumber: 0,
+    selectedOptionIndex: null,
+    selectedOptionValue: null,
+    dropZoneElement: null,
+    hasValidated: false,
+    score: { correct: 0, total: 0 },
+    lastTrack: null,
+    lastLevel: null
+  }
 };
 
 const elements = {
   screens: {
     home: document.getElementById('screen-home'),
-    exercise: document.getElementById('screen-exercise')
+    exercise: document.getElementById('screen-exercise'),
+    math: document.getElementById('screen-math')
   },
   levelButtons: Array.from(document.querySelectorAll('.level-btn')),
+  homeScreen: document.getElementById('screen-home'),
+  homeViews: Array.from(document.querySelectorAll('#screen-home .home-view')),
+  subjectChoiceButtons: Array.from(document.querySelectorAll('[data-home-subject]')),
+  homeBackButtons: Array.from(document.querySelectorAll('[data-home-menu]')),
   resumePanel: document.getElementById('resume-panel'),
   backHome: document.getElementById('back-home'),
+  backHomeMath: document.getElementById('back-home-math'),
   homeScore: document.getElementById('home-score'),
   homeBest: document.getElementById('home-best'),
   homeStreak: document.getElementById('home-streak'),
@@ -163,7 +236,24 @@ const elements = {
   validateBtn: document.getElementById('validate-btn'),
   nextBtn: document.getElementById('next-btn'),
   helpText: document.getElementById('help-text'),
-  toast: document.getElementById('toast')
+  toast: document.getElementById('toast'),
+  mathTrackButtons: Array.from(document.querySelectorAll('.math-track-btn')),
+  mathLevelsWrapper: document.getElementById('math-levels-wrapper'),
+  mathLevels: document.getElementById('math-levels'),
+  mathLevelHeading: document.getElementById('math-level-heading'),
+  mathTrackHelp: document.getElementById('math-track-help'),
+  mathResume: document.getElementById('math-resume'),
+  mathScore: document.getElementById('math-score'),
+  mathLevelTitle: document.getElementById('math-level-title'),
+  mathQuestion: document.getElementById('math-question'),
+  mathSequence: document.getElementById('math-sequence'),
+  mathOptions: document.getElementById('math-options'),
+  mathFeedback: document.getElementById('math-feedback'),
+  mathValidate: document.getElementById('math-validate'),
+  mathNext: document.getElementById('math-next'),
+  mathHint: document.getElementById('math-hint'),
+  mathProgress: document.getElementById('math-progress'),
+  tagline: document.querySelector('.tagline')
 };
 let dragState = null;
 
@@ -185,17 +275,64 @@ async function init() {
   bindEvents();
   renderResume();
   updateScoreboard();
+  updateMathScoreboard();
+  updateMathResume();
+  showHomeView(HOME_VIEWS.MENU);
   registerServiceWorker();
 }
 
 async function loadData() {
   try {
     const response = await fetch('data/phrases.json');
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
     const data = await response.json();
     appState.phrases = data;
   } catch (error) {
     console.error('Impossible de charger les phrases', error);
     elements.resumePanel.textContent = 'Erreur de chargement des données. Réessaie plus tard.';
+  }
+  try {
+    const mathResponse = await fetch('data/maths.json');
+    if (!mathResponse.ok) {
+      return;
+    }
+    const mathData = await mathResponse.json();
+    loadMathData(mathData);
+  } catch (error) {
+    console.warn('Impossible de charger les exercices de mathématiques', error);
+  }
+}
+
+function loadMathData(data) {
+  if (!data || typeof data !== 'object') return;
+  const { math } = appState;
+  const tracks = new Map();
+  MATH_TRACK_DEFINITIONS.forEach((definition) => {
+    const trackData = data && data[definition.key] ? data[definition.key] : {};
+    const levels = new Map();
+    Object.keys(definition.levelLabels).forEach((levelKey) => {
+      const jsonKey = `level${levelKey}`;
+      const levelItems = trackData && Array.isArray(trackData[jsonKey]) ? trackData[jsonKey] : [];
+      levels.set(levelKey, levelItems);
+    });
+    tracks.set(definition.id, {
+      ...definition,
+      levels
+    });
+  });
+  math.tracks = tracks;
+  if (math.selectedTrack && !math.tracks.has(math.selectedTrack)) {
+    math.selectedTrack = null;
+  }
+  if (math.currentTrack && !math.tracks.has(math.currentTrack)) {
+    math.currentTrack = null;
+    math.currentLevel = null;
+  }
+  if (math.lastTrack && !math.tracks.has(math.lastTrack)) {
+    math.lastTrack = null;
+    math.lastLevel = null;
   }
 }
 
@@ -206,10 +343,50 @@ function bindEvents() {
     });
   });
 
+  elements.subjectChoiceButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      openHomeForSubject(button.dataset.homeSubject);
+    });
+  });
+
+  elements.homeBackButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      showHomeView(HOME_VIEWS.MENU);
+    });
+  });
+
+  if (elements.mathTrackButtons.length) {
+    elements.mathTrackButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        selectMathTrack(button.dataset.mathTrack);
+      });
+    });
+  }
+
+  if (elements.mathLevels) {
+    elements.mathLevels.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-math-level]');
+      if (!button) return;
+      const trackId = button.dataset.mathTrack || appState.math.selectedTrack;
+      const level = button.dataset.mathLevel;
+      startMathSession(trackId, level);
+    });
+  }
+
   elements.backHome.addEventListener('click', () => {
     swapScreen('home');
+    showHomeView(HOME_VIEWS.GRAMMAR);
     renderResume();
   });
+
+  if (elements.backHomeMath) {
+    elements.backHomeMath.addEventListener('click', () => {
+      swapScreen('home');
+      showHomeView(HOME_VIEWS.MATH);
+      updateMathResume();
+      updateMathScoreboard();
+    });
+  }
 
   elements.resetBtn.addEventListener('click', onResetScores);
   elements.helpBtn.addEventListener('click', revealHint);
@@ -217,6 +394,18 @@ function bindEvents() {
   elements.nextBtn.addEventListener('click', () => {
     loadNextPhrase();
   });
+
+  if (elements.mathValidate) {
+    elements.mathValidate.addEventListener('click', onMathValidate);
+  }
+  if (elements.mathNext) {
+    elements.mathNext.addEventListener('click', () => {
+      loadNextMathQuestion();
+    });
+  }
+  if (elements.mathHint) {
+    elements.mathHint.addEventListener('click', showMathHint);
+  }
 
   elements.subjectPromptOptions.forEach((button) => {
     button.addEventListener('click', () => {
@@ -227,7 +416,562 @@ function bindEvents() {
   updateSubjectTypeButtons(null);
 }
 
+function setSubject(subject) {
+  const normalized = subject === SUBJECTS.MATH ? SUBJECTS.MATH : SUBJECTS.GRAMMAR;
+  appState.subject = normalized;
+  document.body.classList.toggle('subject-grammar', normalized === SUBJECTS.GRAMMAR);
+  document.body.classList.toggle('subject-math', normalized === SUBJECTS.MATH);
+  const taglineText = SUBJECT_TAGLINES[normalized];
+  if (elements.tagline && taglineText) {
+    elements.tagline.textContent = taglineText;
+  }
+}
+
+function showHomeView(view) {
+  const allowedViews = Object.values(HOME_VIEWS);
+  const normalized = allowedViews.includes(view) ? view : HOME_VIEWS.MENU;
+  appState.homeView = normalized;
+
+  if (elements.homeViews && elements.homeViews.length) {
+    elements.homeViews.forEach((panel) => {
+      const isActive = panel.dataset.view === normalized;
+      panel.hidden = !isActive;
+      panel.setAttribute('aria-hidden', String(!isActive));
+      panel.classList.toggle('active', isActive);
+    });
+  }
+
+  if (elements.homeScreen) {
+    elements.homeScreen.setAttribute('data-view', normalized);
+  }
+
+  if (normalized === HOME_VIEWS.GRAMMAR) {
+    setSubject(SUBJECTS.GRAMMAR);
+  } else if (normalized === HOME_VIEWS.MATH) {
+    setSubject(SUBJECTS.MATH);
+    renderMathHomeState();
+  } else {
+    document.body.classList.remove('subject-grammar', 'subject-math');
+    if (elements.tagline) {
+      elements.tagline.textContent = HOME_MENU_TAGLINE;
+    }
+  }
+}
+
+function openHomeForSubject(subject) {
+  if (subject === SUBJECTS.MATH) {
+    showHomeView(HOME_VIEWS.MATH);
+    if (!appState.math.selectedTrack && appState.math.lastTrack) {
+      appState.math.selectedTrack = appState.math.lastTrack;
+    }
+    updateMathResume();
+    updateMathScoreboard();
+    renderMathHomeState();
+  } else {
+    showHomeView(HOME_VIEWS.GRAMMAR);
+    renderResume();
+    updateScoreboard();
+  }
+}
+
+function updateMathScoreboard() {
+  if (!elements.mathScore) return;
+  const {
+    math: {
+      score: { correct, total }
+    }
+  } = appState;
+  const successLabel = correct > 1 ? 'réussites' : 'réussite';
+  const totalLabel = total > 1 ? 'exercices' : 'exercice';
+  const text = total
+    ? `${correct} ${successLabel} sur ${total} ${totalLabel}.`
+    : '0 réussite sur 0 exercice.';
+  elements.mathScore.textContent = text;
+}
+
+function getMathTrack(trackId) {
+  if (!trackId) return null;
+  return appState.math.tracks.get(trackId) || null;
+}
+
+function getMathLevelLabel(trackId, level) {
+  if (!trackId || level === undefined || level === null) {
+    return `Niveau ${level}`;
+  }
+  const normalizedLevel = level && level.toString ? level.toString() : String(level);
+  const track = getMathTrack(trackId) || MATH_TRACKS_BY_ID.get(trackId);
+  if (track && track.levelLabels) {
+    return (
+      track.levelLabels[normalizedLevel] ||
+      track.levelLabels[Number(normalizedLevel)] ||
+      `Niveau ${normalizedLevel}`
+    );
+  }
+  return `Niveau ${normalizedLevel}`;
+}
+
+function updateMathResume() {
+  if (!elements.mathResume) return;
+  const { lastLevel, lastTrack } = appState.math;
+  if (!lastLevel || !lastTrack) {
+    elements.mathResume.textContent = 'Prêt à résoudre quelques énigmes ?';
+    return;
+  }
+  const label = getMathLevelLabel(lastTrack, lastLevel);
+  elements.mathResume.textContent = `Dernier niveau ouvert : ${label}.`;
+}
+
+function renderMathHomeState() {
+  const { math } = appState;
+  if (elements.mathTrackButtons.length) {
+    elements.mathTrackButtons.forEach((button) => {
+      const isSelected = button.dataset.mathTrack === math.selectedTrack;
+      button.classList.toggle('selected', isSelected);
+      button.setAttribute('aria-pressed', String(isSelected));
+    });
+  }
+
+  const selectedTrack = getMathTrack(math.selectedTrack);
+  if (!selectedTrack) {
+    if (elements.mathLevelsWrapper) {
+      elements.mathLevelsWrapper.hidden = true;
+      elements.mathLevelsWrapper.setAttribute('aria-hidden', 'true');
+    }
+    if (elements.mathLevels) {
+      elements.mathLevels.innerHTML = '';
+    }
+    if (elements.mathTrackHelp) {
+      elements.mathTrackHelp.textContent =
+        "Choisis un type d'énigmes pour voir les niveaux disponibles.";
+    }
+    if (elements.mathLevelHeading) {
+      elements.mathLevelHeading.textContent = 'Choisis ton niveau';
+    }
+    return;
+  }
+
+  if (elements.mathTrackHelp) {
+    elements.mathTrackHelp.textContent = selectedTrack.description || '';
+  }
+  if (elements.mathLevelsWrapper) {
+    elements.mathLevelsWrapper.hidden = false;
+    elements.mathLevelsWrapper.setAttribute('aria-hidden', 'false');
+  }
+  if (elements.mathLevelHeading) {
+    elements.mathLevelHeading.textContent = `Choisis ton niveau · ${selectedTrack.label}`;
+  }
+  renderMathLevelButtons(selectedTrack);
+}
+
+function renderMathLevelButtons(track) {
+  if (!track || !elements.mathLevels) return;
+  elements.mathLevels.innerHTML = '';
+  const levels = Array.from(track.levels.entries()).sort(
+    (a, b) => Number(a[0]) - Number(b[0])
+  );
+  levels.forEach(([levelKey, questions]) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'math-level-btn';
+    button.dataset.mathLevel = levelKey;
+    button.dataset.mathTrack = track.id;
+    button.textContent = `Niveau ${levelKey}`;
+    const questionCount = Array.isArray(questions) ? questions.length : 0;
+    const exercisesLabel = questionCount > 1 ? 'exercices' : 'exercice';
+    button.setAttribute(
+      'aria-label',
+      `${track.label} · niveau ${levelKey} (${questionCount} ${exercisesLabel})`
+    );
+    if (!questions || !questions.length) {
+      button.disabled = true;
+      button.classList.add('disabled');
+    }
+    elements.mathLevels.append(button);
+  });
+}
+
+function selectMathTrack(trackId) {
+  if (!trackId || !appState.math.tracks.has(trackId)) {
+    showToast("Cette sous-matière n'est pas disponible pour le moment.");
+    return;
+  }
+  appState.math.selectedTrack = trackId;
+  renderMathHomeState();
+}
+
+function startMathSession(trackId, level) {
+  const normalizedTrack = trackId && trackId.toString ? trackId.toString() : trackId;
+  const track = getMathTrack(normalizedTrack);
+  if (!track) {
+    showToast("Impossible d'ouvrir cette sous-matière pour le moment.");
+    return;
+  }
+  const normalizedLevel = level && level.toString ? level.toString() : String(level);
+  const levelData = track.levels.get(normalizedLevel) || [];
+  if (!levelData.length) {
+    showToast('Aucun exercice disponible pour ce niveau.');
+    return;
+  }
+  appState.math.selectedTrack = normalizedTrack;
+  appState.math.currentTrack = normalizedTrack;
+  appState.math.currentLevel = normalizedLevel;
+  appState.math.lastTrack = normalizedTrack;
+  appState.math.lastLevel = normalizedLevel;
+  appState.math.queue = shuffleArray([...levelData]);
+  appState.math.queueIndex = 0;
+  appState.math.currentQuestion = null;
+  appState.math.currentQuestionNumber = 0;
+  appState.math.selectedOptionIndex = null;
+  appState.math.selectedOptionValue = null;
+  appState.math.dropZoneElement = null;
+  appState.math.hasValidated = false;
+  setSubject(SUBJECTS.MATH);
+  swapScreen('math');
+  requestFullscreenIfSupported();
+  loadNextMathQuestion();
+  updateMathResume();
+  renderMathHomeState();
+}
+
+function loadNextMathQuestion() {
+  const { math } = appState;
+  const track = getMathTrack(math.currentTrack);
+  const levelData = track ? track.levels.get(math.currentLevel) || [] : [];
+  if (!levelData.length) {
+    setMathFeedback("Pas d'exercice disponible pour le moment.");
+    return;
+  }
+  if (!math.queue.length) {
+    math.queue = shuffleArray([...levelData]);
+    math.queueIndex = 0;
+  }
+  if (math.queueIndex >= math.queue.length) {
+    math.queue = shuffleArray([...levelData]);
+    math.queueIndex = 0;
+  }
+  const question = math.queue[math.queueIndex];
+  math.queueIndex += 1;
+  math.currentQuestionNumber = math.queueIndex;
+  math.currentQuestion = question;
+  math.selectedOptionIndex = null;
+  math.selectedOptionValue = null;
+  math.dropZoneElement = null;
+  math.hasValidated = false;
+  if (elements.mathValidate) {
+    elements.mathValidate.disabled = true;
+  }
+  if (elements.mathNext) {
+    elements.mathNext.disabled = true;
+  }
+  if (elements.mathHint) {
+    const hint = getMathHint(question);
+    elements.mathHint.disabled = !hint;
+  }
+  setMathFeedback('', null);
+  renderMathQuestion(question);
+  updateMathProgress();
+}
+
+function renderMathQuestion(question) {
+  if (!question) return;
+  const { currentTrack, currentLevel } = appState.math;
+  if (elements.mathLevelTitle) {
+    elements.mathLevelTitle.textContent =
+      getMathLevelLabel(currentTrack, currentLevel) || 'Exercices de mathématiques';
+  }
+  const type = question.type || (question.sequence ? 'sequence' : 'mcq');
+  if (type === 'sequence') {
+    renderMathSequence(question);
+  } else {
+    renderMathMultipleChoice(question);
+  }
+}
+
+function renderMathMultipleChoice(question) {
+  if (!elements.mathQuestion || !elements.mathOptions) return;
+  elements.mathQuestion.hidden = false;
+  elements.mathQuestion.textContent = question.question;
+  appState.math.dropZoneElement = null;
+  if (elements.mathSequence) {
+    elements.mathSequence.hidden = true;
+    elements.mathSequence.innerHTML = '';
+  }
+  elements.mathOptions.innerHTML = '';
+  (question.options || []).forEach((option, index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'math-option';
+    button.dataset.index = String(index);
+    button.dataset.value = option;
+    button.textContent = option;
+    button.addEventListener('click', () => {
+      onMathOptionSelect(index);
+    });
+    elements.mathOptions.append(button);
+  });
+  highlightMathOption();
+}
+
+function renderMathSequence(question) {
+  if (!elements.mathQuestion || !elements.mathSequence || !elements.mathOptions) return;
+  elements.mathQuestion.hidden = false;
+  elements.mathQuestion.textContent = question.prompt;
+  elements.mathSequence.hidden = false;
+  elements.mathSequence.innerHTML = '';
+  appState.math.dropZoneElement = null;
+  (question.sequence || []).forEach((value) => {
+    const item = document.createElement('span');
+    item.className = value === null || value === undefined ? 'sequence-item' : 'sequence-item filled';
+    if (value === null || value === undefined) {
+      item.textContent = '?';
+      item.dataset.dropZone = 'true';
+      item.addEventListener('dragover', handleMathDragOver);
+      item.addEventListener('dragleave', handleMathDragLeave);
+      item.addEventListener('drop', handleMathDrop);
+      item.addEventListener('click', clearMathDropZone);
+      appState.math.dropZoneElement = item;
+    } else {
+      item.textContent = value;
+    }
+    elements.mathSequence.append(item);
+  });
+  elements.mathOptions.innerHTML = '';
+  (question.options || []).forEach((option, index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'math-option';
+    button.dataset.index = String(index);
+    button.dataset.value = option;
+    button.textContent = option;
+    button.draggable = true;
+    button.addEventListener('click', () => {
+      placeMathValue(option, index);
+    });
+    button.addEventListener('dragstart', (event) => handleMathDragStart(event, button));
+    button.addEventListener('dragend', handleMathDragEnd);
+    elements.mathOptions.append(button);
+  });
+  highlightMathOption();
+}
+
+function onMathOptionSelect(index) {
+  const question = appState.math.currentQuestion;
+  if (!question) return;
+  appState.math.selectedOptionIndex = index;
+  appState.math.selectedOptionValue = question.options[index];
+  highlightMathOption();
+  if (elements.mathValidate) {
+    elements.mathValidate.disabled = false;
+  }
+  setMathFeedback('', null);
+}
+
+function placeMathValue(value, index) {
+  if (!appState.math.dropZoneElement) return;
+  const question = appState.math.currentQuestion;
+  if (!question) return;
+  let resolvedIndex = index;
+  if (resolvedIndex === undefined || resolvedIndex === null) {
+    resolvedIndex = (question.options || []).findIndex((option) => option === value);
+  }
+  if (resolvedIndex === -1) {
+    resolvedIndex = null;
+  }
+  appState.math.selectedOptionIndex = resolvedIndex;
+  appState.math.selectedOptionValue = value;
+  appState.math.dropZoneElement.textContent = value;
+  appState.math.dropZoneElement.classList.add('filled');
+  highlightMathOption();
+  if (elements.mathValidate) {
+    elements.mathValidate.disabled = false;
+  }
+  setMathFeedback('', null);
+}
+
+function highlightMathOption() {
+  if (!elements.mathOptions) return;
+  const options = Array.from(elements.mathOptions.querySelectorAll('.math-option'));
+  const selectedIndex =
+    appState.math.selectedOptionIndex !== null ? Number(appState.math.selectedOptionIndex) : null;
+  const selectedValue =
+    appState.math.selectedOptionValue !== null && appState.math.selectedOptionValue !== undefined
+      ? String(appState.math.selectedOptionValue)
+      : null;
+  options.forEach((option) => {
+    const optionIndex = Number(option.dataset.index);
+    const optionValue = option.dataset.value;
+    const matchesIndex = selectedIndex !== null && optionIndex === selectedIndex;
+    const matchesValue = selectedValue !== null && optionValue === selectedValue;
+    option.classList.toggle('selected', matchesIndex || matchesValue);
+  });
+}
+
+function onMathValidate() {
+  const { math } = appState;
+  const question = math.currentQuestion;
+  if (!question || math.hasValidated) return;
+  const type = question.type || (question.sequence ? 'sequence' : 'mcq');
+  if (type === 'mcq') {
+    const selectedIndex = math.selectedOptionIndex;
+    if (selectedIndex === null || selectedIndex === undefined) {
+      return;
+    }
+    const isCorrect = Number(selectedIndex) === Number(question.answerIndex);
+    if (!isCorrect) {
+      setMathFeedback('Essaie encore ! Utilise le bon calcul.', 'error');
+      return;
+    }
+    const detail = question.explanation || '';
+    const message = detail ? `Bravo ! ${detail}` : 'Bravo !';
+    finalizeMathSuccess(message.trim());
+    disableMathOptions();
+    return;
+  }
+
+  const value = math.selectedOptionValue;
+  if (!value) return;
+  const isCorrect = value === question.answer;
+  if (!isCorrect) {
+    setMathFeedback('Essaie encore ! Observe le rythme de la suite.', 'error');
+    return;
+  }
+  const detail = question.explanation || question.hint || 'Tu as trouvé la régularité.';
+  const message = detail ? `Bravo ! ${detail}` : 'Bravo !';
+  finalizeMathSuccess(message.trim());
+  disableMathOptions();
+}
+
+function finalizeMathSuccess(message) {
+  const { math } = appState;
+  math.hasValidated = true;
+  math.score.total += 1;
+  math.score.correct += 1;
+  updateMathScoreboard();
+  setMathFeedback(message, 'success');
+  if (elements.mathValidate) {
+    elements.mathValidate.disabled = true;
+  }
+  if (elements.mathNext) {
+    elements.mathNext.disabled = false;
+  }
+  if (elements.mathHint) {
+    elements.mathHint.disabled = true;
+  }
+}
+
+function disableMathOptions() {
+  if (!elements.mathOptions) return;
+  Array.from(elements.mathOptions.querySelectorAll('.math-option')).forEach((option) => {
+    option.disabled = true;
+    option.draggable = false;
+  });
+}
+
+function showMathHint() {
+  const question = appState.math.currentQuestion;
+  if (!question || appState.math.hasValidated) {
+    return;
+  }
+  const hint = getMathHint(question);
+  if (!hint) return;
+  setMathFeedback(hint, null);
+}
+
+function getMathHint(question) {
+  if (!question) return '';
+  return question.hint || '';
+}
+
+function updateMathProgress() {
+  if (!elements.mathProgress) return;
+  const { math } = appState;
+  const track = getMathTrack(math.currentTrack);
+  const levelQuestions = track ? track.levels.get(math.currentLevel) || [] : [];
+  const total = math.queue.length || levelQuestions.length;
+  if (!total || !math.currentQuestionNumber) {
+    elements.mathProgress.textContent = '0 / 0';
+    return;
+  }
+  elements.mathProgress.textContent = `Question ${math.currentQuestionNumber} / ${total}`;
+}
+
+function setMathFeedback(message, status) {
+  if (!elements.mathFeedback) return;
+  elements.mathFeedback.textContent = message || '';
+  elements.mathFeedback.classList.remove('success', 'error');
+  if (status === 'success') {
+    elements.mathFeedback.classList.add('success');
+  }
+  if (status === 'error') {
+    elements.mathFeedback.classList.add('error');
+  }
+}
+
+function handleMathDragStart(event, button) {
+  if (!event.dataTransfer) return;
+  const payload = {
+    value: button.dataset.value,
+    index: button.dataset.index
+  };
+  event.dataTransfer.effectAllowed = 'move';
+  event.dataTransfer.setData('text/plain', JSON.stringify(payload));
+  button.classList.add('dragging');
+}
+
+function handleMathDragEnd(event) {
+  const target = event.target;
+  if (target && target.classList) {
+    target.classList.remove('dragging');
+  }
+}
+
+function handleMathDragOver(event) {
+  event.preventDefault();
+  const target = event.currentTarget;
+  if (target && target.classList) {
+    target.classList.add('drag-over');
+  }
+}
+
+function handleMathDragLeave(event) {
+  const target = event.currentTarget;
+  if (target && target.classList) {
+    target.classList.remove('drag-over');
+  }
+}
+
+function handleMathDrop(event) {
+  event.preventDefault();
+  const target = event.currentTarget;
+  if (target && target.classList) {
+    target.classList.remove('drag-over');
+  }
+  let payload;
+  try {
+    payload = JSON.parse(event.dataTransfer.getData('text/plain'));
+  } catch (error) {
+    payload = { value: event.dataTransfer.getData('text/plain') };
+  }
+  if (!payload || !payload.value) return;
+  placeMathValue(payload.value, payload.index !== undefined ? Number(payload.index) : null);
+}
+
+function clearMathDropZone() {
+  if (!appState.math.dropZoneElement) return;
+  if (!appState.math.selectedOptionValue) return;
+  appState.math.dropZoneElement.textContent = '?';
+  appState.math.dropZoneElement.classList.remove('filled');
+  appState.math.selectedOptionIndex = null;
+  appState.math.selectedOptionValue = null;
+  highlightMathOption();
+  if (elements.mathValidate) {
+    elements.mathValidate.disabled = true;
+  }
+  setMathFeedback('', null);
+}
+
 function startSession(level) {
+  setSubject(SUBJECTS.GRAMMAR);
   const levelKey = LEVEL_CONFIG[level] ? level : 'all';
   appState.activeLevel = level;
   appState.requirements = LEVEL_CONFIG[levelKey];
@@ -256,7 +1000,7 @@ function swapScreen(target) {
   Object.entries(elements.screens).forEach(([key, section]) => {
     section.classList.toggle('active', key === target);
   });
-  document.body.classList.toggle('exercise-active', target === 'exercise');
+  document.body.classList.toggle('exercise-active', target === 'exercise' || target === 'math');
 }
 
 function renderResume() {
