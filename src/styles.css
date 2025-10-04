@@ -136,6 +136,155 @@ body.exercise-active .app {
   gap: 0.75rem;
 }
 
+.subject-menu {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.subject-btn {
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid transparent;
+  color: var(--primary-dark);
+  font-weight: 700;
+  box-shadow: 0 10px 22px rgba(35, 110, 190, 0.12);
+}
+
+.subject-btn.active {
+  background: linear-gradient(135deg, rgba(45, 155, 240, 0.9), rgba(76, 195, 138, 0.9));
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.subject-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.math-level-btn {
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.9), rgba(45, 155, 240, 0.9));
+  color: #fff;
+  font-weight: 700;
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 12px 26px rgba(64, 90, 255, 0.22);
+}
+
+.math-level-btn:hover,
+.math-level-btn:focus-visible {
+  background: linear-gradient(135deg, rgba(79, 70, 228, 1), rgba(31, 124, 216, 1));
+  transform: translateY(-3px) scale(1.01);
+}
+
+.math-resume {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.math-info-card ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.math-score {
+  font-weight: 600;
+}
+
+.math-card {
+  gap: 1rem;
+}
+
+.math-question {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.math-sequence {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  font-size: 1.4rem;
+  justify-content: center;
+}
+
+.math-sequence .sequence-item {
+  min-width: 3rem;
+  min-height: 3rem;
+  border-radius: var(--radius);
+  border: 2px dashed rgba(45, 155, 240, 0.4);
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.75rem;
+  font-weight: 700;
+}
+
+.math-sequence .sequence-item.filled {
+  border-style: solid;
+  border-color: rgba(76, 195, 138, 0.7);
+  background: rgba(76, 195, 138, 0.1);
+}
+
+.math-sequence .sequence-item.drag-over {
+  border-color: rgba(45, 155, 240, 0.8);
+  background: rgba(45, 155, 240, 0.12);
+}
+
+.math-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.math-option {
+  background: rgba(45, 155, 240, 0.12);
+  border: 2px solid rgba(45, 155, 240, 0.4);
+  color: var(--primary-dark);
+  font-weight: 700;
+  padding: 0.65rem 1.2rem;
+  border-radius: calc(var(--radius) / 1.4);
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+}
+
+.math-option:hover,
+.math-option:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(45, 155, 240, 0.2);
+}
+
+.math-option.selected {
+  background: rgba(76, 195, 138, 0.2);
+  border-color: rgba(76, 195, 138, 0.8);
+}
+
+.math-option.dragging {
+  opacity: 0.7;
+  cursor: grabbing;
+}
+
+.math-feedback {
+  min-height: 1.4rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.math-feedback.success {
+  color: var(--accent);
+}
+
+.math-feedback.error {
+  color: var(--error);
+}
+
 button {
   font: inherit;
   border: none;

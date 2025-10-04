@@ -13,66 +13,106 @@
     </header>
     <main id="app" class="app" role="main">
       <section id="screen-home" class="screen active" aria-label="Accueil">
-        <div class="card home-card">
-          <h2>Choisis ton niveau</h2>
-          <div class="level-grid" role="group" aria-label="Niveaux">
-            <button class="level-btn" data-level="1">Niveau 1</button>
-            <button class="level-btn" data-level="2">Niveau 2</button>
-            <button class="level-btn" data-level="3">Niveau 3</button>
-            <button class="level-btn" data-level="4">Niveau 4</button>
-            <button class="level-btn" data-level="5">Niveau 5</button>
-            <button class="level-btn" data-level="all">Révision libre</button>
-          </div>
-          <div class="resume" id="resume-panel" aria-live="polite"></div>
+        <div class="subject-menu" role="tablist" aria-label="Choix de matière">
+          <button
+            class="subject-btn active"
+            data-subject="grammar"
+            role="tab"
+            aria-selected="true"
+          >
+            Grammaire
+          </button>
+          <button class="subject-btn" data-subject="math" role="tab" aria-selected="false">
+            Mathématiques
+          </button>
         </div>
-        <div class="home-grid">
-          <div class="card scoreboard-card">
-            <h2>Mes scores</h2>
-            <div class="scoreboard" id="scoreboard-home" aria-live="polite">
-              <span class="score-pill" id="home-score">Score total : 0</span>
-              <span class="score-pill" id="home-best">Meilleur score : 0</span>
-              <span class="score-pill" id="home-streak">Série en cours : 0</span>
+        <div id="grammar-panel" class="subject-panel">
+          <div class="card home-card">
+            <h2>Choisis ton niveau</h2>
+            <div class="level-grid" role="group" aria-label="Niveaux">
+              <button class="level-btn" data-level="1">Niveau 1</button>
+              <button class="level-btn" data-level="2">Niveau 2</button>
+              <button class="level-btn" data-level="3">Niveau 3</button>
+              <button class="level-btn" data-level="4">Niveau 4</button>
+              <button class="level-btn" data-level="5">Niveau 5</button>
+              <button class="level-btn" data-level="all">Révision libre</button>
             </div>
-            <div class="badge-section">
-              <h3 class="badge-heading">Badges de séries parfaites</h3>
-              <p class="badge-help" id="badge-help">
-                Joue les niveaux 3, 4 et 5 et réussis plusieurs phrases d’affilée pour débloquer les badges.
-              </p>
-              <div class="badge-grid" id="badge-grid" role="list" aria-live="polite"></div>
-            </div>
-            <button id="reset-progress" class="ghost small" type="button">
-              Remettre les scores à zéro
-            </button>
+            <div class="resume" id="resume-panel" aria-live="polite"></div>
           </div>
-          <div class="card legend-card">
-            <h2>Les repères</h2>
-            <div class="icon-legend" role="list">
-              <div role="listitem" class="legend-item" data-role="SUBJECT">
-                <img src="public/pictos/subject.svg" alt="Groupe sujet" />
-                <div class="legend-text">
-                  <span class="legend-title">Groupe sujet</span>
-                  <span class="legend-caption">Qui fait l'action</span>
-                </div>
+          <div class="home-grid">
+            <div class="card scoreboard-card">
+              <h2>Mes scores</h2>
+              <div class="scoreboard" id="scoreboard-home" aria-live="polite">
+                <span class="score-pill" id="home-score">Score total : 0</span>
+                <span class="score-pill" id="home-best">Meilleur score : 0</span>
+                <span class="score-pill" id="home-streak">Série en cours : 0</span>
               </div>
-              <div role="listitem" class="legend-item" data-role="VERB">
-                <img src="public/pictos/verb.svg" alt="Verbe" />
-                <div class="legend-text">
-                  <span class="legend-title">Verbe</span>
-                  <span class="legend-caption">Ce qui se conjugue</span>
-                </div>
+              <div class="badge-section">
+                <h3 class="badge-heading">Badges de séries parfaites</h3>
+                <p class="badge-help" id="badge-help">
+                  Joue les niveaux 3, 4 et 5 et réussis plusieurs phrases d’affilée pour débloquer les badges.
+                </p>
+                <div class="badge-grid" id="badge-grid" role="list" aria-live="polite"></div>
               </div>
-              <div role="listitem" class="legend-item" data-role="COMPLEMENT">
-                <img src="public/pictos/group.svg" alt="Complément" />
-                <div class="legend-text">
-                  <span class="legend-title">Complément</span>
-                  <span class="legend-caption">Lieu ou temps</span>
-                </div>
-              </div>
+              <button id="reset-progress" class="ghost small" type="button">
+                Remettre les scores à zéro
+              </button>
             </div>
-            <p class="legend-note">
-              Dès le niveau 3, précise si le sujet est un <strong>pronom</strong> ou un
-              <strong>groupe nominal</strong>.
+            <div class="card legend-card">
+              <h2>Les repères</h2>
+              <div class="icon-legend" role="list">
+                <div role="listitem" class="legend-item" data-role="SUBJECT">
+                  <img src="public/pictos/subject.svg" alt="Groupe sujet" />
+                  <div class="legend-text">
+                    <span class="legend-title">Groupe sujet</span>
+                    <span class="legend-caption">Qui fait l'action</span>
+                  </div>
+                </div>
+                <div role="listitem" class="legend-item" data-role="VERB">
+                  <img src="public/pictos/verb.svg" alt="Verbe" />
+                  <div class="legend-text">
+                    <span class="legend-title">Verbe</span>
+                    <span class="legend-caption">Ce qui se conjugue</span>
+                  </div>
+                </div>
+                <div role="listitem" class="legend-item" data-role="COMPLEMENT">
+                  <img src="public/pictos/group.svg" alt="Complément" />
+                  <div class="legend-text">
+                    <span class="legend-title">Complément</span>
+                    <span class="legend-caption">Lieu ou temps</span>
+                  </div>
+                </div>
+              </div>
+              <p class="legend-note">
+                Dès le niveau 3, précise si le sujet est un <strong>pronom</strong> ou un
+                <strong>groupe nominal</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div id="math-panel" class="subject-panel" hidden>
+          <div class="card home-card">
+            <h2>Choisis ton défi</h2>
+            <div class="level-grid" role="group" aria-label="Niveaux de mathématiques">
+              <button class="math-level-btn" data-math-level="1">Niveau 1 · Logique rapide</button>
+              <button class="math-level-btn" data-math-level="2">Niveau 2 · Suites logiques</button>
+            </div>
+            <p class="math-resume" id="math-resume" aria-live="polite">
+              Prêt à résoudre quelques énigmes ?
             </p>
+          </div>
+          <div class="home-grid">
+            <div class="card math-info-card">
+              <h2>Ce qui t'attend</h2>
+              <ul class="math-level-list">
+                <li><strong>Niveau 1</strong> : petits problèmes à résoudre dans ta tête avec 3 choix possibles.</li>
+                <li><strong>Niveau 2</strong> : complète la suite en glissant la bonne réponse dans la zone vide.</li>
+              </ul>
+            </div>
+            <div class="card math-score-card">
+              <h2>Mes résultats</h2>
+              <p id="math-score" class="math-score" aria-live="polite">0 réussite sur 0 exercice.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -106,6 +146,27 @@
             <button id="help-btn" class="ghost">Indice</button>
             <button id="validate-btn" class="primary">Valider</button>
             <button id="next-btn" class="secondary" disabled>Suivant</button>
+          </div>
+        </div>
+      </section>
+      <section id="screen-math" class="screen" aria-label="Exercices de mathématiques">
+        <div class="top-bar">
+          <div class="top-bar-left">
+            <button id="back-home-math" class="ghost back-home">← Accueil</button>
+            <span class="app-version" aria-label="Version de l'application">v0.02</span>
+          </div>
+          <span class="streak-chip" id="math-progress">0 / 0</span>
+        </div>
+        <div class="card math-card">
+          <h2 id="math-level-title">Mathématiques</h2>
+          <p id="math-question" class="math-question" aria-live="polite"></p>
+          <div id="math-sequence" class="math-sequence" aria-live="polite"></div>
+          <div id="math-options" class="math-options" role="list"></div>
+          <div id="math-feedback" class="math-feedback" aria-live="assertive"></div>
+          <div class="controls">
+            <button id="math-hint" class="ghost">Indice</button>
+            <button id="math-validate" class="primary" disabled>Valider</button>
+            <button id="math-next" class="secondary" disabled>Suivant</button>
           </div>
         </div>
       </section>

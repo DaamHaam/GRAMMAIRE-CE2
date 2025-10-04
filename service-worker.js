@@ -6,6 +6,7 @@ const OFFLINE_URLS = [
   'src/main.js',
   'src/storage.js',
   'data/phrases.json',
+  'data/maths.json',
   'public/pictos/subject.svg',
   'public/pictos/verb.svg',
   'public/pictos/group.svg'

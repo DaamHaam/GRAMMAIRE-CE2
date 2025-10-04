@@ -1,0 +1,54 @@
+{
+  "level1": [
+    {
+      "id": "l1-1",
+      "question": "Tom a 28 billes. Il en gagne 15 pendant la récréation. Combien a-t-il maintenant ?",
+      "options": ["33", "43", "45"],
+      "answerIndex": 1,
+      "hint": "Additionne mentalement 28 et 15.",
+      "explanation": "28 + 15 = 43."
+    },
+    {
+      "id": "l1-2",
+      "question": "Une classe de 64 élèves part en sortie. 19 montent dans le premier bus. Combien d'élèves restent à faire monter ?",
+      "options": ["35", "45", "55"],
+      "answerIndex": 1,
+      "hint": "Soustrais 19 du nombre d'élèves de la classe.",
+      "explanation": "64 - 19 = 45, il en reste donc 45 élèves à monter."
+    },
+    {
+      "id": "l1-3",
+      "question": "Emma a 48 cartes. Elle veut les partager équitablement entre 6 amis. Combien chaque ami reçoit-il de cartes ?",
+      "options": ["6", "8", "9"],
+      "answerIndex": 1,
+      "hint": "Divise 48 en 6 parts identiques.",
+      "explanation": "48 ÷ 6 = 8."
+    }
+  ],
+  "level2": [
+    {
+      "id": "l2-1",
+      "prompt": "Complète la suite : 2, 4, 6, …",
+      "sequence": ["2", "4", "6", null],
+      "options": ["7", "8", "9"],
+      "answer": "8",
+      "hint": "On ajoute toujours 2."
+    },
+    {
+      "id": "l2-2",
+      "prompt": "Complète la suite : 5, 8, 11, …",
+      "sequence": ["5", "8", "11", null],
+      "options": ["12", "13", "14"],
+      "answer": "14",
+      "hint": "On ajoute 3 à chaque étape."
+    },
+    {
+      "id": "l2-3",
+      "prompt": "Complète la suite de formes : 🔵, 🔺, 🔵, 🔺, …",
+      "sequence": ["🔵", "🔺", "🔵", "🔺", null],
+      "options": ["🔵", "⚪", "⬛"],
+      "answer": "🔵",
+      "hint": "Les formes alternent entre le cercle bleu et le triangle rouge."
+    }
+  ]
+}
