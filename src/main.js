@@ -89,6 +89,14 @@ const SUBJECT_TAGLINES = {
     'Résous des énigmes de logique et complète des suites mathématiques !'
 };
 
+const HOME_VIEWS = {
+  MENU: 'menu',
+  GRAMMAR: 'grammar',
+  MATH: 'math'
+};
+
+const HOME_MENU_TAGLINE = 'Choisis ta matière pour commencer !';
+
 const MATH_LEVEL_LABELS = {
   1: 'Niveau 1 – Logique rapide',
   2: 'Niveau 2 – Suites logiques'
@@ -153,6 +161,7 @@ const appState = {
   subjectTypeSelection: null,
   currentSubjectTypeAnswer: null,
   subject: SUBJECTS.GRAMMAR,
+  homeView: HOME_VIEWS.MENU,
   math: {
     levels: new Map(),
     currentLevel: null,
@@ -176,9 +185,10 @@ const elements = {
     math: document.getElementById('screen-math')
   },
   levelButtons: Array.from(document.querySelectorAll('.level-btn')),
-  subjectButtons: Array.from(document.querySelectorAll('.subject-btn')),
-  grammarPanel: document.getElementById('grammar-panel'),
-  mathPanel: document.getElementById('math-panel'),
+  homeScreen: document.getElementById('screen-home'),
+  homeViews: Array.from(document.querySelectorAll('#screen-home .home-view')),
+  subjectChoiceButtons: Array.from(document.querySelectorAll('[data-home-subject]')),
+  homeBackButtons: Array.from(document.querySelectorAll('[data-home-menu]')),
   resumePanel: document.getElementById('resume-panel'),
   backHome: document.getElementById('back-home'),
   backHomeMath: document.getElementById('back-home-math'),
@@ -233,11 +243,11 @@ function requestFullscreenIfSupported() {
 async function init() {
   await loadData();
   bindEvents();
-  setSubject(appState.subject);
   renderResume();
   updateScoreboard();
   updateMathScoreboard();
   updateMathResume();
+  showHomeView(HOME_VIEWS.MENU);
   registerServiceWorker();
 }
 
@@ -281,9 +291,15 @@ function bindEvents() {
     });
   });
 
-  elements.subjectButtons.forEach((button) => {
+  elements.subjectChoiceButtons.forEach((button) => {
     button.addEventListener('click', () => {
-      setSubject(button.dataset.subject);
+      openHomeForSubject(button.dataset.homeSubject);
+    });
+  });
+
+  elements.homeBackButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      showHomeView(HOME_VIEWS.MENU);
     });
   });
 
@@ -295,14 +311,16 @@ function bindEvents() {
 
   elements.backHome.addEventListener('click', () => {
     swapScreen('home');
+    showHomeView(HOME_VIEWS.GRAMMAR);
     renderResume();
   });
 
   if (elements.backHomeMath) {
     elements.backHomeMath.addEventListener('click', () => {
-      setSubject(SUBJECTS.MATH);
       swapScreen('home');
+      showHomeView(HOME_VIEWS.MATH);
       updateMathResume();
+      updateMathScoreboard();
     });
   }
 
@@ -337,17 +355,6 @@ function bindEvents() {
 function setSubject(subject) {
   const normalized = subject === SUBJECTS.MATH ? SUBJECTS.MATH : SUBJECTS.GRAMMAR;
   appState.subject = normalized;
-  elements.subjectButtons.forEach((button) => {
-    const isActive = button.dataset.subject === normalized;
-    button.classList.toggle('active', isActive);
-    button.setAttribute('aria-selected', String(isActive));
-  });
-  togglePanelVisibility(elements.grammarPanel, normalized === SUBJECTS.GRAMMAR);
-  togglePanelVisibility(elements.mathPanel, normalized === SUBJECTS.MATH);
-  const homeScreen = elements.screens?.home;
-  if (homeScreen) {
-    homeScreen.setAttribute('data-subject', normalized);
-  }
   document.body.classList.toggle('subject-grammar', normalized === SUBJECTS.GRAMMAR);
   document.body.classList.toggle('subject-math', normalized === SUBJECTS.MATH);
   const taglineText = SUBJECT_TAGLINES[normalized];
@@ -356,10 +363,46 @@ function setSubject(subject) {
   }
 }
 
-function togglePanelVisibility(panel, shouldShow) {
-  if (!panel) return;
-  panel.hidden = !shouldShow;
-  panel.setAttribute('aria-hidden', String(!shouldShow));
+function showHomeView(view) {
+  const allowedViews = Object.values(HOME_VIEWS);
+  const normalized = allowedViews.includes(view) ? view : HOME_VIEWS.MENU;
+  appState.homeView = normalized;
+
+  if (elements.homeViews && elements.homeViews.length) {
+    elements.homeViews.forEach((panel) => {
+      const isActive = panel.dataset.view === normalized;
+      panel.hidden = !isActive;
+      panel.setAttribute('aria-hidden', String(!isActive));
+      panel.classList.toggle('active', isActive);
+    });
+  }
+
+  if (elements.homeScreen) {
+    elements.homeScreen.setAttribute('data-view', normalized);
+  }
+
+  if (normalized === HOME_VIEWS.GRAMMAR) {
+    setSubject(SUBJECTS.GRAMMAR);
+  } else if (normalized === HOME_VIEWS.MATH) {
+    setSubject(SUBJECTS.MATH);
+  } else {
+    document.body.classList.remove('subject-grammar', 'subject-math');
+    if (elements.tagline) {
+      elements.tagline.textContent = HOME_MENU_TAGLINE;
+    }
+  }
+}
+
+function openHomeForSubject(subject) {
+  if (subject === SUBJECTS.MATH) {
+    showHomeView(HOME_VIEWS.MATH);
+    updateMathResume();
+    updateMathScoreboard();
+  } else {
+    showHomeView(HOME_VIEWS.GRAMMAR);
+    renderResume();
+    updateScoreboard();
+  }
 }
 
 function updateMathScoreboard() {

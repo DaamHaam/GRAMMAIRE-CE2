@@ -9,24 +9,37 @@
   <body>
     <header class="app-header" role="banner">
       <h1>Détective des groupes</h1>
-      <p class="tagline">Repère pas à pas le groupe sujet, le verbe et les compléments !</p>
+      <p class="tagline">Choisis ta matière pour commencer !</p>
     </header>
     <main id="app" class="app" role="main">
-      <section id="screen-home" class="screen active" aria-label="Accueil">
-        <div class="subject-menu" role="tablist" aria-label="Choix de matière">
-          <button
-            class="subject-btn active"
-            data-subject="grammar"
-            role="tab"
-            aria-selected="true"
-          >
-            Grammaire
-          </button>
-          <button class="subject-btn" data-subject="math" role="tab" aria-selected="false">
-            Mathématiques
-          </button>
+      <section
+        id="screen-home"
+        class="screen active"
+        aria-label="Accueil"
+        data-view="menu"
+      >
+        <div id="home-menu" class="home-view active" data-view="menu">
+          <div class="card home-card intro-card">
+            <h2>Bienvenue !</h2>
+            <p>Sélectionne une matière pour afficher ses exercices et suivre ta progression.</p>
+            <div class="subject-choice-grid" role="group" aria-label="Matières">
+              <button class="subject-choice grammar" type="button" data-home-subject="grammar">
+                <span class="subject-choice-title">Grammaire</span>
+                <span class="subject-choice-caption"
+                  >Repère le groupe sujet, le verbe et les compléments.</span
+                >
+              </button>
+              <button class="subject-choice math" type="button" data-home-subject="math">
+                <span class="subject-choice-title">Mathématiques</span>
+                <span class="subject-choice-caption"
+                  >Résous des QCM logiques et complète des suites.</span
+                >
+              </button>
+            </div>
+          </div>
         </div>
-        <div id="grammar-panel" class="subject-panel">
+        <div id="grammar-panel" class="home-view" data-view="grammar" hidden aria-hidden="true">
+          <button class="back-to-menu" type="button" data-home-menu>← Choisir une matière</button>
           <div class="card home-card">
             <h2>Choisis ton niveau</h2>
             <div class="level-grid" role="group" aria-label="Niveaux">
@@ -90,7 +103,8 @@
             </div>
           </div>
         </div>
-        <div id="math-panel" class="subject-panel" hidden>
+        <div id="math-panel" class="home-view" data-view="math" hidden aria-hidden="true">
+          <button class="back-to-menu" type="button" data-home-menu>← Choisir une matière</button>
           <div class="card home-card">
             <h2>Choisis ton défi</h2>
             <div class="level-grid" role="group" aria-label="Niveaux de mathématiques">
@@ -120,7 +134,7 @@
         <div class="top-bar">
           <div class="top-bar-left">
             <button id="back-home" class="ghost back-home">← Accueil</button>
-            <span class="app-version" aria-label="Version de l'application">v0.03</span>
+            <span class="app-version" aria-label="Version de l'application">v0.04</span>
           </div>
           <span class="streak-chip" id="streak-display">Série en cours : 0</span>
         </div>
@@ -153,7 +167,7 @@
         <div class="top-bar">
           <div class="top-bar-left">
             <button id="back-home-math" class="ghost back-home">← Accueil</button>
-            <span class="app-version" aria-label="Version de l'application">v0.03</span>
+            <span class="app-version" aria-label="Version de l'application">v0.04</span>
           </div>
           <span class="streak-chip" id="math-progress">0 / 0</span>
         </div>

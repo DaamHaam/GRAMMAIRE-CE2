@@ -1,5 +1,9 @@
 # Journal des versions
 
+## v0.04 · 2025-??-??
+- Revoit l'écran d'accueil avec une page de sélection des matières avant d'accéder aux exercices.
+- Assure l'affichage exclusif des contenus Grammaire ou Mathématiques selon le choix de l'élève.
+
 ## v0.03 · 2025-10-04
 - Sépare l'accueil par matière : les onglets Grammaire et Mathématiques affichent chacun leurs contenus dédiés.
 - Met à jour le texte d'accroche en fonction de la matière sélectionnée et force le retour vers la bonne section après un exercice.
