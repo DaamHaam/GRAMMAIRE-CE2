@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grammaire-ce2-cache-v4';
+const CACHE_NAME = 'grammaire-ce2-cache-v5';
 const OFFLINE_URLS = [
   './',
   'index.html',

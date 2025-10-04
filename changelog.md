@@ -1,5 +1,10 @@
 # Journal des versions
 
+## v0.05 · 2025-??-??
+- Ajoute deux sous-matières en mathématiques (Logique rapide et Suites logiques) avec trois niveaux chacune.
+- Crée dix-huit nouvelles questions progressives (trois par niveau) réparties entre QCM et suites à compléter.
+- Refonte l'écran d'accueil mathématique avec sélection de sous-matière, niveaux dynamiques et texte d'aide mis à jour.
+
 ## v0.04 · 2025-??-??
 - Revoit l'écran d'accueil avec une page de sélection des matières avant d'accéder aux exercices.
 - Assure l'affichage exclusif des contenus Grammaire ou Mathématiques selon le choix de l'élève.

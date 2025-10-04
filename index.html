@@ -107,9 +107,45 @@
           <button class="back-to-menu" type="button" data-home-menu>← Choisir une matière</button>
           <div class="card home-card">
             <h2>Choisis ton défi</h2>
-            <div class="level-grid" role="group" aria-label="Niveaux de mathématiques">
-              <button class="math-level-btn" data-math-level="1">Niveau 1 · Logique rapide</button>
-              <button class="math-level-btn" data-math-level="2">Niveau 2 · Suites logiques</button>
+            <div
+              class="math-track-grid"
+              role="group"
+              aria-label="Sous-matières de mathématiques"
+            >
+              <button
+                class="math-track-btn"
+                type="button"
+                data-math-track="logic-rapide"
+                aria-pressed="false"
+              >
+                <span class="math-track-title">Logique rapide</span>
+                <span class="math-track-caption"
+                  >Calculs mentaux express, opérations combinées et problèmes courts.</span
+                >
+              </button>
+              <button
+                class="math-track-btn"
+                type="button"
+                data-math-track="suites-logiques"
+                aria-pressed="false"
+              >
+                <span class="math-track-title">Suites logiques</span>
+                <span class="math-track-caption"
+                  >Complète des suites numériques ou visuelles par glisser-déposer.</span
+                >
+              </button>
+            </div>
+            <p id="math-track-help" class="math-track-help">
+              Choisis un type d'énigmes pour voir les niveaux disponibles.
+            </p>
+            <div id="math-levels-wrapper" class="math-levels-wrapper" hidden aria-hidden="true">
+              <h3 id="math-level-heading">Choisis ton niveau</h3>
+              <div
+                id="math-levels"
+                class="level-grid"
+                role="group"
+                aria-labelledby="math-level-heading"
+              ></div>
             </div>
             <p class="math-resume" id="math-resume" aria-live="polite">
               Prêt à résoudre quelques énigmes ?
@@ -119,8 +155,14 @@
             <div class="card math-info-card">
               <h2>Ce qui t'attend</h2>
               <ul class="math-level-list">
-                <li><strong>Niveau 1</strong> : petits problèmes à résoudre dans ta tête avec 3 choix possibles.</li>
-                <li><strong>Niveau 2</strong> : complète la suite en glissant la bonne réponse dans la zone vide.</li>
+                <li>
+                  <strong>Logique rapide</strong> : trois niveaux de calcul mental avec questions à choix
+                  multiples.
+                </li>
+                <li>
+                  <strong>Suites logiques</strong> : trois niveaux de suites numériques ou visuelles à compléter
+                  en glisser-déposer.
+                </li>
               </ul>
             </div>
             <div class="card math-score-card">
@@ -131,13 +173,13 @@
         </div>
       </section>
       <section id="screen-exercise" class="screen" aria-label="Exercice">
-        <div class="top-bar">
-          <div class="top-bar-left">
-            <button id="back-home" class="ghost back-home">← Accueil</button>
-            <span class="app-version" aria-label="Version de l'application">v0.04</span>
+          <div class="top-bar">
+            <div class="top-bar-left">
+              <button id="back-home" class="ghost back-home">← Accueil</button>
+              <span class="app-version" aria-label="Version de l'application">v0.05</span>
+            </div>
+            <span class="streak-chip" id="streak-display">Série en cours : 0</span>
           </div>
-          <span class="streak-chip" id="streak-display">Série en cours : 0</span>
-        </div>
         <div class="card exercise-card">
           <div class="phrase-zone" aria-live="polite">
             <p id="phrase-text" class="phrase"></p>
@@ -167,7 +209,7 @@
         <div class="top-bar">
           <div class="top-bar-left">
             <button id="back-home-math" class="ghost back-home">← Accueil</button>
-            <span class="app-version" aria-label="Version de l'application">v0.04</span>
+            <span class="app-version" aria-label="Version de l'application">v0.05</span>
           </div>
           <span class="streak-chip" id="math-progress">0 / 0</span>
         </div>

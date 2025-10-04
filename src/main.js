@@ -97,10 +97,33 @@ const HOME_VIEWS = {
 
 const HOME_MENU_TAGLINE = 'Choisis ta matière pour commencer !';
 
-const MATH_LEVEL_LABELS = {
-  1: 'Niveau 1 – Logique rapide',
-  2: 'Niveau 2 – Suites logiques'
-};
+const MATH_TRACK_DEFINITIONS = [
+  {
+    id: 'logic-rapide',
+    key: 'logicRapide',
+    label: 'Logique rapide',
+    description:
+      'Résous des problèmes mentaux de plus en plus longs en choisissant la bonne réponse.',
+    levelLabels: {
+      '1': 'Logique rapide · Niveau 1',
+      '2': 'Logique rapide · Niveau 2',
+      '3': 'Logique rapide · Niveau 3'
+    }
+  },
+  {
+    id: 'suites-logiques',
+    key: 'suitesLogiques',
+    label: 'Suites logiques',
+    description: 'Observe les rythmes de suites numériques ou visuelles et complète-les.',
+    levelLabels: {
+      '1': 'Suites logiques · Niveau 1',
+      '2': 'Suites logiques · Niveau 2',
+      '3': 'Suites logiques · Niveau 3'
+    }
+  }
+];
+
+const MATH_TRACKS_BY_ID = new Map(MATH_TRACK_DEFINITIONS.map((track) => [track.id, track]));
 
 const ROLE_VISUAL_CLASSES = ['role-SUBJECT', 'role-VERB', 'role-COMPLEMENT'];
 const SUBJECT_TYPE_VISUAL_CLASSES = ['subject-pronoun', 'subject-gn'];
@@ -163,7 +186,9 @@ const appState = {
   subject: SUBJECTS.GRAMMAR,
   homeView: HOME_VIEWS.MENU,
   math: {
-    levels: new Map(),
+    tracks: new Map(),
+    selectedTrack: null,
+    currentTrack: null,
     currentLevel: null,
     queue: [],
     queueIndex: 0,
@@ -174,6 +199,7 @@ const appState = {
     dropZoneElement: null,
     hasValidated: false,
     score: { correct: 0, total: 0 },
+    lastTrack: null,
     lastLevel: null
   }
 };
@@ -211,7 +237,11 @@ const elements = {
   nextBtn: document.getElementById('next-btn'),
   helpText: document.getElementById('help-text'),
   toast: document.getElementById('toast'),
-  mathLevelButtons: Array.from(document.querySelectorAll('.math-level-btn')),
+  mathTrackButtons: Array.from(document.querySelectorAll('.math-track-btn')),
+  mathLevelsWrapper: document.getElementById('math-levels-wrapper'),
+  mathLevels: document.getElementById('math-levels'),
+  mathLevelHeading: document.getElementById('math-level-heading'),
+  mathTrackHelp: document.getElementById('math-track-help'),
   mathResume: document.getElementById('math-resume'),
   mathScore: document.getElementById('math-score'),
   mathLevelTitle: document.getElementById('math-level-title'),
@@ -278,10 +308,32 @@ async function loadData() {
 function loadMathData(data) {
   if (!data || typeof data !== 'object') return;
   const { math } = appState;
-  const level1 = Array.isArray(data.level1) ? data.level1 : [];
-  const level2 = Array.isArray(data.level2) ? data.level2 : [];
-  math.levels.set('1', level1);
-  math.levels.set('2', level2);
+  const tracks = new Map();
+  MATH_TRACK_DEFINITIONS.forEach((definition) => {
+    const trackData = data && data[definition.key] ? data[definition.key] : {};
+    const levels = new Map();
+    Object.keys(definition.levelLabels).forEach((levelKey) => {
+      const jsonKey = `level${levelKey}`;
+      const levelItems = trackData && Array.isArray(trackData[jsonKey]) ? trackData[jsonKey] : [];
+      levels.set(levelKey, levelItems);
+    });
+    tracks.set(definition.id, {
+      ...definition,
+      levels
+    });
+  });
+  math.tracks = tracks;
+  if (math.selectedTrack && !math.tracks.has(math.selectedTrack)) {
+    math.selectedTrack = null;
+  }
+  if (math.currentTrack && !math.tracks.has(math.currentTrack)) {
+    math.currentTrack = null;
+    math.currentLevel = null;
+  }
+  if (math.lastTrack && !math.tracks.has(math.lastTrack)) {
+    math.lastTrack = null;
+    math.lastLevel = null;
+  }
 }
 
 function bindEvents() {
@@ -303,11 +355,23 @@ function bindEvents() {
     });
   });
 
-  elements.mathLevelButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      startMathSession(button.dataset.mathLevel);
+  if (elements.mathTrackButtons.length) {
+    elements.mathTrackButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        selectMathTrack(button.dataset.mathTrack);
+      });
     });
-  });
+  }
+
+  if (elements.mathLevels) {
+    elements.mathLevels.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-math-level]');
+      if (!button) return;
+      const trackId = button.dataset.mathTrack || appState.math.selectedTrack;
+      const level = button.dataset.mathLevel;
+      startMathSession(trackId, level);
+    });
+  }
 
   elements.backHome.addEventListener('click', () => {
     swapScreen('home');
@@ -385,6 +449,7 @@ function showHomeView(view) {
     setSubject(SUBJECTS.GRAMMAR);
   } else if (normalized === HOME_VIEWS.MATH) {
     setSubject(SUBJECTS.MATH);
+    renderMathHomeState();
   } else {
     document.body.classList.remove('subject-grammar', 'subject-math');
     if (elements.tagline) {
@@ -396,8 +461,12 @@ function showHomeView(view) {
 function openHomeForSubject(subject) {
   if (subject === SUBJECTS.MATH) {
     showHomeView(HOME_VIEWS.MATH);
+    if (!appState.math.selectedTrack && appState.math.lastTrack) {
+      appState.math.selectedTrack = appState.math.lastTrack;
+    }
     updateMathResume();
     updateMathScoreboard();
+    renderMathHomeState();
   } else {
     showHomeView(HOME_VIEWS.GRAMMAR);
     renderResume();
@@ -420,25 +489,133 @@ function updateMathScoreboard() {
   elements.mathScore.textContent = text;
 }
 
+function getMathTrack(trackId) {
+  if (!trackId) return null;
+  return appState.math.tracks.get(trackId) || null;
+}
+
+function getMathLevelLabel(trackId, level) {
+  if (!trackId || level === undefined || level === null) {
+    return `Niveau ${level}`;
+  }
+  const normalizedLevel = level && level.toString ? level.toString() : String(level);
+  const track = getMathTrack(trackId) || MATH_TRACKS_BY_ID.get(trackId);
+  if (track && track.levelLabels) {
+    return (
+      track.levelLabels[normalizedLevel] ||
+      track.levelLabels[Number(normalizedLevel)] ||
+      `Niveau ${normalizedLevel}`
+    );
+  }
+  return `Niveau ${normalizedLevel}`;
+}
+
 function updateMathResume() {
   if (!elements.mathResume) return;
-  const { lastLevel } = appState.math;
-  if (!lastLevel) {
+  const { lastLevel, lastTrack } = appState.math;
+  if (!lastLevel || !lastTrack) {
     elements.mathResume.textContent = 'Prêt à résoudre quelques énigmes ?';
     return;
   }
-  const label = MATH_LEVEL_LABELS[Number(lastLevel)] || `Niveau ${lastLevel}`;
+  const label = getMathLevelLabel(lastTrack, lastLevel);
   elements.mathResume.textContent = `Dernier niveau ouvert : ${label}.`;
 }
 
-function startMathSession(level) {
+function renderMathHomeState() {
+  const { math } = appState;
+  if (elements.mathTrackButtons.length) {
+    elements.mathTrackButtons.forEach((button) => {
+      const isSelected = button.dataset.mathTrack === math.selectedTrack;
+      button.classList.toggle('selected', isSelected);
+      button.setAttribute('aria-pressed', String(isSelected));
+    });
+  }
+
+  const selectedTrack = getMathTrack(math.selectedTrack);
+  if (!selectedTrack) {
+    if (elements.mathLevelsWrapper) {
+      elements.mathLevelsWrapper.hidden = true;
+      elements.mathLevelsWrapper.setAttribute('aria-hidden', 'true');
+    }
+    if (elements.mathLevels) {
+      elements.mathLevels.innerHTML = '';
+    }
+    if (elements.mathTrackHelp) {
+      elements.mathTrackHelp.textContent =
+        "Choisis un type d'énigmes pour voir les niveaux disponibles.";
+    }
+    if (elements.mathLevelHeading) {
+      elements.mathLevelHeading.textContent = 'Choisis ton niveau';
+    }
+    return;
+  }
+
+  if (elements.mathTrackHelp) {
+    elements.mathTrackHelp.textContent = selectedTrack.description || '';
+  }
+  if (elements.mathLevelsWrapper) {
+    elements.mathLevelsWrapper.hidden = false;
+    elements.mathLevelsWrapper.setAttribute('aria-hidden', 'false');
+  }
+  if (elements.mathLevelHeading) {
+    elements.mathLevelHeading.textContent = `Choisis ton niveau · ${selectedTrack.label}`;
+  }
+  renderMathLevelButtons(selectedTrack);
+}
+
+function renderMathLevelButtons(track) {
+  if (!track || !elements.mathLevels) return;
+  elements.mathLevels.innerHTML = '';
+  const levels = Array.from(track.levels.entries()).sort(
+    (a, b) => Number(a[0]) - Number(b[0])
+  );
+  levels.forEach(([levelKey, questions]) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'math-level-btn';
+    button.dataset.mathLevel = levelKey;
+    button.dataset.mathTrack = track.id;
+    button.textContent = `Niveau ${levelKey}`;
+    const questionCount = Array.isArray(questions) ? questions.length : 0;
+    const exercisesLabel = questionCount > 1 ? 'exercices' : 'exercice';
+    button.setAttribute(
+      'aria-label',
+      `${track.label} · niveau ${levelKey} (${questionCount} ${exercisesLabel})`
+    );
+    if (!questions || !questions.length) {
+      button.disabled = true;
+      button.classList.add('disabled');
+    }
+    elements.mathLevels.append(button);
+  });
+}
+
+function selectMathTrack(trackId) {
+  if (!trackId || !appState.math.tracks.has(trackId)) {
+    showToast("Cette sous-matière n'est pas disponible pour le moment.");
+    return;
+  }
+  appState.math.selectedTrack = trackId;
+  renderMathHomeState();
+}
+
+function startMathSession(trackId, level) {
+  const normalizedTrack = trackId && trackId.toString ? trackId.toString() : trackId;
+  const track = getMathTrack(normalizedTrack);
+  if (!track) {
+    showToast("Impossible d'ouvrir cette sous-matière pour le moment.");
+    return;
+  }
   const normalizedLevel = level && level.toString ? level.toString() : String(level);
-  const levelData = appState.math.levels.get(normalizedLevel) || [];
+  const levelData = track.levels.get(normalizedLevel) || [];
   if (!levelData.length) {
     showToast('Aucun exercice disponible pour ce niveau.');
     return;
   }
+  appState.math.selectedTrack = normalizedTrack;
+  appState.math.currentTrack = normalizedTrack;
   appState.math.currentLevel = normalizedLevel;
+  appState.math.lastTrack = normalizedTrack;
   appState.math.lastLevel = normalizedLevel;
   appState.math.queue = shuffleArray([...levelData]);
   appState.math.queueIndex = 0;
@@ -453,11 +630,13 @@ function startMathSession(level) {
   requestFullscreenIfSupported();
   loadNextMathQuestion();
   updateMathResume();
+  renderMathHomeState();
 }
 
 function loadNextMathQuestion() {
   const { math } = appState;
-  const levelData = math.levels.get(math.currentLevel) || [];
+  const track = getMathTrack(math.currentTrack);
+  const levelData = track ? track.levels.get(math.currentLevel) || [] : [];
   if (!levelData.length) {
     setMathFeedback("Pas d'exercice disponible pour le moment.");
     return;
@@ -495,22 +674,24 @@ function loadNextMathQuestion() {
 
 function renderMathQuestion(question) {
   if (!question) return;
-  const levelNumber = Number(appState.math.currentLevel);
+  const { currentTrack, currentLevel } = appState.math;
   if (elements.mathLevelTitle) {
     elements.mathLevelTitle.textContent =
-      MATH_LEVEL_LABELS[levelNumber] || 'Exercices de mathématiques';
+      getMathLevelLabel(currentTrack, currentLevel) || 'Exercices de mathématiques';
   }
-  if (levelNumber === 1) {
-    renderMathLevel1(question);
+  const type = question.type || (question.sequence ? 'sequence' : 'mcq');
+  if (type === 'sequence') {
+    renderMathSequence(question);
   } else {
-    renderMathLevel2(question);
+    renderMathMultipleChoice(question);
   }
 }
 
-function renderMathLevel1(question) {
+function renderMathMultipleChoice(question) {
   if (!elements.mathQuestion || !elements.mathOptions) return;
   elements.mathQuestion.hidden = false;
   elements.mathQuestion.textContent = question.question;
+  appState.math.dropZoneElement = null;
   if (elements.mathSequence) {
     elements.mathSequence.hidden = true;
     elements.mathSequence.innerHTML = '';
@@ -531,7 +712,7 @@ function renderMathLevel1(question) {
   highlightMathOption();
 }
 
-function renderMathLevel2(question) {
+function renderMathSequence(question) {
   if (!elements.mathQuestion || !elements.mathSequence || !elements.mathOptions) return;
   elements.mathQuestion.hidden = false;
   elements.mathQuestion.textContent = question.prompt;
@@ -629,8 +810,8 @@ function onMathValidate() {
   const { math } = appState;
   const question = math.currentQuestion;
   if (!question || math.hasValidated) return;
-  const levelNumber = Number(math.currentLevel);
-  if (levelNumber === 1) {
+  const type = question.type || (question.sequence ? 'sequence' : 'mcq');
+  if (type === 'mcq') {
     const selectedIndex = math.selectedOptionIndex;
     if (selectedIndex === null || selectedIndex === undefined) {
       return;
@@ -640,7 +821,9 @@ function onMathValidate() {
       setMathFeedback('Essaie encore ! Utilise le bon calcul.', 'error');
       return;
     }
-    finalizeMathSuccess(`Bravo ! ${question.explanation || ''}`.trim());
+    const detail = question.explanation || '';
+    const message = detail ? `Bravo ! ${detail}` : 'Bravo !';
+    finalizeMathSuccess(message.trim());
     disableMathOptions();
     return;
   }
@@ -652,7 +835,9 @@ function onMathValidate() {
     setMathFeedback('Essaie encore ! Observe le rythme de la suite.', 'error');
     return;
   }
-  finalizeMathSuccess(`Bravo ! ${question.hint || 'Tu as trouvé la régularité.'}`.trim());
+  const detail = question.explanation || question.hint || 'Tu as trouvé la régularité.';
+  const message = detail ? `Bravo ! ${detail}` : 'Bravo !';
+  finalizeMathSuccess(message.trim());
   disableMathOptions();
 }
 
@@ -694,16 +879,15 @@ function showMathHint() {
 
 function getMathHint(question) {
   if (!question) return '';
-  if (Number(appState.math.currentLevel) === 1) {
-    return question.hint || '';
-  }
   return question.hint || '';
 }
 
 function updateMathProgress() {
   if (!elements.mathProgress) return;
   const { math } = appState;
-  const total = math.queue.length || (math.levels.get(math.currentLevel) || []).length;
+  const track = getMathTrack(math.currentTrack);
+  const levelQuestions = track ? track.levels.get(math.currentLevel) || [] : [];
+  const total = math.queue.length || levelQuestions.length;
   if (!total || !math.currentQuestionNumber) {
     elements.mathProgress.textContent = '0 / 0';
     return;
