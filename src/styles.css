@@ -49,6 +49,18 @@ body {
   box-shadow: 0 4px 12px rgba(32, 48, 73, 0.08);
 }
 
+.app-version-floating {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 1200;
+  pointer-events: none;
+}
+
+body.exercise-active .app-version-floating {
+  top: 0.5rem;
+}
+
 body::before {
   content: '';
   position: fixed;

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
+    <span class="app-version app-version-floating" aria-label="Version de l'application">v0.06</span>
     <header class="app-header" role="banner">
       <h1>Détective des groupes</h1>
       <p class="tagline">Choisis ta matière pour commencer !</p>
@@ -32,7 +33,7 @@
               <button class="subject-choice math" type="button" data-home-subject="math">
                 <span class="subject-choice-title">Mathématiques</span>
                 <span class="subject-choice-caption"
-                  >Résous des QCM logiques et complète des suites.</span
+                  >Résous des QCM logiques, complète des suites et explore les racines carrées.</span
                 >
               </button>
             </div>
@@ -134,6 +135,17 @@
                   >Complète des suites numériques ou visuelles par glisser-déposer.</span
                 >
               </button>
+              <button
+                class="math-track-btn"
+                type="button"
+                data-math-track="racines-carrees"
+                aria-pressed="false"
+              >
+                <span class="math-track-title">Racines carrées</span>
+                <span class="math-track-caption"
+                  >Identifie les racines carrées parfaites et explique ta démarche.</span
+                >
+              </button>
             </div>
             <p id="math-track-help" class="math-track-help">
               Choisis un type d'énigmes pour voir les niveaux disponibles.
@@ -163,6 +175,10 @@
                   <strong>Suites logiques</strong> : trois niveaux de suites numériques ou visuelles à compléter
                   en glisser-déposer.
                 </li>
+                <li>
+                  <strong>Racines carrées</strong> : trois niveaux pour reconnaître les racines carrées parfaites et
+                  les utiliser dans de petits problèmes.
+                </li>
               </ul>
             </div>
             <div class="card math-score-card">
@@ -176,7 +192,6 @@
           <div class="top-bar">
             <div class="top-bar-left">
               <button id="back-home" class="ghost back-home">← Accueil</button>
-              <span class="app-version" aria-label="Version de l'application">v0.05</span>
             </div>
             <span class="streak-chip" id="streak-display">Série en cours : 0</span>
           </div>
@@ -209,7 +224,6 @@
         <div class="top-bar">
           <div class="top-bar-left">
             <button id="back-home-math" class="ghost back-home">← Accueil</button>
-            <span class="app-version" aria-label="Version de l'application">v0.05</span>
           </div>
           <span class="streak-chip" id="math-progress">0 / 0</span>
         </div>

@@ -27,6 +27,33 @@
         "answerIndex": 1,
         "hint": "Divise 48 en 6 parts identiques.",
         "explanation": "48 ÷ 6 = 8."
+      },
+      {
+        "id": "lr-1-4",
+        "type": "mcq",
+        "question": "Noé possède 36 autocollants et en offre 18 à son cousin. Combien lui en reste-t-il ?",
+        "options": ["12", "18", "24"],
+        "answerIndex": 1,
+        "hint": "Soustrais 18 au stock de départ.",
+        "explanation": "36 - 18 = 18 autocollants restants."
+      },
+      {
+        "id": "lr-1-5",
+        "type": "mcq",
+        "question": "Une boîte contient 5 paquets de 4 gâteaux. Combien y a-t-il de gâteaux en tout ?",
+        "options": ["18", "20", "24"],
+        "answerIndex": 1,
+        "hint": "Additionne 5 fois 4 ou multiplie 5 par 4.",
+        "explanation": "5 × 4 = 20 gâteaux au total."
+      },
+      {
+        "id": "lr-1-6",
+        "type": "mcq",
+        "question": "Lors d'une collecte, on reçoit 27 jouets lundi et 14 mardi. Combien de jouets ont été récoltés ?",
+        "options": ["39", "41", "43"],
+        "answerIndex": 1,
+        "hint": "Additionne les dons des deux jours.",
+        "explanation": "27 + 14 = 41 jouets."
       }
     ],
     "level2": [
@@ -56,6 +83,33 @@
         "answerIndex": 0,
         "hint": "Commence par retirer 19 de 54, puis ajoute 12.",
         "explanation": "54 - 19 = 35, puis 35 + 12 = 47 élèves."
+      },
+      {
+        "id": "lr-2-4",
+        "type": "mcq",
+        "question": "Un club achète 6 lots de 8 ballons et en offre 15 lors d'un tournoi. Combien de ballons lui restent-ils ?",
+        "options": ["27", "33", "39"],
+        "answerIndex": 1,
+        "hint": "Calcule d'abord 6 × 8, puis soustrais les 15 ballons offerts.",
+        "explanation": "6 × 8 = 48 ballons. 48 - 15 = 33 ballons restants."
+      },
+      {
+        "id": "lr-2-5",
+        "type": "mcq",
+        "question": "Pour préparer trois gâteaux, Léa utilise 125 g de farine par gâteau et ajoute 60 g pour la décoration finale. Combien de farine utilise-t-elle en tout ?",
+        "options": ["420 g", "435 g", "450 g"],
+        "answerIndex": 1,
+        "hint": "Multiplie 125 g par 3 puis ajoute les 60 g de décoration.",
+        "explanation": "3 × 125 = 375 g. 375 + 60 = 435 g de farine au total."
+      },
+      {
+        "id": "lr-2-6",
+        "type": "mcq",
+        "question": "Un train transporte 3 wagons de 32 passagers chacun. À la gare suivante, 28 descendent et 19 montent. Combien de passagers restent à bord ?",
+        "options": ["83", "87", "91"],
+        "answerIndex": 1,
+        "hint": "Additionne les passagers des 3 wagons, retire 28 puis ajoute 19.",
+        "explanation": "3 × 32 = 96 passagers. 96 - 28 = 68, puis 68 + 19 = 87 passagers."
       }
     ],
     "level3": [
@@ -85,6 +139,33 @@
         "answerIndex": 1,
         "hint": "Additionne les points de base puis ajoute 2 bonus de 3 points.",
         "explanation": "9 + 12 + 15 = 36. Deux bonus de 3 points donnent +6. 36 + 6 = 42."
+      },
+      {
+        "id": "lr-3-4",
+        "type": "mcq",
+        "question": "Une association prépare 5 caisses de 24 repas. Elle en distribue 38 le matin et 16 l'après-midi. Combien de repas restent-ils ?",
+        "options": ["58", "66", "72"],
+        "answerIndex": 1,
+        "hint": "Commence par calculer le nombre total de repas, puis retire les deux distributions.",
+        "explanation": "5 × 24 = 120 repas. 120 - 38 = 82, puis 82 - 16 = 66 repas restants."
+      },
+      {
+        "id": "lr-3-5",
+        "type": "mcq",
+        "question": "Une bibliothèque possède 4 étagères de 18 livres et reçoit 3 caisses de 12 livres. On range ensuite tous les livres par piles de 6. Combien de piles obtient-on ?",
+        "options": ["16", "18", "20"],
+        "answerIndex": 1,
+        "hint": "Additionne tous les livres puis divise par 6 pour connaître le nombre de piles.",
+        "explanation": "4 × 18 = 72 et 3 × 12 = 36. 72 + 36 = 108 livres. 108 ÷ 6 = 18 piles."
+      },
+      {
+        "id": "lr-3-6",
+        "type": "mcq",
+        "question": "Une salle de jeux dispose de 125 jetons. Trois joueurs gagnent 14 jetons chacun et deux joueurs en perdent 9 chacun. Combien de jetons y a-t-il désormais ?",
+        "options": ["143", "149", "155"],
+        "answerIndex": 1,
+        "hint": "Ajoute les gains des trois joueurs puis retire les pertes des deux autres.",
+        "explanation": "3 × 14 = 42 jetons gagnés. 2 × 9 = 18 jetons perdus. 125 + 42 - 18 = 149 jetons."
       }
     ]
   },
@@ -118,7 +199,37 @@
         "options": ["🔵", "⚪", "⬛"],
         "answer": "🔵",
         "hint": "Les formes alternent entre cercle bleu et triangle rouge.",
-        "explanation": "La figure reprend exactement la première forme." 
+        "explanation": "La figure reprend exactement la première forme."
+      },
+      {
+        "id": "sl-1-4",
+        "type": "sequence",
+        "prompt": "Complète la suite : 1, 3, 5, …",
+        "sequence": ["1", "3", "5", null],
+        "options": ["6", "7", "8"],
+        "answer": "7",
+        "hint": "Les nombres augmentent de 2 en 2.",
+        "explanation": "On ajoute 2 à chaque terme : 5 + 2 = 7."
+      },
+      {
+        "id": "sl-1-5",
+        "type": "sequence",
+        "prompt": "Complète la suite : 12, 14, 16, …",
+        "sequence": ["12", "14", "16", null],
+        "options": ["17", "18", "19"],
+        "answer": "18",
+        "hint": "Observe de combien augmente chaque nombre.",
+        "explanation": "On ajoute toujours 2, donc 16 + 2 = 18."
+      },
+      {
+        "id": "sl-1-6",
+        "type": "sequence",
+        "prompt": "Complète la suite : 5, 6, 8, 11, …",
+        "sequence": ["5", "6", "8", "11", null],
+        "options": ["13", "14", "15"],
+        "answer": "15",
+        "hint": "Les écarts augmentent progressivement : +1, puis +2, puis +3…",
+        "explanation": "Après +1, +2 et +3, on ajoute +4 : 11 + 4 = 15."
       }
     ],
     "level2": [
@@ -150,7 +261,37 @@
         "options": ["-1", "-2", "-3"],
         "answer": "-3",
         "hint": "On retire toujours 3.",
-        "explanation": "La suite diminue de 3 en 3." 
+        "explanation": "La suite diminue de 3 en 3."
+      },
+      {
+        "id": "sl-2-4",
+        "type": "sequence",
+        "prompt": "Complète la suite : 7, 14, 21, …",
+        "sequence": ["7", "14", "21", null],
+        "options": ["25", "28", "35"],
+        "answer": "28",
+        "hint": "On ajoute toujours le même nombre.",
+        "explanation": "La suite augmente de 7 en 7, donc 21 + 7 = 28."
+      },
+      {
+        "id": "sl-2-5",
+        "type": "sequence",
+        "prompt": "Complète la suite : 2, 5, 9, 14, …",
+        "sequence": ["2", "5", "9", "14", null],
+        "options": ["18", "19", "20"],
+        "answer": "20",
+        "hint": "Observe la progression : +3, +4, +5…",
+        "explanation": "Après +3, +4 et +5, on ajoute +6 : 14 + 6 = 20."
+      },
+      {
+        "id": "sl-2-6",
+        "type": "sequence",
+        "prompt": "Complète la suite : 1, 4, 16, 64, …",
+        "sequence": ["1", "4", "16", "64", null],
+        "options": ["128", "196", "256"],
+        "answer": "256",
+        "hint": "Chaque terme est multiplié par le même nombre.",
+        "explanation": "On multiplie par 4 à chaque étape : 64 × 4 = 256."
       }
     ],
     "level3": [
@@ -182,7 +323,207 @@
         "options": ["30", "33", "39"],
         "answer": "39",
         "hint": "Additionne l'avant-dernier et le dernier terme pour trouver le suivant.",
-        "explanation": "À partir du troisième terme, chaque nombre est la somme des deux précédents." 
+        "explanation": "À partir du troisième terme, chaque nombre est la somme des deux précédents."
+      },
+      {
+        "id": "sl-3-4",
+        "type": "sequence",
+        "prompt": "Complète la suite : 4, 9, 16, 25, …",
+        "sequence": ["4", "9", "16", "25", null],
+        "options": ["30", "34", "36"],
+        "answer": "36",
+        "hint": "Chaque terme est le carré d'un nombre entier.",
+        "explanation": "Ce sont les carrés de 2, 3, 4, 5… donc 6² = 36."
+      },
+      {
+        "id": "sl-3-5",
+        "type": "sequence",
+        "prompt": "Complète la suite : 81, 27, 9, 3, …",
+        "sequence": ["81", "27", "9", "3", null],
+        "options": ["1", "2", "3"],
+        "answer": "1",
+        "hint": "Chaque étape consiste à diviser par le même nombre.",
+        "explanation": "On divise par 3 à chaque fois : 3 ÷ 3 = 1."
+      },
+      {
+        "id": "sl-3-6",
+        "type": "sequence",
+        "prompt": "Complète la suite : 1, 1, 2, 3, 5, …",
+        "sequence": ["1", "1", "2", "3", "5", null],
+        "options": ["7", "8", "9"],
+        "answer": "8",
+        "hint": "Chaque terme est la somme des deux précédents.",
+        "explanation": "5 + 3 = 8 : c'est la suite de Fibonacci."
+      }
+    ]
+  },
+  "racinesCarrees": {
+    "level1": [
+      {
+        "id": "rc-1-1",
+        "type": "mcq",
+        "question": "Quelle est la racine carrée de 16 ?",
+        "options": ["4", "6", "8"],
+        "answerIndex": 0,
+        "hint": "Cherche le nombre qui multiplié par lui-même donne 16.",
+        "explanation": "4 × 4 = 16, la racine carrée est donc 4."
+      },
+      {
+        "id": "rc-1-2",
+        "type": "mcq",
+        "question": "Quelle est la racine carrée de 49 ?",
+        "options": ["6", "7", "9"],
+        "answerIndex": 1,
+        "hint": "Teste les carrés des nombres entiers proches.",
+        "explanation": "7 × 7 = 49, donc la racine carrée est 7."
+      },
+      {
+        "id": "rc-1-3",
+        "type": "mcq",
+        "question": "Quelle est la racine carrée de 81 ?",
+        "options": ["8", "9", "10"],
+        "answerIndex": 1,
+        "hint": "81 est un carré parfait proche de 9 × 9.",
+        "explanation": "9 × 9 = 81, la racine carrée vaut donc 9."
+      },
+      {
+        "id": "rc-1-4",
+        "type": "mcq",
+        "question": "Un carré compte 36 cases. Combien y a-t-il de cases par côté ?",
+        "options": ["5", "6", "7"],
+        "answerIndex": 1,
+        "hint": "La racine carrée de 36 indique le nombre de cases sur un côté.",
+        "explanation": "√36 = 6, il y a donc 6 cases par côté."
+      },
+      {
+        "id": "rc-1-5",
+        "type": "mcq",
+        "question": "Un jardin carré mesure 64 m². Quelle est la longueur d'un côté ?",
+        "options": ["6 m", "8 m", "10 m"],
+        "answerIndex": 1,
+        "hint": "Trouve le nombre qui, multiplié par lui-même, donne 64.",
+        "explanation": "8 × 8 = 64, chaque côté mesure donc 8 m."
+      },
+      {
+        "id": "rc-1-6",
+        "type": "mcq",
+        "question": "Une mosaïque carrée contient 100 carreaux. Combien de carreaux y a-t-il sur chaque rangée ?",
+        "options": ["8", "9", "10"],
+        "answerIndex": 2,
+        "hint": "100 est le carré d'un nombre entier bien connu.",
+        "explanation": "10 × 10 = 100, il y a donc 10 carreaux par rangée."
+      }
+    ],
+    "level2": [
+      {
+        "id": "rc-2-1",
+        "type": "mcq",
+        "question": "Quelle est la racine carrée de 121 ?",
+        "options": ["10", "11", "12"],
+        "answerIndex": 1,
+        "hint": "Réfléchis au carré qui donne 121.",
+        "explanation": "11 × 11 = 121, donc la racine carrée est 11."
+      },
+      {
+        "id": "rc-2-2",
+        "type": "mcq",
+        "question": "Quelle est la racine carrée de 144 ?",
+        "options": ["11", "12", "13"],
+        "answerIndex": 1,
+        "hint": "144 est juste après 12 × 12.",
+        "explanation": "12 × 12 = 144, la racine carrée vaut 12."
+      },
+      {
+        "id": "rc-2-3",
+        "type": "mcq",
+        "question": "Une parcelle carrée couvre 169 m². Quelle est la longueur d'un côté ?",
+        "options": ["11 m", "12 m", "13 m"],
+        "answerIndex": 2,
+        "hint": "Cherche le nombre dont le carré vaut 169.",
+        "explanation": "13 × 13 = 169, donc chaque côté mesure 13 m."
+      },
+      {
+        "id": "rc-2-4",
+        "type": "mcq",
+        "question": "On souhaite ranger 196 cartes en un carré parfait. Combien de cartes par rangée faut-il prévoir ?",
+        "options": ["12", "14", "16"],
+        "answerIndex": 1,
+        "hint": "Calcule la racine carrée de 196.",
+        "explanation": "√196 = 14, il faut 14 cartes par rangée."
+      },
+      {
+        "id": "rc-2-5",
+        "type": "mcq",
+        "question": "Quel nombre multiplié par lui-même donne 225 ?",
+        "options": ["14", "15", "16"],
+        "answerIndex": 1,
+        "hint": "Cherche le carré parfait juste après 14 × 14.",
+        "explanation": "15 × 15 = 225, le nombre recherché est 15."
+      },
+      {
+        "id": "rc-2-6",
+        "type": "mcq",
+        "question": "Une grille carrée contient 256 cases. Combien de cases y a-t-il sur un côté ?",
+        "options": ["14", "16", "18"],
+        "answerIndex": 1,
+        "hint": "256 est un carré parfait souvent utilisé en informatique.",
+        "explanation": "16 × 16 = 256, chaque côté comporte 16 cases."
+      }
+    ],
+    "level3": [
+      {
+        "id": "rc-3-1",
+        "type": "mcq",
+        "question": "Quelle est la racine carrée de 289 ?",
+        "options": ["16", "17", "18"],
+        "answerIndex": 1,
+        "hint": "289 est le carré d'un nombre situé entre 16 et 18.",
+        "explanation": "17 × 17 = 289, la racine carrée est 17."
+      },
+      {
+        "id": "rc-3-2",
+        "type": "mcq",
+        "question": "Quelle est la racine carrée de 324 ?",
+        "options": ["17", "18", "19"],
+        "answerIndex": 1,
+        "hint": "324 est obtenu en multipliant un nombre pair par lui-même.",
+        "explanation": "18 × 18 = 324, donc la racine carrée vaut 18."
+      },
+      {
+        "id": "rc-3-3",
+        "type": "mcq",
+        "question": "Un terrain carré mesure 361 m². Quelle est la longueur d'un côté ?",
+        "options": ["18 m", "19 m", "20 m"],
+        "answerIndex": 1,
+        "hint": "361 correspond au carré d'un nombre impair.",
+        "explanation": "19 × 19 = 361, le côté mesure donc 19 m."
+      },
+      {
+        "id": "rc-3-4",
+        "type": "mcq",
+        "question": "Calcule : √400 + √81 = ?",
+        "options": ["27", "29", "31"],
+        "answerIndex": 1,
+        "hint": "Calcule séparément chaque racine carrée avant d'additionner.",
+        "explanation": "√400 = 20 et √81 = 9, donc 20 + 9 = 29."
+      },
+      {
+        "id": "rc-3-5",
+        "type": "mcq",
+        "question": "Si √x = 22, quelle est la valeur de x ?",
+        "options": ["242", "484", "522"],
+        "answerIndex": 1,
+        "hint": "Élève 22 au carré pour retrouver x.",
+        "explanation": "22 × 22 = 484, donc x = 484."
+      },
+      {
+        "id": "rc-3-6",
+        "type": "mcq",
+        "question": "Une classe dispose de 576 cartes et veut former un grand carré parfait. Combien de cartes par rangée doivent-ils aligner ?",
+        "options": ["22", "24", "26"],
+        "answerIndex": 1,
+        "hint": "Cherche la racine carrée de 576.",
+        "explanation": "24 × 24 = 576, il faut donc 24 cartes par rangée."
       }
     ]
   }

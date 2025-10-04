@@ -86,7 +86,7 @@ const SUBJECT_TAGLINES = {
   [SUBJECTS.GRAMMAR]:
     'Repère pas à pas le groupe sujet, le verbe et les compléments !',
   [SUBJECTS.MATH]:
-    'Résous des énigmes de logique et complète des suites mathématiques !'
+    'Résous des énigmes de logique, complète des suites et explore les racines carrées !'
 };
 
 const HOME_VIEWS = {
@@ -119,6 +119,18 @@ const MATH_TRACK_DEFINITIONS = [
       '1': 'Suites logiques · Niveau 1',
       '2': 'Suites logiques · Niveau 2',
       '3': 'Suites logiques · Niveau 3'
+    }
+  },
+  {
+    id: 'racines-carrees',
+    key: 'racinesCarrees',
+    label: 'Racines carrées',
+    description:
+      'Entraîne-toi à reconnaître et utiliser les racines carrées parfaites dans des situations variées.',
+    levelLabels: {
+      '1': 'Racines carrées · Niveau 1',
+      '2': 'Racines carrées · Niveau 2',
+      '3': 'Racines carrées · Niveau 3'
     }
   }
 ];
