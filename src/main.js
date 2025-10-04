@@ -1,4 +1,12 @@
-import { loadProgress, recordResult, updateLastLevel, resetProgress } from './storage.js';
+import {
+  loadProgress,
+  recordResult,
+  updateLastLevel,
+  resetProgress,
+  BADGE_LEVELS,
+  BADGE_STREAKS,
+  makeBadgeId
+} from './storage.js';
 
 const LEVEL_CONFIG = {
   1: { requiredRoles: ['VERB'], requireSubjectType: false },
@@ -99,6 +107,20 @@ const SLOT_FEEDBACK = {
   }
 };
 
+const BADGE_DEFINITIONS = BADGE_LEVELS.flatMap((level) =>
+  BADGE_STREAKS.map((threshold) => ({
+    id: makeBadgeId(level, threshold),
+    level,
+    threshold,
+    title: `Niveau ${level} · ${threshold} phrases parfaites`,
+    description: `Enchaîne ${threshold} phrases sans erreur au niveau ${level}.`
+  }))
+);
+
+const BADGE_DEFINITION_BY_ID = new Map(
+  BADGE_DEFINITIONS.map((badge) => [badge.id, badge])
+);
+
 const appState = {
   phrases: [],
   queue: [],
@@ -126,6 +148,8 @@ const elements = {
   homeScore: document.getElementById('home-score'),
   homeBest: document.getElementById('home-best'),
   homeStreak: document.getElementById('home-streak'),
+  badgeGrid: document.getElementById('badge-grid'),
+  badgeHelp: document.getElementById('badge-help'),
   streakDisplay: document.getElementById('streak-display'),
   resetBtn: document.getElementById('reset-progress'),
   phraseText: document.getElementById('phrase-text'),
@@ -143,11 +167,25 @@ const elements = {
 };
 let dragState = null;
 
+function requestFullscreenIfSupported() {
+  const isStandalone =
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(display-mode: standalone)').matches;
+  if (isStandalone) return;
+  if (document.fullscreenElement) return;
+  const root = document.documentElement;
+  if (!root || typeof root.requestFullscreen !== 'function') return;
+  root.requestFullscreen().catch(() => {
+    // Ignorer les erreurs (refus utilisateur ou navigateur)
+  });
+}
+
 async function init() {
   await loadData();
   bindEvents();
   renderResume();
   updateScoreboard();
+  registerServiceWorker();
 }
 
 async function loadData() {
@@ -209,6 +247,7 @@ function startSession(level) {
   appState.slots = new Map();
   appState.hasValidated = false;
   swapScreen('exercise');
+  requestFullscreenIfSupported();
   appState.progress = updateLastLevel(appState.progress, level);
   loadNextPhrase();
 }
@@ -540,13 +579,19 @@ function onValidate() {
   }
 
   const deltaScore = correctCount;
-  appState.progress = recordResult(
+  const { progress, unlockedBadges } = recordResult(
     appState.progress,
     appState.currentPhrase.id,
     deltaScore,
-    stars
+    stars,
+    { level: appState.activeLevel }
   );
+  appState.progress = progress;
   updateScoreboard();
+  if (unlockedBadges.length) {
+    highlightUnlockedBadges(unlockedBadges);
+    announceBadgeUnlock(unlockedBadges);
+  }
 
   elements.helpText.innerHTML = slotMessages.join('<br />');
   elements.nextBtn.disabled = false;
@@ -696,6 +741,7 @@ function updateScoreboard() {
   if (elements.streakDisplay) {
     elements.streakDisplay.textContent = `Série en cours : ${streak}`;
   }
+  renderBadges();
 }
 
 function getLabelByKindAndValue(kind, value) {
@@ -720,6 +766,119 @@ function showToast(message) {
   }, 2400);
 }
 
+function getBadgeDefinition(id) {
+  return BADGE_DEFINITION_BY_ID.get(id) || null;
+}
+
+function renderBadges() {
+  if (!elements.badgeGrid) return;
+
+  const container = elements.badgeGrid;
+  const badgesState = (appState.progress && appState.progress.badges) || {};
+  container.innerHTML = '';
+  container.setAttribute('role', 'list');
+
+  let unlockedCount = 0;
+
+  BADGE_DEFINITIONS.forEach((badge) => {
+    const unlockedAt = badgesState[badge.id];
+    const unlocked = Boolean(unlockedAt);
+    if (unlocked) {
+      unlockedCount += 1;
+    }
+
+    const card = document.createElement('div');
+    card.className = 'badge-card';
+    card.dataset.badgeId = badge.id;
+    card.setAttribute('role', 'listitem');
+    card.classList.add(unlocked ? 'unlocked' : 'locked');
+    card.setAttribute(
+      'aria-label',
+      unlocked
+        ? `Badge débloqué : ${badge.title}`
+        : `Badge à débloquer : ${badge.title}`
+    );
+
+    const icon = document.createElement('div');
+    icon.className = 'badge-icon';
+    icon.textContent = `N${badge.level}`;
+    icon.setAttribute('aria-hidden', 'true');
+
+    const info = document.createElement('div');
+    info.className = 'badge-info';
+
+    const title = document.createElement('span');
+    title.className = 'badge-title';
+    title.textContent = badge.title;
+
+    const status = document.createElement('span');
+    status.className = 'badge-status';
+    if (unlocked && unlockedAt) {
+      const formatted = formatBadgeDate(unlockedAt);
+      status.textContent = formatted ? `Débloqué le ${formatted}` : 'Débloqué !';
+    } else {
+      status.textContent = badge.description;
+    }
+
+    info.append(title, status);
+    card.append(icon, info);
+    container.append(card);
+  });
+
+  if (elements.badgeHelp) {
+    if (unlockedCount === 0) {
+      elements.badgeHelp.hidden = false;
+      elements.badgeHelp.textContent =
+        'Joue les niveaux 3, 4 et 5 et réussis plusieurs phrases d’affilée pour débloquer les badges.';
+    } else {
+      const remaining = BADGE_DEFINITIONS.length - unlockedCount;
+      elements.badgeHelp.hidden = false;
+      if (remaining > 0) {
+        elements.badgeHelp.textContent = `Encore ${remaining} badge${
+          remaining > 1 ? 's' : ''
+        } à décrocher en poursuivant les séries parfaites !`;
+      } else {
+        elements.badgeHelp.textContent = 'Tous les badges sont débloqués, bravo !';
+      }
+    }
+  }
+}
+
+function formatBadgeDate(timestamp) {
+  if (!timestamp) return null;
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+  try {
+    return new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium' }).format(date);
+  } catch (error) {
+    return date.toLocaleDateString('fr-FR');
+  }
+}
+
+function highlightUnlockedBadges(unlockedIds) {
+  if (!unlockedIds || !unlockedIds.length || !elements.badgeGrid) return;
+  unlockedIds.forEach((id) => {
+    const card = elements.badgeGrid.querySelector(`[data-badge-id="${id}"]`);
+    if (!card) return;
+    card.classList.add('just-unlocked');
+    setTimeout(() => {
+      card.classList.remove('just-unlocked');
+    }, 1600);
+  });
+}
+
+function announceBadgeUnlock(unlockedIds) {
+  if (!unlockedIds || !unlockedIds.length) return;
+  const badge = getBadgeDefinition(unlockedIds[unlockedIds.length - 1]);
+  if (!badge) {
+    showToast('Nouveau badge débloqué !');
+    return;
+  }
+  showToast(`Nouveau badge ! ${badge.title}`);
+}
+
 function shuffleArray(arr) {
   const copy = [...arr];
   for (let i = copy.length - 1; i > 0; i -= 1) {
@@ -727,6 +886,17 @@ function shuffleArray(arr) {
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
   return copy;
+}
+
+async function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) {
+    return;
+  }
+  try {
+    await navigator.serviceWorker.register('service-worker.js');
+  } catch (error) {
+    console.warn('Service Worker indisponible :', error);
+  }
 }
 
 init();
