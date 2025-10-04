@@ -1,5 +1,10 @@
 # Journal des versions
 
+## v0.06 · 2025-??-??
+- Affiche le numéro de version en permanence dans l'interface, visible dès l'accueil.
+- Ajoute trois nouveaux exercices à chaque niveau des parcours Logique rapide et Suites logiques.
+- Introduit la thématique « Racines carrées » avec trois niveaux dédiés.
+
 ## v0.05 · 2025-??-??
 - Ajoute deux sous-matières en mathématiques (Logique rapide et Suites logiques) avec trois niveaux chacune.
 - Crée dix-huit nouvelles questions progressives (trois par niveau) réparties entre QCM et suites à compléter.
