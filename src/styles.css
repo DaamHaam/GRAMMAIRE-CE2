@@ -79,6 +79,10 @@ body::before {
   font-size: 1rem;
 }
 
+body.subject-math .tagline {
+  color: #1f7cd8;
+}
+
 body.exercise-active .app-header {
   display: none;
 }

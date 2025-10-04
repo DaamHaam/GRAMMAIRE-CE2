@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grammaire-ce2-cache-v2';
+const CACHE_NAME = 'grammaire-ce2-cache-v3';
 const OFFLINE_URLS = [
   './',
   'index.html',
@@ -7,6 +7,7 @@ const OFFLINE_URLS = [
   'src/storage.js',
   'data/phrases.json',
   'data/maths.json',
+  'changelog.md',
   'public/pictos/subject.svg',
   'public/pictos/verb.svg',
   'public/pictos/group.svg'

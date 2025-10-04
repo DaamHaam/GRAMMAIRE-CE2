@@ -82,6 +82,13 @@ const SUBJECTS = {
   MATH: 'math'
 };
 
+const SUBJECT_TAGLINES = {
+  [SUBJECTS.GRAMMAR]:
+    'Repère pas à pas le groupe sujet, le verbe et les compléments !',
+  [SUBJECTS.MATH]:
+    'Résous des énigmes de logique et complète des suites mathématiques !'
+};
+
 const MATH_LEVEL_LABELS = {
   1: 'Niveau 1 – Logique rapide',
   2: 'Niveau 2 – Suites logiques'
@@ -205,7 +212,8 @@ const elements = {
   mathValidate: document.getElementById('math-validate'),
   mathNext: document.getElementById('math-next'),
   mathHint: document.getElementById('math-hint'),
-  mathProgress: document.getElementById('math-progress')
+  mathProgress: document.getElementById('math-progress'),
+  tagline: document.querySelector('.tagline')
 };
 let dragState = null;
 
@@ -336,6 +344,16 @@ function setSubject(subject) {
   });
   togglePanelVisibility(elements.grammarPanel, normalized === SUBJECTS.GRAMMAR);
   togglePanelVisibility(elements.mathPanel, normalized === SUBJECTS.MATH);
+  const homeScreen = elements.screens?.home;
+  if (homeScreen) {
+    homeScreen.setAttribute('data-subject', normalized);
+  }
+  document.body.classList.toggle('subject-grammar', normalized === SUBJECTS.GRAMMAR);
+  document.body.classList.toggle('subject-math', normalized === SUBJECTS.MATH);
+  const taglineText = SUBJECT_TAGLINES[normalized];
+  if (elements.tagline && taglineText) {
+    elements.tagline.textContent = taglineText;
+  }
 }
 
 function togglePanelVisibility(panel, shouldShow) {
@@ -726,6 +744,7 @@ function clearMathDropZone() {
 }
 
 function startSession(level) {
+  setSubject(SUBJECTS.GRAMMAR);
   const levelKey = LEVEL_CONFIG[level] ? level : 'all';
   appState.activeLevel = level;
   appState.requirements = LEVEL_CONFIG[levelKey];
