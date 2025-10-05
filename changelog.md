@@ -1,5 +1,8 @@
 # Journal des versions
 
+## v0.07 · 2025-??-??
+- Mélange l'ordre des réponses des QCM de mathématiques à chaque affichage pour éviter les réponses prévisibles.
+
 ## v0.06 · 2025-??-??
 - Affiche le numéro de version en permanence dans l'interface, visible dès l'accueil.
 - Ajoute trois nouveaux exercices à chaque niveau des parcours Logique rapide et Suites logiques.

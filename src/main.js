@@ -688,6 +688,33 @@ function startMathSession(trackId, level) {
   renderMathHomeState();
 }
 
+function prepareMathQuestion(question) {
+  if (!question) return null;
+  const type = question.type || (question.sequence ? 'sequence' : 'mcq');
+  if (type !== 'mcq') {
+    return { ...question };
+  }
+  const options = Array.isArray(question.options) ? [...question.options] : [];
+  const answerIndex =
+    question.answerIndex !== undefined && question.answerIndex !== null
+      ? Number(question.answerIndex)
+      : -1;
+  if (!options.length || answerIndex < 0 || answerIndex >= options.length) {
+    return { ...question, options };
+  }
+  const taggedOptions = options.map((value, index) => ({
+    value,
+    isCorrect: index === answerIndex
+  }));
+  const shuffled = shuffleArray(taggedOptions);
+  const normalizedAnswerIndex = shuffled.findIndex((entry) => entry.isCorrect);
+  return {
+    ...question,
+    options: shuffled.map((entry) => entry.value),
+    answerIndex: normalizedAnswerIndex
+  };
+}
+
 function loadNextMathQuestion() {
   const { math } = appState;
   const track = getMathTrack(math.currentTrack);
@@ -704,7 +731,7 @@ function loadNextMathQuestion() {
     math.queue = shuffleArray([...levelData]);
     math.queueIndex = 0;
   }
-  const question = math.queue[math.queueIndex];
+  const question = prepareMathQuestion(math.queue[math.queueIndex]);
   math.queueIndex += 1;
   math.currentQuestionNumber = math.queueIndex;
   math.currentQuestion = question;
