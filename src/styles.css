@@ -49,6 +49,18 @@ body {
   box-shadow: 0 4px 12px rgba(32, 48, 73, 0.08);
 }
 
+.app-version-floating {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 1200;
+  pointer-events: none;
+}
+
+body.exercise-active .app-version-floating {
+  top: 0.5rem;
+}
+
 body::before {
   content: '';
   position: fixed;
@@ -225,6 +237,30 @@ body.exercise-active .app {
 .back-to-menu:focus-visible {
   background: rgba(255, 255, 255, 0.28);
   transform: translateY(-1px);
+}
+
+.math-track-back {
+  align-self: flex-start;
+  margin-top: -0.35rem;
+  margin-bottom: -0.5rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.math-track-back:hover,
+.math-track-back:focus-visible {
+  background: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.math-track-back[hidden] {
+  display: none;
 }
 
 .math-track-grid {

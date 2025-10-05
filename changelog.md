@@ -1,5 +1,14 @@
 # Journal des versions
 
+## v0.07 · 2025-??-??
+- Mélange l'ordre des réponses des QCM de mathématiques à chaque affichage pour éviter les réponses prévisibles.
+
+## v0.06 · 2025-??-??
+- Affiche le numéro de version en permanence dans l'interface, visible dès l'accueil.
+- Ajoute trois nouveaux exercices à chaque niveau des parcours Logique rapide et Suites logiques.
+- Introduit la thématique « Racines carrées » avec trois niveaux dédiés.
+- Améliore la navigation des défis mathématiques : la sélection du niveau s'affiche seule après le choix du défi, avec un bouton de retour.
+
 ## v0.05 · 2025-??-??
 - Ajoute deux sous-matières en mathématiques (Logique rapide et Suites logiques) avec trois niveaux chacune.
 - Crée dix-huit nouvelles questions progressives (trois par niveau) réparties entre QCM et suites à compléter.
