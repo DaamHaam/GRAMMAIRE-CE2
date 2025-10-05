@@ -96,6 +96,8 @@ const HOME_VIEWS = {
 };
 
 const HOME_MENU_TAGLINE = 'Choisis ta matière pour commencer !';
+const MATH_TRACK_HELP_DEFAULT =
+  "Choisis un type d'énigmes pour voir les niveaux disponibles.";
 
 const MATH_TRACK_DEFINITIONS = [
   {
@@ -212,7 +214,8 @@ const appState = {
     hasValidated: false,
     score: { correct: 0, total: 0 },
     lastTrack: null,
-    lastLevel: null
+    lastLevel: null,
+    homeStage: 'tracks'
   }
 };
 
@@ -250,10 +253,13 @@ const elements = {
   helpText: document.getElementById('help-text'),
   toast: document.getElementById('toast'),
   mathTrackButtons: Array.from(document.querySelectorAll('.math-track-btn')),
+  mathTrackGrid: document.getElementById('math-track-grid'),
+  mathHomeTitle: document.getElementById('math-home-title'),
   mathLevelsWrapper: document.getElementById('math-levels-wrapper'),
   mathLevels: document.getElementById('math-levels'),
   mathLevelHeading: document.getElementById('math-level-heading'),
   mathTrackHelp: document.getElementById('math-track-help'),
+  mathBackToTracks: document.getElementById('math-track-back'),
   mathResume: document.getElementById('math-resume'),
   mathScore: document.getElementById('math-score'),
   mathLevelTitle: document.getElementById('math-level-title'),
@@ -337,6 +343,7 @@ function loadMathData(data) {
   math.tracks = tracks;
   if (math.selectedTrack && !math.tracks.has(math.selectedTrack)) {
     math.selectedTrack = null;
+    math.homeStage = 'tracks';
   }
   if (math.currentTrack && !math.tracks.has(math.currentTrack)) {
     math.currentTrack = null;
@@ -372,6 +379,21 @@ function bindEvents() {
       button.addEventListener('click', () => {
         selectMathTrack(button.dataset.mathTrack);
       });
+    });
+  }
+
+  if (elements.mathBackToTracks) {
+    elements.mathBackToTracks.addEventListener('click', () => {
+      appState.math.homeStage = 'tracks';
+      renderMathHomeState();
+      if (elements.mathTrackGrid) {
+        const focused =
+          elements.mathTrackGrid.querySelector('.math-track-btn.selected') ||
+          elements.mathTrackGrid.querySelector('.math-track-btn');
+        if (focused) {
+          focused.focus();
+        }
+      }
     });
   }
 
@@ -476,6 +498,9 @@ function openHomeForSubject(subject) {
     if (!appState.math.selectedTrack && appState.math.lastTrack) {
       appState.math.selectedTrack = appState.math.lastTrack;
     }
+    if (!appState.math.selectedTrack) {
+      appState.math.homeStage = 'tracks';
+    }
     updateMathResume();
     updateMathScoreboard();
     renderMathHomeState();
@@ -544,35 +569,51 @@ function renderMathHomeState() {
   }
 
   const selectedTrack = getMathTrack(math.selectedTrack);
-  if (!selectedTrack) {
-    if (elements.mathLevelsWrapper) {
-      elements.mathLevelsWrapper.hidden = true;
-      elements.mathLevelsWrapper.setAttribute('aria-hidden', 'true');
-    }
-    if (elements.mathLevels) {
+  if (!selectedTrack && math.homeStage === 'levels') {
+    math.homeStage = 'tracks';
+  }
+
+  const isChoosingTrack = math.homeStage !== 'levels' || !selectedTrack;
+
+  if (elements.mathTrackGrid) {
+    elements.mathTrackGrid.hidden = !isChoosingTrack;
+    elements.mathTrackGrid.setAttribute('aria-hidden', String(!isChoosingTrack));
+  }
+
+  if (elements.mathBackToTracks) {
+    elements.mathBackToTracks.hidden = isChoosingTrack;
+    elements.mathBackToTracks.setAttribute('aria-hidden', String(isChoosingTrack));
+  }
+
+  if (elements.mathHomeTitle) {
+    elements.mathHomeTitle.textContent = isChoosingTrack
+      ? 'Choisis ton défi'
+      : `Choisis ton niveau · ${selectedTrack.label}`;
+  }
+
+  if (elements.mathLevelsWrapper) {
+    const showLevels = !isChoosingTrack && !!selectedTrack;
+    elements.mathLevelsWrapper.hidden = !showLevels;
+    elements.mathLevelsWrapper.setAttribute('aria-hidden', String(!showLevels));
+    if (!showLevels && elements.mathLevels) {
       elements.mathLevels.innerHTML = '';
     }
-    if (elements.mathTrackHelp) {
-      elements.mathTrackHelp.textContent =
-        "Choisis un type d'énigmes pour voir les niveaux disponibles.";
-    }
-    if (elements.mathLevelHeading) {
-      elements.mathLevelHeading.textContent = 'Choisis ton niveau';
-    }
-    return;
   }
 
   if (elements.mathTrackHelp) {
-    elements.mathTrackHelp.textContent = selectedTrack.description || '';
+    elements.mathTrackHelp.textContent = isChoosingTrack
+      ? MATH_TRACK_HELP_DEFAULT
+      : selectedTrack?.description || '';
   }
-  if (elements.mathLevelsWrapper) {
-    elements.mathLevelsWrapper.hidden = false;
-    elements.mathLevelsWrapper.setAttribute('aria-hidden', 'false');
+
+  if (!isChoosingTrack && selectedTrack) {
+    if (elements.mathLevelHeading) {
+      elements.mathLevelHeading.textContent = `Choisis ton niveau · ${selectedTrack.label}`;
+    }
+    renderMathLevelButtons(selectedTrack);
+  } else if (elements.mathLevelHeading) {
+    elements.mathLevelHeading.textContent = 'Choisis ton niveau';
   }
-  if (elements.mathLevelHeading) {
-    elements.mathLevelHeading.textContent = `Choisis ton niveau · ${selectedTrack.label}`;
-  }
-  renderMathLevelButtons(selectedTrack);
 }
 
 function renderMathLevelButtons(track) {
@@ -608,6 +649,7 @@ function selectMathTrack(trackId) {
     return;
   }
   appState.math.selectedTrack = trackId;
+  appState.math.homeStage = 'levels';
   renderMathHomeState();
 }
 
@@ -629,6 +671,7 @@ function startMathSession(trackId, level) {
   appState.math.currentLevel = normalizedLevel;
   appState.math.lastTrack = normalizedTrack;
   appState.math.lastLevel = normalizedLevel;
+  appState.math.homeStage = 'levels';
   appState.math.queue = shuffleArray([...levelData]);
   appState.math.queueIndex = 0;
   appState.math.currentQuestion = null;

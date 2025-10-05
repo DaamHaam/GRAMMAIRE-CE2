@@ -106,9 +106,19 @@
         </div>
         <div id="math-panel" class="home-view" data-view="math" hidden aria-hidden="true">
           <button class="back-to-menu" type="button" data-home-menu>← Choisir une matière</button>
-          <div class="card home-card">
-            <h2>Choisis ton défi</h2>
+          <div class="card home-card math-home-card">
+            <h2 id="math-home-title">Choisis ton défi</h2>
+            <button
+              id="math-track-back"
+              class="math-track-back"
+              type="button"
+              hidden
+              aria-hidden="true"
+            >
+              ← Changer de défi
+            </button>
             <div
+              id="math-track-grid"
               class="math-track-grid"
               role="group"
               aria-label="Sous-matières de mathématiques"
