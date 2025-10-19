@@ -470,5 +470,71 @@
       { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "un indice mystérieux" },
       { "type": "text", "text": "." }
     ]
+  },
+  {
+    "id": "l5-09",
+    "level": 5,
+    "text": "Les grands voyageurs racontaient hier encore leurs péripéties avec passion.",
+    "parts": [
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Les grands voyageurs" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "racontaient" },
+      { "type": "text", "text": " hier encore " },
+      { "type": "segment", "role": "COMPLEMENT", "text": "leurs péripéties avec passion" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "l5-10",
+    "level": 5,
+    "text": "La vieille horloge du hall égrainait lentement les minutes silencieuses.",
+    "parts": [
+      {
+        "type": "segment",
+        "role": "SUBJECT",
+        "subjectType": "GN",
+        "text": "La vieille horloge du hall"
+      },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "égrainait" },
+      { "type": "text", "text": " lentement " },
+      { "type": "segment", "role": "COMPLEMENT", "text": "les minutes silencieuses" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "l5-11",
+    "level": 5,
+    "text": "Ces élèves studieux termineront demain leur exposé de sciences.",
+    "parts": [
+      { "type": "segment", "role": "SUBJECT", "subjectType": "GN", "text": "Ces élèves studieux" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "termineront" },
+      { "type": "text", "text": " demain " },
+      { "type": "segment", "role": "COMPLEMENT", "text": "leur exposé de sciences" },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "l5-12",
+    "level": 5,
+    "text": "Ma cousine et moi préparions patiemment un gâteau aux pommes dans la cuisine.",
+    "parts": [
+      {
+        "type": "segment",
+        "role": "SUBJECT",
+        "subjectType": "GN",
+        "text": "Ma cousine et moi"
+      },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "préparions" },
+      { "type": "text", "text": " patiemment " },
+      {
+        "type": "segment",
+        "role": "COMPLEMENT",
+        "text": "un gâteau aux pommes dans la cuisine"
+      },
+      { "type": "text", "text": "." }
+    ]
   }
 ]

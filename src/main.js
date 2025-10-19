@@ -1067,7 +1067,10 @@ function startSession(level) {
     showToast('Aucune phrase disponible pour ce niveau.');
     return;
   }
-  appState.queue = shuffleArray(available);
+  const shouldBalanceSubjectPositions = levelFilter === 5;
+  appState.queue = shouldBalanceSubjectPositions
+    ? buildBalancedSubjectQueue(available)
+    : shuffleArray(available);
   appState.currentIndex = 0;
   appState.currentPhrase = null;
   appState.slots = new Map();
@@ -1076,6 +1079,82 @@ function startSession(level) {
   requestFullscreenIfSupported();
   appState.progress = updateLastLevel(appState.progress, level);
   loadNextPhrase();
+}
+
+function buildBalancedSubjectQueue(phrases) {
+  const groups = categorizeSubjectPositions(phrases);
+  const subjectBefore = shuffleArray(groups.subjectBefore);
+  const subjectAfter = shuffleArray(groups.subjectAfter);
+  const other = shuffleArray(groups.other);
+
+  if (!subjectBefore.length || !subjectAfter.length) {
+    return shuffleArray([...subjectBefore, ...subjectAfter, ...other]);
+  }
+
+  const queue = [];
+  const maxLength = Math.max(subjectBefore.length, subjectAfter.length);
+  for (let i = 0; i < maxLength; i += 1) {
+    if (i < subjectBefore.length) {
+      queue.push(subjectBefore[i]);
+    }
+    if (i < subjectAfter.length) {
+      queue.push(subjectAfter[i]);
+    }
+  }
+
+  return queue.concat(other);
+}
+
+function categorizeSubjectPositions(phrases) {
+  return phrases.reduce(
+    (groups, phrase) => {
+      const placement = getSubjectPlacement(phrase);
+      if (placement === 'before') {
+        groups.subjectBefore.push(phrase);
+      } else if (placement === 'after') {
+        groups.subjectAfter.push(phrase);
+      } else {
+        groups.other.push(phrase);
+      }
+      return groups;
+    },
+    { subjectBefore: [], subjectAfter: [], other: [] }
+  );
+}
+
+function getSubjectPlacement(phrase) {
+  if (!phrase || !Array.isArray(phrase.parts)) {
+    return 'unknown';
+  }
+
+  let subjectIndex = -1;
+  let verbIndex = -1;
+
+  phrase.parts.forEach((part, index) => {
+    if (part.type !== 'segment') {
+      return;
+    }
+    if (part.role === 'SUBJECT' && subjectIndex === -1) {
+      subjectIndex = index;
+    }
+    if (part.role === 'VERB' && verbIndex === -1) {
+      verbIndex = index;
+    }
+  });
+
+  if (subjectIndex === -1 || verbIndex === -1) {
+    return 'unknown';
+  }
+
+  if (subjectIndex < verbIndex) {
+    return 'before';
+  }
+
+  if (subjectIndex > verbIndex) {
+    return 'after';
+  }
+
+  return 'unknown';
 }
 
 function swapScreen(target) {
