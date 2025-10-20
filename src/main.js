@@ -82,20 +82,11 @@ const SUBJECTS = {
   MATH: 'math'
 };
 
-const SUBJECT_TAGLINES = {
-  [SUBJECTS.GRAMMAR]:
-    'Repère pas à pas le groupe sujet, le verbe et les compléments !',
-  [SUBJECTS.MATH]:
-    'Résous des énigmes de logique, complète des suites et explore les racines carrées !'
-};
-
 const HOME_VIEWS = {
   MENU: 'menu',
   GRAMMAR: 'grammar',
   MATH: 'math'
 };
-
-const HOME_MENU_TAGLINE = 'Choisis ta matière pour commencer !';
 const MATH_TRACK_HELP_DEFAULT =
   "Choisis un type d'énigmes pour voir les niveaux disponibles.";
 
@@ -254,7 +245,6 @@ const elements = {
   toast: document.getElementById('toast'),
   mathTrackButtons: Array.from(document.querySelectorAll('.math-track-btn')),
   mathTrackGrid: document.getElementById('math-track-grid'),
-  mathHomeTitle: document.getElementById('math-home-title'),
   mathLevelsWrapper: document.getElementById('math-levels-wrapper'),
   mathLevels: document.getElementById('math-levels'),
   mathLevelHeading: document.getElementById('math-level-heading'),
@@ -270,8 +260,7 @@ const elements = {
   mathValidate: document.getElementById('math-validate'),
   mathNext: document.getElementById('math-next'),
   mathHint: document.getElementById('math-hint'),
-  mathProgress: document.getElementById('math-progress'),
-  tagline: document.querySelector('.tagline')
+  mathProgress: document.getElementById('math-progress')
 };
 let dragState = null;
 
@@ -455,10 +444,6 @@ function setSubject(subject) {
   appState.subject = normalized;
   document.body.classList.toggle('subject-grammar', normalized === SUBJECTS.GRAMMAR);
   document.body.classList.toggle('subject-math', normalized === SUBJECTS.MATH);
-  const taglineText = SUBJECT_TAGLINES[normalized];
-  if (elements.tagline && taglineText) {
-    elements.tagline.textContent = taglineText;
-  }
 }
 
 function showHomeView(view) {
@@ -486,9 +471,6 @@ function showHomeView(view) {
     renderMathHomeState();
   } else {
     document.body.classList.remove('subject-grammar', 'subject-math');
-    if (elements.tagline) {
-      elements.tagline.textContent = HOME_MENU_TAGLINE;
-    }
   }
 }
 
@@ -583,12 +565,6 @@ function renderMathHomeState() {
   if (elements.mathBackToTracks) {
     elements.mathBackToTracks.hidden = isChoosingTrack;
     elements.mathBackToTracks.setAttribute('aria-hidden', String(isChoosingTrack));
-  }
-
-  if (elements.mathHomeTitle) {
-    elements.mathHomeTitle.textContent = isChoosingTrack
-      ? 'Choisis ton défi'
-      : `Choisis ton niveau · ${selectedTrack.label}`;
   }
 
   if (elements.mathLevelsWrapper) {
