@@ -205,8 +205,7 @@ const appState = {
     hasValidated: false,
     score: { correct: 0, total: 0 },
     lastTrack: null,
-    lastLevel: null,
-    homeStage: 'tracks'
+    lastLevel: null
   }
 };
 
@@ -249,7 +248,6 @@ const elements = {
   mathLevels: document.getElementById('math-levels'),
   mathLevelHeading: document.getElementById('math-level-heading'),
   mathTrackHelp: document.getElementById('math-track-help'),
-  mathBackToTracks: document.getElementById('math-track-back'),
   mathResume: document.getElementById('math-resume'),
   mathScore: document.getElementById('math-score'),
   mathLevelTitle: document.getElementById('math-level-title'),
@@ -332,7 +330,6 @@ function loadMathData(data) {
   math.tracks = tracks;
   if (math.selectedTrack && !math.tracks.has(math.selectedTrack)) {
     math.selectedTrack = null;
-    math.homeStage = 'tracks';
   }
   if (math.currentTrack && !math.tracks.has(math.currentTrack)) {
     math.currentTrack = null;
@@ -368,21 +365,6 @@ function bindEvents() {
       button.addEventListener('click', () => {
         selectMathTrack(button.dataset.mathTrack);
       });
-    });
-  }
-
-  if (elements.mathBackToTracks) {
-    elements.mathBackToTracks.addEventListener('click', () => {
-      appState.math.homeStage = 'tracks';
-      renderMathHomeState();
-      if (elements.mathTrackGrid) {
-        const focused =
-          elements.mathTrackGrid.querySelector('.math-track-btn.selected') ||
-          elements.mathTrackGrid.querySelector('.math-track-btn');
-        if (focused) {
-          focused.focus();
-        }
-      }
     });
   }
 
@@ -480,9 +462,6 @@ function openHomeForSubject(subject) {
     if (!appState.math.selectedTrack && appState.math.lastTrack) {
       appState.math.selectedTrack = appState.math.lastTrack;
     }
-    if (!appState.math.selectedTrack) {
-      appState.math.homeStage = 'tracks';
-    }
     updateMathResume();
     updateMathScoreboard();
     renderMathHomeState();
@@ -542,6 +521,8 @@ function updateMathResume() {
 
 function renderMathHomeState() {
   const { math } = appState;
+  const selectedTrack = getMathTrack(math.selectedTrack);
+
   if (elements.mathTrackButtons.length) {
     elements.mathTrackButtons.forEach((button) => {
       const isSelected = button.dataset.mathTrack === math.selectedTrack;
@@ -550,25 +531,14 @@ function renderMathHomeState() {
     });
   }
 
-  const selectedTrack = getMathTrack(math.selectedTrack);
-  if (!selectedTrack && math.homeStage === 'levels') {
-    math.homeStage = 'tracks';
-  }
-
-  const isChoosingTrack = math.homeStage !== 'levels' || !selectedTrack;
+  const showLevels = !!selectedTrack;
 
   if (elements.mathTrackGrid) {
-    elements.mathTrackGrid.hidden = !isChoosingTrack;
-    elements.mathTrackGrid.setAttribute('aria-hidden', String(!isChoosingTrack));
-  }
-
-  if (elements.mathBackToTracks) {
-    elements.mathBackToTracks.hidden = isChoosingTrack;
-    elements.mathBackToTracks.setAttribute('aria-hidden', String(isChoosingTrack));
+    elements.mathTrackGrid.hidden = false;
+    elements.mathTrackGrid.setAttribute('aria-hidden', 'false');
   }
 
   if (elements.mathLevelsWrapper) {
-    const showLevels = !isChoosingTrack && !!selectedTrack;
     elements.mathLevelsWrapper.hidden = !showLevels;
     elements.mathLevelsWrapper.setAttribute('aria-hidden', String(!showLevels));
     if (!showLevels && elements.mathLevels) {
@@ -577,18 +547,19 @@ function renderMathHomeState() {
   }
 
   if (elements.mathTrackHelp) {
-    elements.mathTrackHelp.textContent = isChoosingTrack
-      ? MATH_TRACK_HELP_DEFAULT
-      : selectedTrack?.description || '';
+    elements.mathTrackHelp.textContent = showLevels
+      ? selectedTrack?.description || ''
+      : MATH_TRACK_HELP_DEFAULT;
   }
 
-  if (!isChoosingTrack && selectedTrack) {
-    if (elements.mathLevelHeading) {
-      elements.mathLevelHeading.textContent = `Choisis ton niveau · ${selectedTrack.label}`;
-    }
+  if (elements.mathLevelHeading) {
+    elements.mathLevelHeading.textContent = showLevels
+      ? `Choisis ton niveau · ${selectedTrack.label}`
+      : 'Choisis ton niveau';
+  }
+
+  if (showLevels && selectedTrack) {
     renderMathLevelButtons(selectedTrack);
-  } else if (elements.mathLevelHeading) {
-    elements.mathLevelHeading.textContent = 'Choisis ton niveau';
   }
 }
 
@@ -620,12 +591,24 @@ function renderMathLevelButtons(track) {
 }
 
 function selectMathTrack(trackId) {
-  if (!trackId || !appState.math.tracks.has(trackId)) {
+  if (!trackId) {
+    appState.math.selectedTrack = null;
+    renderMathHomeState();
+    return;
+  }
+
+  if (!appState.math.tracks.has(trackId)) {
     showToast("Cette sous-matière n'est pas disponible pour le moment.");
     return;
   }
+
+  if (appState.math.selectedTrack === trackId) {
+    appState.math.selectedTrack = null;
+    renderMathHomeState();
+    return;
+  }
+
   appState.math.selectedTrack = trackId;
-  appState.math.homeStage = 'levels';
   renderMathHomeState();
 }
 
@@ -647,7 +630,6 @@ function startMathSession(trackId, level) {
   appState.math.currentLevel = normalizedLevel;
   appState.math.lastTrack = normalizedTrack;
   appState.math.lastLevel = normalizedLevel;
-  appState.math.homeStage = 'levels';
   appState.math.queue = shuffleArray([...levelData]);
   appState.math.queueIndex = 0;
   appState.math.currentQuestion = null;

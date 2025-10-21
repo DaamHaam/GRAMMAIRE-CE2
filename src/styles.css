@@ -48,7 +48,7 @@ body {
 }
 
 .app-version {
-  font-size: 0.55rem;
+  font-size: 0.45rem;
   font-weight: 600;
   color: rgba(32, 48, 73, 0.6);
   letter-spacing: 0.12em;
@@ -57,14 +57,14 @@ body {
 
 .app-version-floating {
   position: fixed;
-  top: 0.4rem;
-  left: 0.5rem;
+  top: 0.15rem;
+  left: 0.25rem;
   z-index: 1200;
   pointer-events: none;
 }
 
 body.exercise-active .app-version-floating {
-  top: 0.35rem;
+  top: 0.1rem;
 }
 
 body::before {
@@ -215,30 +215,6 @@ body::before {
 .back-to-menu:focus-visible {
   background: rgba(255, 255, 255, 0.28);
   transform: translateY(-1px);
-}
-
-.math-track-back {
-  align-self: flex-start;
-  margin: 0;
-  margin-bottom: 0.5rem;
-  padding: 0.45rem 0.85rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  color: var(--primary);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
-}
-
-.math-track-back:hover,
-.math-track-back:focus-visible {
-  background: rgba(255, 255, 255, 0.28);
-  transform: translateY(-1px);
-}
-
-.math-track-back[hidden] {
-  display: none;
 }
 
 .math-home {
