@@ -1,5 +1,8 @@
 # Journal des versions
 
+## v0.10 · 2025-??-??
+- Met à jour la version affichée dans l'interface et les documents afin d'annoncer la release v0.10.
+
 ## v0.07 · 2025-??-??
 - Mélange l'ordre des réponses des QCM de mathématiques à chaque affichage pour éviter les réponses prévisibles.
 
