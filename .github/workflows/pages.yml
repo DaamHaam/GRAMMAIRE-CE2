@@ -1,108 +1,122 @@
-name: Pages (prod + beta + releases + PR previews incl. forks)
+name: Pages (prod, beta, PR previews)
 
 on:
   push:
-    branches: [ main, next ]           # prod=main, beta=next
-    tags:    [ 'v*', 'v*.*', 'v*.*.*' ]# releases/vX[.Y[.Z]]
-  pull_request:                         # PR créées depuis le même dépôt
-    branches: [ main, next ]
-  pull_request_target:                  # PR depuis un fork -> droits du dépôt cible
-    types: [ opened, synchronize, reopened ]
-  workflow_dispatch:
+    branches: [ main, next, Next ]
+  pull_request:
+    branches: [ main, next, Next ]
+    types: [opened, synchronize, reopened, ready_for_review, closed]
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
+  pull-requests: write
 
 concurrency:
-  group: github-pages
+  group: pages-${{ github.workflow }}-${{ github.ref || format('pr-{0}', github.event.number) }}
   cancel-in-progress: true
 
-# ---- Déploiements "persistants": prod/beta/releases ----
 jobs:
-  deploy:
-    if: ${{ github.event_name != 'pull_request' && github.event_name != 'pull_request_target' }}
+  # --- PROD: push sur main -> racine de gh-pages ---
+  deploy-prod:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Build artifact layout
-        shell: bash
-        run: |
-          set -e
-          mkdir -p dist
-          EXCLUDES="--exclude .git --exclude .github --exclude dist --exclude node_modules"
-
-          if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
-            # Production à la racine
-            rsync -a $EXCLUDES ./ dist/
-          elif [ "${GITHUB_REF}" = "refs/heads/next" ]; then
-            # Canal beta sous /beta/
-            mkdir -p dist/beta
-            rsync -a $EXCLUDES ./ dist/beta/
-          elif [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            # Archive sous /releases/<tag>/
-            mkdir -p "dist/releases/${GITHUB_REF_NAME}"
-            rsync -a $EXCLUDES ./ "dist/releases/${GITHUB_REF_NAME}/"
-          else
-            rsync -a $EXCLUDES ./ dist/
-          fi
-
-          # Empêche Jekyll d'ignorer des fichiers
-          touch dist/.nojekyll
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+      - uses: actions/checkout@v4
+      # Optionnel: si tu as des dossiers commençant par "_" :
+      - run: touch .nojekyll
+      - name: Deploy production to gh-pages root
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: dist
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: .
+          keep_files: true        # on préserve /beta et /pr-*
 
-      - id: deployment
-        name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
-
-# ---- Previews éphémères pour PR (inclut PR depuis fork, en mode sûr) ----
-  preview:
-    if: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target' }}
+  # --- BÊTA: push sur next|Next -> gh-pages/beta ---
+  deploy-beta:
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/next' || github.ref == 'refs/heads/Next')
     runs-on: ubuntu-latest
-    environment:
-      name: preview
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # On récupère le code exact de la PR (même dépôt OU fork) sans exposer de token
-      - name: Checkout PR HEAD (safe)
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - run: touch .nojekyll
+      - name: Deploy beta to gh-pages/beta
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: .
+          destination_dir: beta
+          keep_files: true
 
-      - name: Prepare dist (static copy only)
-        shell: bash
+  # --- PR PREVIEW vers Next: gh-pages/beta/pr-<num>/ ---
+  pr-preview-next:
+    if: github.event_name == 'pull_request' && (github.base_ref == 'next' || github.base_ref == 'Next') && github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - run: touch .nojekyll
+      - name: Deploy PR preview (Next)
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: .
+          destination_dir: beta/pr-${{ github.event.number }}
+          keep_files: true
+      - name: Compute repo name
+        run: echo "REPO_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
+      - name: Comment preview URL (Next)
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          recreate: true
+          message: |
+            🚀 Préversion déployée :
+            https://${{ github.repository_owner }}.github.io/${{ env.REPO_NAME }}/beta/pr-${{ github.event.number }}/
+
+  # --- PR PREVIEW vers main: gh-pages/pr-<num>/ ---
+  pr-preview-main:
+    if: github.event_name == 'pull_request' && github.base_ref == 'main' && github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - run: touch .nojekyll
+      - name: Deploy PR preview (main)
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: .
+          destination_dir: pr-${{ github.event.number }}
+          keep_files: true
+      - name: Compute repo name
+        run: echo "REPO_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
+      - name: Comment preview URL (main)
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          recreate: true
+          message: |
+            🚀 Préversion déployée :
+            https://${{ github.repository_owner }}.github.io/${{ env.REPO_NAME }}/pr-${{ github.event.number }}/
+
+  # --- CLEANUP: quand la PR est close/mergée, on supprime son dossier ---
+  cleanup-preview:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+      - name: Remove preview folder
         run: |
-          set -e
-          rm -rf dist
-          mkdir -p dist
-          rsync -a --exclude '.git' --exclude '.github' --exclude 'dist' --exclude 'node_modules' ./ dist/
-          touch dist/.nojekyll
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: dist
-
-      - id: deployment
-        name: Deploy PR preview
-        uses: actions/deploy-pages@v4
-        with:
-          preview: true
+          set -eux
+          rm -rf "pr-${{ github.event.number }}" "beta/pr-${{ github.event.number }}" || true
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: cleanup preview for PR #${{ github.event.number }}" || echo "Nothing to clean"
+          git push
