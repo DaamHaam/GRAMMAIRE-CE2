@@ -7,11 +7,7 @@
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
-    <span class="app-version app-version-floating" aria-label="Version de l'application">v0.07</span>
-    <header class="app-header" role="banner">
-      <h1>Détective des groupes</h1>
-      <p class="tagline">Choisis ta matière pour commencer !</p>
-    </header>
+    <span class="app-version app-version-floating" aria-label="Version de l'application">v0.09</span>
     <main id="app" class="app" role="main">
       <section
         id="screen-home"
@@ -20,23 +16,19 @@
         data-view="menu"
       >
         <div id="home-menu" class="home-view active" data-view="menu">
-          <div class="card home-card intro-card">
-            <h2>Bienvenue !</h2>
-            <p>Sélectionne une matière pour afficher ses exercices et suivre ta progression.</p>
-            <div class="subject-choice-grid" role="group" aria-label="Matières">
-              <button class="subject-choice grammar" type="button" data-home-subject="grammar">
-                <span class="subject-choice-title">Grammaire</span>
-                <span class="subject-choice-caption"
-                  >Repère le groupe sujet, le verbe et les compléments.</span
-                >
-              </button>
-              <button class="subject-choice math" type="button" data-home-subject="math">
-                <span class="subject-choice-title">Mathématiques</span>
-                <span class="subject-choice-caption"
-                  >Résous des QCM logiques, complète des suites et explore les racines carrées.</span
-                >
-              </button>
-            </div>
+          <div class="subject-choice-panel" role="group" aria-label="Choisis une matière">
+            <button class="subject-choice grammar" type="button" data-home-subject="grammar">
+              <span class="subject-choice-title">Grammaire</span>
+              <span class="subject-choice-caption"
+                >Repère le groupe sujet, le verbe et les compléments.</span
+              >
+            </button>
+            <button class="subject-choice math" type="button" data-home-subject="math">
+              <span class="subject-choice-title">Mathématiques</span>
+              <span class="subject-choice-caption"
+                >Résous des QCM logiques, complète des suites et explore les racines carrées.</span
+              >
+            </button>
           </div>
         </div>
         <div id="grammar-panel" class="home-view" data-view="grammar" hidden aria-hidden="true">
@@ -106,17 +98,7 @@
         </div>
         <div id="math-panel" class="home-view" data-view="math" hidden aria-hidden="true">
           <button class="back-to-menu" type="button" data-home-menu>← Choisir une matière</button>
-          <div class="card home-card math-home-card">
-            <h2 id="math-home-title">Choisis ton défi</h2>
-            <button
-              id="math-track-back"
-              class="math-track-back"
-              type="button"
-              hidden
-              aria-hidden="true"
-            >
-              ← Changer de défi
-            </button>
+          <div class="math-home">
             <div
               id="math-track-grid"
               class="math-track-grid"
@@ -161,7 +143,7 @@
               Choisis un type d'énigmes pour voir les niveaux disponibles.
             </p>
             <div id="math-levels-wrapper" class="math-levels-wrapper" hidden aria-hidden="true">
-              <h3 id="math-level-heading">Choisis ton niveau</h3>
+              <h3 id="math-level-heading" class="visually-hidden">Choisis ton niveau</h3>
               <div
                 id="math-levels"
                 class="level-grid"

@@ -418,112 +418,112 @@
       {
         "id": "rc-2-1",
         "type": "mcq",
-        "question": "Quelle est la racine carrée de 121 ?",
-        "options": ["10", "11", "12"],
-        "answerIndex": 1,
-        "hint": "Réfléchis au carré qui donne 121.",
-        "explanation": "11 × 11 = 121, donc la racine carrée est 11."
+        "question": "Quelle est la racine carrée de 81 ?",
+        "options": ["7", "8", "9"],
+        "answerIndex": 2,
+        "hint": "Trouve le nombre qui, multiplié par lui-même, donne 81.",
+        "explanation": "9 × 9 = 81, la racine carrée est donc 9."
       },
       {
         "id": "rc-2-2",
         "type": "mcq",
-        "question": "Quelle est la racine carrée de 144 ?",
-        "options": ["11", "12", "13"],
+        "question": "Quelle est la racine carrée de 100 ?",
+        "options": ["9", "10", "12"],
         "answerIndex": 1,
-        "hint": "144 est juste après 12 × 12.",
-        "explanation": "12 × 12 = 144, la racine carrée vaut 12."
+        "hint": "Pense au carré parfait juste après 9 × 9.",
+        "explanation": "10 × 10 = 100, la racine carrée vaut 10."
       },
       {
         "id": "rc-2-3",
         "type": "mcq",
-        "question": "Une parcelle carrée couvre 169 m². Quelle est la longueur d'un côté ?",
-        "options": ["11 m", "12 m", "13 m"],
-        "answerIndex": 2,
-        "hint": "Cherche le nombre dont le carré vaut 169.",
-        "explanation": "13 × 13 = 169, donc chaque côté mesure 13 m."
+        "question": "Un damier carré compte 121 cases. Combien y en a-t-il sur un côté ?",
+        "options": ["10", "11", "12"],
+        "answerIndex": 1,
+        "hint": "Cherche le nombre dont le carré vaut 121.",
+        "explanation": "11 × 11 = 121, il y a donc 11 cases par côté."
       },
       {
         "id": "rc-2-4",
         "type": "mcq",
-        "question": "On souhaite ranger 196 cartes en un carré parfait. Combien de cartes par rangée faut-il prévoir ?",
-        "options": ["12", "14", "16"],
+        "question": "Quelle est la racine carrée de 144 ?",
+        "options": ["11", "12", "13"],
         "answerIndex": 1,
-        "hint": "Calcule la racine carrée de 196.",
-        "explanation": "√196 = 14, il faut 14 cartes par rangée."
+        "hint": "144 est le carré d'un nombre entier juste après 11.",
+        "explanation": "12 × 12 = 144, la racine carrée vaut 12."
       },
       {
         "id": "rc-2-5",
         "type": "mcq",
-        "question": "Quel nombre multiplié par lui-même donne 225 ?",
-        "options": ["14", "15", "16"],
+        "question": "Un potager carré mesure 169 m². Quelle est la longueur d'un côté ?",
+        "options": ["12 m", "13 m", "14 m"],
         "answerIndex": 1,
-        "hint": "Cherche le carré parfait juste après 14 × 14.",
-        "explanation": "15 × 15 = 225, le nombre recherché est 15."
+        "hint": "Cherche le carré parfait qui donne 169.",
+        "explanation": "13 × 13 = 169, chaque côté mesure donc 13 m."
       },
       {
         "id": "rc-2-6",
         "type": "mcq",
-        "question": "Une grille carrée contient 256 cases. Combien de cases y a-t-il sur un côté ?",
-        "options": ["14", "16", "18"],
+        "question": "On veut aligner 196 cartes en carré. Combien de cartes par rangée faut-il prendre ?",
+        "options": ["13", "14", "15"],
         "answerIndex": 1,
-        "hint": "256 est un carré parfait souvent utilisé en informatique.",
-        "explanation": "16 × 16 = 256, chaque côté comporte 16 cases."
+        "hint": "Calcule la racine carrée de 196.",
+        "explanation": "√196 = 14, il faut 14 cartes par rangée."
       }
     ],
     "level3": [
       {
         "id": "rc-3-1",
         "type": "mcq",
-        "question": "Quelle est la racine carrée de 289 ?",
-        "options": ["16", "17", "18"],
+        "question": "Quelle est la racine carrée de 225 ?",
+        "options": ["14", "15", "16"],
         "answerIndex": 1,
-        "hint": "289 est le carré d'un nombre situé entre 16 et 18.",
-        "explanation": "17 × 17 = 289, la racine carrée est 17."
+        "hint": "225 est juste après 14 × 14.",
+        "explanation": "15 × 15 = 225, la racine carrée est 15."
       },
       {
         "id": "rc-3-2",
         "type": "mcq",
-        "question": "Quelle est la racine carrée de 324 ?",
-        "options": ["17", "18", "19"],
+        "question": "Quelle est la racine carrée de 256 ?",
+        "options": ["15", "16", "18"],
         "answerIndex": 1,
-        "hint": "324 est obtenu en multipliant un nombre pair par lui-même.",
-        "explanation": "18 × 18 = 324, donc la racine carrée vaut 18."
+        "hint": "Pense au carré d'un nombre pair légèrement supérieur à 15.",
+        "explanation": "16 × 16 = 256, la racine carrée vaut 16."
       },
       {
         "id": "rc-3-3",
         "type": "mcq",
-        "question": "Un terrain carré mesure 361 m². Quelle est la longueur d'un côté ?",
-        "options": ["18 m", "19 m", "20 m"],
+        "question": "Un terrain carré mesure 289 m². Quelle est la longueur d'un côté ?",
+        "options": ["16 m", "17 m", "18 m"],
         "answerIndex": 1,
-        "hint": "361 correspond au carré d'un nombre impair.",
-        "explanation": "19 × 19 = 361, le côté mesure donc 19 m."
+        "hint": "289 est le carré d'un nombre entier qui suit 16.",
+        "explanation": "17 × 17 = 289, chaque côté mesure 17 m."
       },
       {
         "id": "rc-3-4",
         "type": "mcq",
-        "question": "Calcule : √400 + √81 = ?",
-        "options": ["27", "29", "31"],
+        "question": "Calcule : √100 + √49 = ?",
+        "options": ["15", "17", "18"],
         "answerIndex": 1,
         "hint": "Calcule séparément chaque racine carrée avant d'additionner.",
-        "explanation": "√400 = 20 et √81 = 9, donc 20 + 9 = 29."
+        "explanation": "√100 = 10 et √49 = 7, donc 10 + 7 = 17."
       },
       {
         "id": "rc-3-5",
         "type": "mcq",
-        "question": "Si √x = 22, quelle est la valeur de x ?",
-        "options": ["242", "484", "522"],
+        "question": "Si √x = 16, quelle est la valeur de x ?",
+        "options": ["216", "256", "316"],
         "answerIndex": 1,
-        "hint": "Élève 22 au carré pour retrouver x.",
-        "explanation": "22 × 22 = 484, donc x = 484."
+        "hint": "Élève 16 au carré pour retrouver x.",
+        "explanation": "16 × 16 = 256, donc x = 256."
       },
       {
         "id": "rc-3-6",
         "type": "mcq",
-        "question": "Une classe dispose de 576 cartes et veut former un grand carré parfait. Combien de cartes par rangée doivent-ils aligner ?",
-        "options": ["22", "24", "26"],
+        "question": "Une classe dispose de 324 cartes et veut former un carré parfait. Combien de cartes par rangée ?",
+        "options": ["16", "18", "20"],
         "answerIndex": 1,
-        "hint": "Cherche la racine carrée de 576.",
-        "explanation": "24 × 24 = 576, il faut donc 24 cartes par rangée."
+        "hint": "Cherche le nombre dont le carré vaut 324.",
+        "explanation": "18 × 18 = 324, il faut donc 18 cartes par rangée."
       }
     ]
   }

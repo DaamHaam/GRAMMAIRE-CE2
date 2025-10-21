@@ -82,20 +82,11 @@ const SUBJECTS = {
   MATH: 'math'
 };
 
-const SUBJECT_TAGLINES = {
-  [SUBJECTS.GRAMMAR]:
-    'Repère pas à pas le groupe sujet, le verbe et les compléments !',
-  [SUBJECTS.MATH]:
-    'Résous des énigmes de logique, complète des suites et explore les racines carrées !'
-};
-
 const HOME_VIEWS = {
   MENU: 'menu',
   GRAMMAR: 'grammar',
   MATH: 'math'
 };
-
-const HOME_MENU_TAGLINE = 'Choisis ta matière pour commencer !';
 const MATH_TRACK_HELP_DEFAULT =
   "Choisis un type d'énigmes pour voir les niveaux disponibles.";
 
@@ -214,8 +205,7 @@ const appState = {
     hasValidated: false,
     score: { correct: 0, total: 0 },
     lastTrack: null,
-    lastLevel: null,
-    homeStage: 'tracks'
+    lastLevel: null
   }
 };
 
@@ -254,12 +244,10 @@ const elements = {
   toast: document.getElementById('toast'),
   mathTrackButtons: Array.from(document.querySelectorAll('.math-track-btn')),
   mathTrackGrid: document.getElementById('math-track-grid'),
-  mathHomeTitle: document.getElementById('math-home-title'),
   mathLevelsWrapper: document.getElementById('math-levels-wrapper'),
   mathLevels: document.getElementById('math-levels'),
   mathLevelHeading: document.getElementById('math-level-heading'),
   mathTrackHelp: document.getElementById('math-track-help'),
-  mathBackToTracks: document.getElementById('math-track-back'),
   mathResume: document.getElementById('math-resume'),
   mathScore: document.getElementById('math-score'),
   mathLevelTitle: document.getElementById('math-level-title'),
@@ -270,8 +258,7 @@ const elements = {
   mathValidate: document.getElementById('math-validate'),
   mathNext: document.getElementById('math-next'),
   mathHint: document.getElementById('math-hint'),
-  mathProgress: document.getElementById('math-progress'),
-  tagline: document.querySelector('.tagline')
+  mathProgress: document.getElementById('math-progress')
 };
 let dragState = null;
 
@@ -343,7 +330,6 @@ function loadMathData(data) {
   math.tracks = tracks;
   if (math.selectedTrack && !math.tracks.has(math.selectedTrack)) {
     math.selectedTrack = null;
-    math.homeStage = 'tracks';
   }
   if (math.currentTrack && !math.tracks.has(math.currentTrack)) {
     math.currentTrack = null;
@@ -379,21 +365,6 @@ function bindEvents() {
       button.addEventListener('click', () => {
         selectMathTrack(button.dataset.mathTrack);
       });
-    });
-  }
-
-  if (elements.mathBackToTracks) {
-    elements.mathBackToTracks.addEventListener('click', () => {
-      appState.math.homeStage = 'tracks';
-      renderMathHomeState();
-      if (elements.mathTrackGrid) {
-        const focused =
-          elements.mathTrackGrid.querySelector('.math-track-btn.selected') ||
-          elements.mathTrackGrid.querySelector('.math-track-btn');
-        if (focused) {
-          focused.focus();
-        }
-      }
     });
   }
 
@@ -455,10 +426,6 @@ function setSubject(subject) {
   appState.subject = normalized;
   document.body.classList.toggle('subject-grammar', normalized === SUBJECTS.GRAMMAR);
   document.body.classList.toggle('subject-math', normalized === SUBJECTS.MATH);
-  const taglineText = SUBJECT_TAGLINES[normalized];
-  if (elements.tagline && taglineText) {
-    elements.tagline.textContent = taglineText;
-  }
 }
 
 function showHomeView(view) {
@@ -486,9 +453,6 @@ function showHomeView(view) {
     renderMathHomeState();
   } else {
     document.body.classList.remove('subject-grammar', 'subject-math');
-    if (elements.tagline) {
-      elements.tagline.textContent = HOME_MENU_TAGLINE;
-    }
   }
 }
 
@@ -497,9 +461,6 @@ function openHomeForSubject(subject) {
     showHomeView(HOME_VIEWS.MATH);
     if (!appState.math.selectedTrack && appState.math.lastTrack) {
       appState.math.selectedTrack = appState.math.lastTrack;
-    }
-    if (!appState.math.selectedTrack) {
-      appState.math.homeStage = 'tracks';
     }
     updateMathResume();
     updateMathScoreboard();
@@ -560,6 +521,8 @@ function updateMathResume() {
 
 function renderMathHomeState() {
   const { math } = appState;
+  const selectedTrack = getMathTrack(math.selectedTrack);
+
   if (elements.mathTrackButtons.length) {
     elements.mathTrackButtons.forEach((button) => {
       const isSelected = button.dataset.mathTrack === math.selectedTrack;
@@ -568,31 +531,14 @@ function renderMathHomeState() {
     });
   }
 
-  const selectedTrack = getMathTrack(math.selectedTrack);
-  if (!selectedTrack && math.homeStage === 'levels') {
-    math.homeStage = 'tracks';
-  }
-
-  const isChoosingTrack = math.homeStage !== 'levels' || !selectedTrack;
+  const showLevels = !!selectedTrack;
 
   if (elements.mathTrackGrid) {
-    elements.mathTrackGrid.hidden = !isChoosingTrack;
-    elements.mathTrackGrid.setAttribute('aria-hidden', String(!isChoosingTrack));
-  }
-
-  if (elements.mathBackToTracks) {
-    elements.mathBackToTracks.hidden = isChoosingTrack;
-    elements.mathBackToTracks.setAttribute('aria-hidden', String(isChoosingTrack));
-  }
-
-  if (elements.mathHomeTitle) {
-    elements.mathHomeTitle.textContent = isChoosingTrack
-      ? 'Choisis ton défi'
-      : `Choisis ton niveau · ${selectedTrack.label}`;
+    elements.mathTrackGrid.hidden = false;
+    elements.mathTrackGrid.setAttribute('aria-hidden', 'false');
   }
 
   if (elements.mathLevelsWrapper) {
-    const showLevels = !isChoosingTrack && !!selectedTrack;
     elements.mathLevelsWrapper.hidden = !showLevels;
     elements.mathLevelsWrapper.setAttribute('aria-hidden', String(!showLevels));
     if (!showLevels && elements.mathLevels) {
@@ -601,18 +547,19 @@ function renderMathHomeState() {
   }
 
   if (elements.mathTrackHelp) {
-    elements.mathTrackHelp.textContent = isChoosingTrack
-      ? MATH_TRACK_HELP_DEFAULT
-      : selectedTrack?.description || '';
+    elements.mathTrackHelp.textContent = showLevels
+      ? selectedTrack?.description || ''
+      : MATH_TRACK_HELP_DEFAULT;
   }
 
-  if (!isChoosingTrack && selectedTrack) {
-    if (elements.mathLevelHeading) {
-      elements.mathLevelHeading.textContent = `Choisis ton niveau · ${selectedTrack.label}`;
-    }
+  if (elements.mathLevelHeading) {
+    elements.mathLevelHeading.textContent = showLevels
+      ? `Choisis ton niveau · ${selectedTrack.label}`
+      : 'Choisis ton niveau';
+  }
+
+  if (showLevels && selectedTrack) {
     renderMathLevelButtons(selectedTrack);
-  } else if (elements.mathLevelHeading) {
-    elements.mathLevelHeading.textContent = 'Choisis ton niveau';
   }
 }
 
@@ -644,12 +591,24 @@ function renderMathLevelButtons(track) {
 }
 
 function selectMathTrack(trackId) {
-  if (!trackId || !appState.math.tracks.has(trackId)) {
+  if (!trackId) {
+    appState.math.selectedTrack = null;
+    renderMathHomeState();
+    return;
+  }
+
+  if (!appState.math.tracks.has(trackId)) {
     showToast("Cette sous-matière n'est pas disponible pour le moment.");
     return;
   }
+
+  if (appState.math.selectedTrack === trackId) {
+    appState.math.selectedTrack = null;
+    renderMathHomeState();
+    return;
+  }
+
   appState.math.selectedTrack = trackId;
-  appState.math.homeStage = 'levels';
   renderMathHomeState();
 }
 
@@ -671,7 +630,6 @@ function startMathSession(trackId, level) {
   appState.math.currentLevel = normalizedLevel;
   appState.math.lastTrack = normalizedTrack;
   appState.math.lastLevel = normalizedLevel;
-  appState.math.homeStage = 'levels';
   appState.math.queue = shuffleArray([...levelData]);
   appState.math.queueIndex = 0;
   appState.math.currentQuestion = null;
@@ -1067,7 +1025,10 @@ function startSession(level) {
     showToast('Aucune phrase disponible pour ce niveau.');
     return;
   }
-  appState.queue = shuffleArray(available);
+  const shouldBalanceSubjectPositions = levelFilter === 5;
+  appState.queue = shouldBalanceSubjectPositions
+    ? buildBalancedSubjectQueue(available)
+    : shuffleArray(available);
   appState.currentIndex = 0;
   appState.currentPhrase = null;
   appState.slots = new Map();
@@ -1076,6 +1037,82 @@ function startSession(level) {
   requestFullscreenIfSupported();
   appState.progress = updateLastLevel(appState.progress, level);
   loadNextPhrase();
+}
+
+function buildBalancedSubjectQueue(phrases) {
+  const groups = categorizeSubjectPositions(phrases);
+  const subjectBefore = shuffleArray(groups.subjectBefore);
+  const subjectAfter = shuffleArray(groups.subjectAfter);
+  const other = shuffleArray(groups.other);
+
+  if (!subjectBefore.length || !subjectAfter.length) {
+    return shuffleArray([...subjectBefore, ...subjectAfter, ...other]);
+  }
+
+  const queue = [];
+  const maxLength = Math.max(subjectBefore.length, subjectAfter.length);
+  for (let i = 0; i < maxLength; i += 1) {
+    if (i < subjectBefore.length) {
+      queue.push(subjectBefore[i]);
+    }
+    if (i < subjectAfter.length) {
+      queue.push(subjectAfter[i]);
+    }
+  }
+
+  return queue.concat(other);
+}
+
+function categorizeSubjectPositions(phrases) {
+  return phrases.reduce(
+    (groups, phrase) => {
+      const placement = getSubjectPlacement(phrase);
+      if (placement === 'before') {
+        groups.subjectBefore.push(phrase);
+      } else if (placement === 'after') {
+        groups.subjectAfter.push(phrase);
+      } else {
+        groups.other.push(phrase);
+      }
+      return groups;
+    },
+    { subjectBefore: [], subjectAfter: [], other: [] }
+  );
+}
+
+function getSubjectPlacement(phrase) {
+  if (!phrase || !Array.isArray(phrase.parts)) {
+    return 'unknown';
+  }
+
+  let subjectIndex = -1;
+  let verbIndex = -1;
+
+  phrase.parts.forEach((part, index) => {
+    if (part.type !== 'segment') {
+      return;
+    }
+    if (part.role === 'SUBJECT' && subjectIndex === -1) {
+      subjectIndex = index;
+    }
+    if (part.role === 'VERB' && verbIndex === -1) {
+      verbIndex = index;
+    }
+  });
+
+  if (subjectIndex === -1 || verbIndex === -1) {
+    return 'unknown';
+  }
+
+  if (subjectIndex < verbIndex) {
+    return 'before';
+  }
+
+  if (subjectIndex > verbIndex) {
+    return 'after';
+  }
+
+  return 'unknown';
 }
 
 function swapScreen(target) {
