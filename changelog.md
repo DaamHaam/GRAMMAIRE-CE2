@@ -1,5 +1,9 @@
 # Journal des versions
 
+## v0.12 · 2025-??-??
+- Ajoute des phrases inspirées des mangas japonais au niveau 5 de grammaire.
+- Met à jour la version affichée dans l'interface en v0.12.
+
 ## v0.10 · 2025-??-??
 - Met à jour la version affichée dans l'interface et les documents afin d'annoncer la release v0.10.
 

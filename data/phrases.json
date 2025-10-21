@@ -536,5 +536,81 @@
       },
       { "type": "text", "text": "." }
     ]
+  },
+  {
+    "id": "l5-13",
+    "level": 5,
+    "text": "Sous les lanternes du festival dansait avec grâce la jeune ninja du village.",
+    "parts": [
+      { "type": "segment", "role": "COMPLEMENT", "text": "Sous les lanternes du festival" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "dansait" },
+      { "type": "text", "text": " avec grâce " },
+      {
+        "type": "segment",
+        "role": "SUBJECT",
+        "subjectType": "GN",
+        "text": "la jeune ninja du village"
+      },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "l5-14",
+    "level": 5,
+    "text": "Près du temple ancestral s'entraînaient chaque aube les apprentis samouraïs courageux.",
+    "parts": [
+      { "type": "segment", "role": "COMPLEMENT", "text": "Près du temple ancestral" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "s'entraînaient" },
+      { "type": "text", "text": " chaque aube " },
+      {
+        "type": "segment",
+        "role": "SUBJECT",
+        "subjectType": "GN",
+        "text": "les apprentis samouraïs courageux"
+      },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "l5-15",
+    "level": 5,
+    "text": "Les amis du club de dessin imaginaient hier encore des robots géants protecteurs.",
+    "parts": [
+      {
+        "type": "segment",
+        "role": "SUBJECT",
+        "subjectType": "GN",
+        "text": "Les amis du club de dessin"
+      },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "imaginaient" },
+      { "type": "text", "text": " hier encore " },
+      {
+        "type": "segment",
+        "role": "COMPLEMENT",
+        "text": "des robots géants protecteurs"
+      },
+      { "type": "text", "text": "." }
+    ]
+  },
+  {
+    "id": "l5-16",
+    "level": 5,
+    "text": "Au cœur de la ville futuriste résonnait soudain l'appel d'un immense mecha protecteur.",
+    "parts": [
+      { "type": "segment", "role": "COMPLEMENT", "text": "Au cœur de la ville futuriste" },
+      { "type": "text", "text": " " },
+      { "type": "segment", "role": "VERB", "text": "résonnait" },
+      { "type": "text", "text": " soudain " },
+      {
+        "type": "segment",
+        "role": "SUBJECT",
+        "subjectType": "GN",
+        "text": "l'appel d'un immense mecha protecteur"
+      },
+      { "type": "text", "text": "." }
+    ]
   }
 ]
